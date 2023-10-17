@@ -14,6 +14,11 @@ defmodule Vx.String do
     end)
   end
 
+  @spec nonblank(Schema.t(:string)) :: Schema.t(:string)
+  def nonblank(%Schema{type: :string} = schema \\ t()) do
+    Schema.validate(schema, :nonblank, fn value -> String.trim(value) != "" end)
+  end
+
   @spec min(Schema.t(:string), non_neg_integer) :: Schema.t(:string)
   def min(%Schema{type: :string} = schema \\ t(), length)
       when is_integer(length) and length >= 0 do
