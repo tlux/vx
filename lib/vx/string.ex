@@ -1,4 +1,5 @@
 defmodule Vx.String do
+  alias Vx.Common
   alias Vx.Schema
 
   @spec t() :: Schema.t()
@@ -6,17 +7,22 @@ defmodule Vx.String do
     Schema.new(:string, &String.valid?/1)
   end
 
-  @spec nonempty(Schema.t(:string)) :: Schema.t(:string)
-  def nonempty(%Schema{type: :string} = schema \\ t()) do
-    Schema.validate(schema, :nonempty, fn
+  @spec eq(Schema.t(:string), String.t()) :: Schema.t()
+  def eq(%Schema{type: :string} = schema \\ t(), value) when is_binary(value) do
+    Common.eq(schema, value)
+  end
+
+  @spec non_empty(Schema.t(:string)) :: Schema.t(:string)
+  def non_empty(%Schema{type: :string} = schema \\ t()) do
+    Schema.validate(schema, :non_empty, fn
       "" -> false
       _ -> true
     end)
   end
 
-  @spec nonblank(Schema.t(:string)) :: Schema.t(:string)
-  def nonblank(%Schema{type: :string} = schema \\ t()) do
-    Schema.validate(schema, :nonblank, fn value -> String.trim(value) != "" end)
+  @spec present(Schema.t(:string)) :: Schema.t(:string)
+  def present(%Schema{type: :string} = schema \\ t()) do
+    Schema.validate(schema, :present, fn value -> String.trim(value) != "" end)
   end
 
   @spec min(Schema.t(:string), non_neg_integer) :: Schema.t(:string)

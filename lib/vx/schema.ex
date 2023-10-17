@@ -10,25 +10,26 @@ defmodule Vx.Schema do
 
   @spec new(atom, Validator.fun()) :: t
   def new(type, fun) do
-    %__MODULE__{type: type, validators: [Validator.new(fun)]}
+    %__MODULE__{type: type, validators: [Validator.new(type, fun)]}
   end
 
   @spec validate(t, atom, Validator.fun()) :: t
-  def validate(%__MODULE__{validators: validators} = schema, key, fun) do
-    %{schema | validators: [Validator.new(key, fun) | validators]}
+  def validate(
+        %__MODULE__{type: type, validators: validators} = schema,
+        key,
+        fun
+      ) do
+    %{schema | validators: [Validator.new(type, key, fun) | validators]}
   end
 
   @spec eval(t, any) :: :ok | {:error, Vx.TypeError.t()}
-  def eval(%__MODULE__{type: type, validators: validators}, value) do
+  def eval(%__MODULE__{validators: validators}, value) do
     validators
     |> Enum.reverse()
     |> Enum.reduce_while(:ok, fn validator, _ ->
       case Validator.eval(validator, value) do
-        :ok ->
-          {:cont, :ok}
-
-        {:error, key} ->
-          {:halt, {:error, Vx.TypeError.new(type, key, value)}}
+        :ok -> {:cont, :ok}
+        error -> {:halt, error}
       end
     end)
   end

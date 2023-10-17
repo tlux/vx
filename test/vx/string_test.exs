@@ -15,13 +15,13 @@ defmodule Vx.StringTest do
     end)
   end
 
-  test "nonempty/0" do
-    assert Schema.eval(Vx.String.nonempty(), "foo") == :ok
+  test "non_empty/0" do
+    assert Schema.eval(Vx.String.non_empty(), "foo") == :ok
 
-    assert Schema.eval(Vx.String.nonempty(), "") ==
-             {:error, Vx.TypeError.new(:string, :nonempty, "")}
+    assert Schema.eval(Vx.String.non_empty(), "") ==
+             {:error, Vx.TypeError.new(:string, :non_empty, "")}
 
-    assert Schema.eval(Vx.String.nonempty(), "  ") == :ok
+    assert Schema.eval(Vx.String.non_empty(), "  ") == :ok
 
     Enum.each(@invalid, fn value ->
       assert Schema.eval(Vx.String.t(), value) ==
@@ -29,12 +29,12 @@ defmodule Vx.StringTest do
     end)
   end
 
-  test "nonblank/0" do
-    assert Schema.eval(Vx.String.nonblank(), "foo") == :ok
+  test "present/0" do
+    assert Schema.eval(Vx.String.present(), "foo") == :ok
 
     Enum.each(["", "   "], fn value ->
-      assert Schema.eval(Vx.String.nonblank(), value) ==
-               {:error, Vx.TypeError.new(:string, :nonblank, value)}
+      assert Schema.eval(Vx.String.present(), value) ==
+               {:error, Vx.TypeError.new(:string, :present, value)}
     end)
 
     Enum.each(@invalid, fn value ->
