@@ -18,8 +18,7 @@ defmodule Vx.Map do
     end)
   end
 
-  defp validate_value(%Schema{} = schema, value),
-    do: Schema.eval(schema, value)
+  defp validate_value(%Schema{} = schema, value), do: Schema.eval(schema, value)
 
   defp validate_value(value, value), do: :ok
 

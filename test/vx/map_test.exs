@@ -15,21 +15,53 @@ defmodule Vx.MapTest do
     end)
   end
 
-  test "shape/1" do
-    assert Schema.eval(Vx.Map.shape(%{"foo" => Vx.String.t()}), %{
-             "foo" => "bar"
-           }) == :ok
+  describe "shape/1" do
+    test "exact key and value" do
+      assert Schema.eval(Vx.Map.shape(%{"foo" => "bar"}), %{
+               "foo" => "bar"
+             }) == :ok
 
-    invalid_value = %{"foo" => "  "}
+      invalid_value = %{"foo" => "baz"}
 
-    assert Schema.eval(
-             Vx.Map.shape(%{"foo" => Vx.String.present()}),
-             invalid_value
-           ) ==
-             {:error,
-              Vx.TypeError.wrap(
-                Vx.TypeError.new(:map, :shape, invalid_value),
-                Vx.TypeError.new(:string, :present, "  ")
-              )}
+      assert Schema.eval(Vx.Map.shape(%{"foo" => "bar"}), invalid_value) ==
+               {:error, Vx.TypeError.new(:map, :shape, invalid_value)}
+    end
+
+    test "schema value" do
+      assert Schema.eval(Vx.Map.shape(%{"foo" => Vx.String.t()}), %{
+               "foo" => "bar"
+             }) == :ok
+
+      invalid_value = %{"foo" => "  "}
+
+      assert Schema.eval(
+               Vx.Map.shape(%{"foo" => Vx.String.present()}),
+               invalid_value
+             ) ==
+               {:error,
+                Vx.TypeError.wrap(
+                  Vx.TypeError.new(:map, :shape, invalid_value),
+                  Vx.TypeError.new(:string, :present, "  ")
+                )}
+    end
+
+    test "schema key" do
+      assert Schema.eval(
+               Vx.Map.shape(%{Vx.String.t() => "bar"}),
+               %{"foo" => "bar"}
+             ) == :ok
+
+      invalid_value = %{foo: "  "}
+
+      assert Schema.eval(
+               Vx.Map.shape(%{Vx.String.t() => "bar"}),
+               invalid_value
+             ) ==
+               {:error,
+                Vx.TypeError.wrap(
+                  Vx.TypeError.new(:map, :shape, invalid_value),
+                  Vx.TypeError.new(:string, :present, "  ")
+                )}
+    end
   end
 end
