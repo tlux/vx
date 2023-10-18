@@ -15,6 +15,8 @@ defmodule Vx.MapTest do
     end)
   end
 
+  test "pairs/3"
+
   describe "shape/1" do
     test "exact key and value" do
       assert Schema.eval(Vx.Map.shape(%{"foo" => "bar"}), %{

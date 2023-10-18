@@ -21,14 +21,13 @@ defmodule VxTest do
         "type" => Vx.Any.of(["user", "admin"])
       })
 
-    assert :ok = Vx.Schema.eval(schema, @valid_values)
-    assert :ok = Vx.Schema.eval(schema, %{@valid_values | "type" => "user"})
+    assert :ok = Schema.eval(schema, @valid_values)
+    assert :ok = Schema.eval(schema, %{@valid_values | "type" => "user"})
+
+    assert {:error, _} = Schema.eval(schema, %{@valid_values | "hobbies" => []})
 
     assert {:error, _} =
-             Vx.Schema.eval(schema, %{@valid_values | "hobbies" => []})
-
-    assert {:error, _} =
-             Vx.Schema.eval(schema, %{
+             Schema.eval(schema, %{
                @valid_values
                | "hobbies" => ["foo", "  "]
              })
