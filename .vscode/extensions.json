@@ -1,0 +1,7 @@
+{
+  "recommendations": [
+    "pantajoe.vscode-elixir-credo",
+    "jakebecker.elixir-ls",
+    "benvp.vscode-hex-pm-intellisense"
+  ]
+}
