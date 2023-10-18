@@ -31,8 +31,7 @@ defmodule Vx.TypeError do
   defp indent(str) do
     str
     |> String.split("\n")
-    |> Enum.map(&"  #{&1}")
-    |> Enum.join("\n")
+    |> Enum.map_join(&"  #{&1}", "\n")
   end
 
   @doc false

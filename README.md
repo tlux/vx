@@ -1,5 +1,12 @@
 # Vx
 
+[![Build](https://github.com/tlux/vx/actions/workflows/elixir.yml/badge.svg)](https://github.com/tlux/vx/actions/workflows/elixir.yml)
+[![Coverage Status](https://coveralls.io/repos/github/tlux/vx/badge.svg?branch=main)](https://coveralls.io/github/tlux/vx?branch=main)
+[![Module Version](https://img.shields.io/hexpm/v/vx.svg)](https://hex.pm/packages/vx)
+[![Hex Docs](https://img.shields.io/badge/hex-docs-lightgreen.svg)](https://hexdocs.pm/vx/)
+[![License](https://img.shields.io/hexpm/l/vx.svg)](https://github.com/tlux/vx/blob/main/LICENSE.md)
+[![Last Updated](https://img.shields.io/github/last-commit/tlux/vx.svg)](https://github.com/tlux/vx/commits/main)
+
 **TODO: Add description**
 
 ## Installation
@@ -18,4 +25,3 @@ end
 Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_doc)
 and published on [HexDocs](https://hexdocs.pm). Once published, the docs can
 be found at <https://hexdocs.pm/vx>.
-
