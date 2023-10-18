@@ -113,7 +113,7 @@ defmodule Vx.Schema do
   @doc """
   Validates the schema.
   """
-  @spec eval(t, any) :: :ok | {:error, Vx.TypeError.t()}
+  @spec eval(t, any) :: :ok | {:error, Vx.ValidationError.t()}
   def eval(%__MODULE__{validators: validators}, value) do
     validators
     |> Enum.reverse()

@@ -35,7 +35,7 @@ defmodule Vx.Validator do
   end
 
   @doc false
-  @spec eval(t, any) :: :ok | {:error, TypeError.t()}
+  @spec eval(t, any) :: :ok | {:error, ValidationError.t()}
   def eval(%__MODULE__{fun: fun} = validator, value) do
     case fun.(value) do
       true ->
