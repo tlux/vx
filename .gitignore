@@ -26,3 +26,4 @@ vx-*.tar
 /tmp/
 
 /.elixir_ls/
+/priv/

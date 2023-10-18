@@ -5,15 +5,40 @@ defmodule Vx.Schema do
 
   defstruct [:type, validators: []]
 
-  @type t :: t(atom)
+  @type schema_type :: atom | {atom, any}
+  @type t :: t(schema_type)
   @type t(type) :: %__MODULE__{type: type, validators: [Validator.t()]}
 
-  @spec new(atom, Validator.fun()) :: t
+  @spec new(schema_type) :: t
+  def new(type) do
+    %__MODULE__{type: type, validators: []}
+  end
+
+  @spec new(schema_type, Validator.fun()) :: t
   def new(type, fun) do
     %__MODULE__{type: type, validators: [Validator.new(type, fun)]}
   end
 
-  @spec validate(t, atom, Validator.fun()) :: t
+  @spec any_of([t]) :: t
+  def any_of([]), do: new({:any_of, []})
+
+  def any_of(schemata) when is_list(schemata) do
+    new({:any_of, schemata}, fn value ->
+      Enum.reduce_while(schemata, :error, fn
+        %__MODULE__{} = schema, _ ->
+          case eval(schema, value) do
+            :ok -> {:halt, :ok}
+            {:error, error} -> {:cont, error}
+          end
+
+        _, _ ->
+          raise ArgumentError,
+                "any_of/1 must be passed a list of #{inspect(__MODULE__)}"
+      end)
+    end)
+  end
+
+  @spec validate(t, Validator.validator_type(), Validator.fun()) :: t
   def validate(
         %__MODULE__{type: type, validators: validators} = schema,
         key,

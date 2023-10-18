@@ -6,7 +6,7 @@ defmodule Vx.Map do
   end
 
   def shape(%Schema{type: :map} = schema \\ t(), target) do
-    Schema.validate(schema, :shape, fn map ->
+    Schema.validate(schema, {:shape, target}, fn map ->
       Enum.reduce_while(target, :ok, fn {key, value_schema}, _ ->
         with {:ok, value} <- Map.fetch(map, key),
              :ok <- validate_value(value_schema, value) do

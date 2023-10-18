@@ -16,12 +16,12 @@ defmodule Vx.TypeErrorTest do
   describe "message/1" do
     test "message without validator name" do
       assert Exception.message(TypeError.new(:string, "foo")) ==
-               "Type error (string): #{inspect("foo")}"
+               "Type error (:string): #{inspect("foo")}"
     end
 
     test "message with validator name" do
       assert Exception.message(TypeError.new(:string, :invalid, "foo")) ==
-               "Type error (string): #{inspect("foo")} (validator: invalid)"
+               "Type error (:string): #{inspect("foo")} (validator: invalid)"
     end
 
     test "message with wrapped error" do
@@ -38,9 +38,9 @@ defmodule Vx.TypeErrorTest do
                  )
                )
              ) ==
-               "Type error (map): #{inspect(value_1)} (validator: shape)\n" <>
-                 "  Type error (map): #{inspect(value_2)} (validator: shape)\n" <>
-                 "    Type error (string): #{inspect(value_3)} (validator: present)"
+               "Type error (:map): #{inspect(value_1)} (validator: shape)\n" <>
+                 "  Type error (:map): #{inspect(value_2)} (validator: shape)\n" <>
+                 "    Type error (:string): #{inspect(value_3)} (validator: present)"
     end
   end
 end
