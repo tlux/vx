@@ -81,8 +81,14 @@ defmodule Vx.Schema do
   defp do_intersect(schemata) do
     new(
       :intersect,
-      fn _value ->
-        :ok
+      fn value ->
+        Enum.reduce_while(schemata, :error, fn
+          schema, :ok ->
+            case eval(schema, value) do
+              :ok -> {:cont, :ok}
+              {:error, error} -> {:halt, error}
+            end
+        end)
       end,
       %{schemata: schemata}
     )
