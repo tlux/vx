@@ -9,6 +9,7 @@ defmodule Vx.MixProject do
       app: :vx,
       version: @version,
       elixir: "~> 1.14",
+      elixirc_paths: elixirc_paths(Mix.env()),
       start_permanent: Mix.env() == :prod,
       deps: deps(),
       package: package(),
@@ -25,7 +26,7 @@ defmodule Vx.MixProject do
       dialyzer: dialyzer(),
 
       # Docs
-      name: "GraphQL Websocket Client",
+      name: "Vx",
       docs: docs()
     ]
   end
@@ -70,6 +71,9 @@ defmodule Vx.MixProject do
       plt_file: {:no_warn, "priv/plts/vx.plt"}
     ]
   end
+
+  defp elixirc_paths(:test), do: ["lib", "test/support"]
+  defp elixirc_paths(_), do: ["lib"]
 
   def package do
     [

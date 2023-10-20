@@ -7,7 +7,8 @@ defmodule VxTest do
     "name" => "foo",
     "age" => 18,
     "hobbies" => ["foo", "bar"],
-    "type" => "admin"
+    "type" => "admin",
+    "addresses" => [%Address{street: "baz"}]
   }
 
   test "complex schema" do
@@ -18,7 +19,8 @@ defmodule VxTest do
         "hobbies" =>
           Vx.List.of(Vx.String.present())
           |> Vx.List.non_empty(),
-        "type" => Vx.Any.of(["user", "admin"])
+        "type" => Vx.Any.of(["user", "admin"]),
+        "addresses" => Vx.List.of(Vx.Struct.t(Address))
       })
 
     assert :ok = Schema.eval(schema, @valid_values)
