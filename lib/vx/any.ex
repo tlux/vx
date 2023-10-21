@@ -6,6 +6,7 @@ defmodule Vx.Any do
   @spec t() :: t
   def t, do: Schema.new(:any)
 
+  @spec non_nil(t) :: t
   def non_nil(%Schema{} = schema \\ t()) do
     not_eq(schema, nil)
   end
@@ -47,5 +48,18 @@ defmodule Vx.Any do
       fn value -> !Enum.member?(values, value) end,
       %{values: values}
     )
+  end
+
+  @spec match(any, any) :: Macro.t()
+  defmacro match(schema, pattern) do
+    quote do
+      Schema.validate(
+        unquote(schema),
+        :match,
+        fn value ->
+          match?(unquote(pattern), value)
+        end
+      )
+    end
   end
 end

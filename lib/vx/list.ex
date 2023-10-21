@@ -23,7 +23,7 @@ defmodule Vx.List do
     )
   end
 
-  defp validate_values(values, element_schema) do
+  defp validate_values(values, element_schema) when is_list(values) do
     Enum.reduce_while(values, :ok, fn value, _ ->
       case Schema.eval(element_schema, value) do
         :ok -> {:cont, :ok}
@@ -31,6 +31,8 @@ defmodule Vx.List do
       end
     end)
   end
+
+  defp validate_values(_, _), do: :error
 
   @spec non_empty(t) :: t
   def non_empty(%Schema{name: :list} = schema \\ t()) do

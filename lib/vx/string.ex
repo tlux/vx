@@ -39,8 +39,6 @@ defmodule Vx.String do
 
   @spec format(t, Regex.t()) :: t
   def format(%Schema{name: :string} = schema \\ t(), %Regex{} = regex) do
-    Schema.validate(schema, :format, fn value ->
-      Regex.match?(regex, value)
-    end)
+    Schema.validate(schema, :format, &Regex.match?(regex, &1), %{regex: regex})
   end
 end

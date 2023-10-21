@@ -8,28 +8,27 @@ defmodule Vx.Map do
     Schema.new(:map, &is_map/1)
   end
 
-  @spec pairs(t, Schema.t(), Schema.t()) :: t
-  def pairs(
-        %Schema{name: :map} = schema \\ t(),
-        %Schema{} = key_schema,
-        %Schema{} = value_schema
-      ) do
-    Schema.validate(
-      schema,
-      :pairs,
-      fn map ->
-        Enum.reduce_while(map, :ok, fn {key, value}, _ ->
-          with :ok <- Schema.eval(key_schema, key),
-               :ok <- Schema.eval(value_schema, value) do
-            {:cont, :ok}
-          else
-            error -> {:halt, error}
-          end
-        end)
-      end,
-      %{key_schema: key_schema, value_schema: value_schema}
+  @spec t(Schema.t(), Schema.t()) :: t
+  def t(%Schema{} = key_schema, %Schema{} = value_schema) do
+    Schema.new(
+      :map,
+      &validate_map(&1, key_schema, value_schema),
+      %{key: key_schema, value: value_schema}
     )
   end
+
+  defp validate_map(map, key_schema, value_schema) when is_map(map) do
+    Enum.reduce_while(map, :ok, fn {key, value}, _ ->
+      with :ok <- Schema.eval(key_schema, key),
+           :ok <- Schema.eval(value_schema, value) do
+        {:cont, :ok}
+      else
+        error -> {:halt, error}
+      end
+    end)
+  end
+
+  defp validate_map(_, _, _), do: :error
 
   @spec shape(t, %{optional(any) => Schema.t() | any}) :: t
   def shape(%Schema{name: :map} = schema \\ t(), structure) do

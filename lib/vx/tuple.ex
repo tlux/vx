@@ -6,17 +6,6 @@ defmodule Vx.Tuple do
   @spec t() :: t
   def t, do: Schema.new(:tuple, &is_tuple/1)
 
-  @spec size(t, non_neg_integer) :: t
-  def size(%Schema{name: :tuple} = schema \\ t(), count)
-      when is_integer(count) and count >= 0 do
-    Schema.validate(
-      schema,
-      :size,
-      fn tuple -> tuple_size(tuple) == count end,
-      %{count: count}
-    )
-  end
-
   @spec shape(t, tuple) :: t
   def shape(%Schema{name: :tuple} = schema \\ t(), structure)
       when is_tuple(structure) do
@@ -44,4 +33,15 @@ defmodule Vx.Tuple do
   end
 
   defp check_tuple_shape(_, _, _), do: :error
+
+  @spec size(t, non_neg_integer) :: t
+  def size(%Schema{name: :tuple} = schema \\ t(), count)
+      when is_integer(count) and count >= 0 do
+    Schema.validate(
+      schema,
+      :size,
+      fn tuple -> tuple_size(tuple) == count end,
+      %{count: count}
+    )
+  end
 end
