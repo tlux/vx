@@ -40,6 +40,14 @@ defmodule Vx.Validators do
   end
 
   @doc """
+  Gets the primary validator.
+  """
+  @spec primary_validator(t) :: Validator.t() | nil
+  def primary_validator(%__MODULE__{list: validators}) do
+    Enum.find(validators, &is_nil(&1.name))
+  end
+
+  @doc """
   Runs all validators in the list.
   """
   @spec run(t, any) :: :ok | {:error, TypeError.t()}
