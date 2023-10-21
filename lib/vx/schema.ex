@@ -82,12 +82,11 @@ defmodule Vx.Schema do
     new(
       :intersect,
       fn value ->
-        Enum.reduce_while(schemata, :error, fn
-          schema, :ok ->
-            case eval(schema, value) do
-              :ok -> {:cont, :ok}
-              {:error, error} -> {:halt, error}
-            end
+        Enum.reduce_while(schemata, :error, fn schema, _ ->
+          case eval(schema, value) do
+            :ok -> {:cont, :ok}
+            {:error, error} -> {:halt, error}
+          end
         end)
       end,
       %{schemata: schemata}
@@ -117,9 +116,10 @@ defmodule Vx.Schema do
   end
 
   @doc """
-  Validates the schema.
+  Validates whether the value matches the schema or the values are equal.
   """
-  @spec eval(t, any) :: :ok | {:error, Vx.ValidationError.t()}
+  @spec eval(t | value, value) :: :ok | {:error, Vx.ValidationError.t()}
+        when value: var
   def eval(%__MODULE__{validators: validators}, value) do
     validators
     |> Enum.reverse()
@@ -129,6 +129,12 @@ defmodule Vx.Schema do
         error -> {:halt, error}
       end
     end)
+  end
+
+  def eval(value, actual_value) do
+    value
+    |> Vx.Any.eq()
+    |> eval(actual_value)
   end
 
   @doc """

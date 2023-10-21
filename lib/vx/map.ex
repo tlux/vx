@@ -32,27 +32,36 @@ defmodule Vx.Map do
   end
 
   @spec shape(t, %{optional(any) => Schema.t() | any}) :: t
-  def shape(%Schema{name: :map} = schema \\ t(), children) do
+  def shape(%Schema{name: :map} = schema \\ t(), structure) do
     Schema.validate(
       schema,
       :shape,
-      fn map ->
-        Enum.reduce_while(children, :ok, fn {key, value_schema}, _ ->
-          with {:ok, value} <- Map.fetch(map, key),
-               :ok <- validate_value(value_schema, value) do
-            {:cont, :ok}
-          else
-            error -> {:halt, error}
-          end
-        end)
-      end,
-      %{children: children}
+      &check_map_shape(&1, structure),
+      %{structure: structure}
     )
   end
 
-  defp validate_value(%Schema{} = schema, value), do: Schema.eval(schema, value)
-  defp validate_value(value, value), do: :ok
-  defp validate_value(_, _), do: :error
+  defp check_map_shape(map, structure) do
+    Enum.reduce_while(structure, :ok, fn {key, value_schema}, _ ->
+      with :ok <- validate_key(key),
+           {:ok, value} <- Map.fetch(map, key),
+           :ok <- Schema.eval(value_schema, value) do
+        {:cont, :ok}
+      else
+        error -> {:halt, error}
+      end
+    end)
+  end
+
+  defp validate_key(%Schema{} = schema) do
+    {:error,
+     %Vx.UnexpectedSchemaError{
+       message: "Schema unexpectedly used as map key",
+       schema: schema
+     }}
+  end
+
+  defp validate_key(_), do: :ok
 
   @spec size(t, non_neg_integer) :: t
   def size(%Schema{name: :map} = schema \\ t(), count)
@@ -60,7 +69,7 @@ defmodule Vx.Map do
     Schema.validate(
       schema,
       :size,
-      fn map -> map_size(map) == count end,
+      &(map_size(&1) == count),
       %{count: count}
     )
   end

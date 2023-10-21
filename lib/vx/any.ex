@@ -38,4 +38,14 @@ defmodule Vx.Any do
   def of(%Schema{} = schema \\ t(), values) when is_list(values) do
     Schema.validate(schema, :of, &Enum.member?(values, &1), %{values: values})
   end
+
+  @spec not_of(t, [any]) :: t
+  def not_of(%Schema{} = schema \\ t(), values) when is_list(values) do
+    Schema.validate(
+      schema,
+      :not_of,
+      fn value -> !Enum.member?(values, value) end,
+      %{values: values}
+    )
+  end
 end

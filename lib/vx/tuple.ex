@@ -25,22 +25,23 @@ defmodule Vx.Tuple do
     Schema.validate(
       schema,
       :shape,
-      fn tuple ->
-        if tuple_size(tuple) == expected_size do
-          Enum.reduce_while(0..(expected_size - 1), :ok, fn index, _ ->
-            schema = elem(structure, index)
-            value = elem(tuple, index)
-
-            case Schema.eval(schema, value) do
-              :ok -> {:cont, :ok}
-              {:error, error} -> {:halt, error}
-            end
-          end)
-        else
-          :error
-        end
-      end,
+      &check_tuple_shape(&1, structure, expected_size),
       %{structure: structure}
     )
   end
+
+  defp check_tuple_shape(tuple, structure, expected_size)
+       when tuple_size(tuple) == expected_size do
+    Enum.reduce_while(0..(expected_size - 1), :ok, fn index, _ ->
+      schema_or_value = elem(structure, index)
+      value = elem(tuple, index)
+
+      case Schema.eval(schema_or_value, value) do
+        :ok -> {:cont, :ok}
+        error -> {:halt, error}
+      end
+    end)
+  end
+
+  defp check_tuple_shape(_, _, _), do: :error
 end

@@ -57,19 +57,14 @@ defmodule Vx.Number do
   end
 
   @spec range(Schema.t(), Range.t(number, number)) :: Schema.t()
-  def range(%Schema{} = schema \\ t(), _min.._max = range) do
-    Schema.validate(
-      schema,
-      :range,
-      fn value ->
-        value in range
-      end,
-      %{range: range}
-    )
+  def range(%Schema{} = schema \\ t(), range) do
+    Schema.validate(schema, :range, &(&1 in range), %{range: range})
   end
 
   @spec between(Schema.t(), number, number) :: Schema.t()
-  def between(%Schema{} = schema \\ t(), min, max)
+  def between(schema \\ t(), first, last)
+
+  def between(%Schema{} = schema, min, max)
       when is_number(min) and is_number(max) and min <= max do
     Schema.validate(
       schema,
@@ -77,5 +72,10 @@ defmodule Vx.Number do
       fn value -> value >= min && value <= max end,
       %{min: min, max: max}
     )
+  end
+
+  def between(%Schema{} = schema, first, last)
+      when is_number(first) and is_number(last) and first > last do
+    between(schema, last, first)
   end
 end
