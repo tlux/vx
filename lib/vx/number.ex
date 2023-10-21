@@ -1,81 +1,44 @@
 defmodule Vx.Number do
-  alias Vx.Schema
-
-  @type t :: Schema.t(:number)
+  use Vx.Type
 
   @spec t() :: t
-  def t, do: Schema.new(:number, &is_number/1)
+  def t, do: init(&is_number/1)
 
-  @spec lt(Schema.t(), number) :: Schema.t()
-  def lt(%Schema{} = schema \\ t(), value) when is_number(value) do
-    Schema.validate(
-      schema,
-      :lt,
-      fn actual_value ->
-        actual_value < value
-      end,
-      %{value: value}
-    )
+  @spec lt(t, number) :: t
+  def lt(type \\ t(), value) when is_number(value) do
+    validate(type, :lt, &(&1 < value), %{value: value})
   end
 
-  @spec lteq(Schema.t(), number) :: Schema.t()
-  def lteq(%Schema{} = schema \\ t(), value)
-      when is_number(value) do
-    Schema.validate(
-      schema,
-      :lteq,
-      fn actual_value ->
-        actual_value <= value
-      end,
-      %{value: value}
-    )
+  @spec lteq(t, number) :: t
+  def lteq(type \\ t(), value) when is_number(value) do
+    validate(type, :lteq, &(&1 <= value), %{value: value})
   end
 
-  @spec gt(Schema.t(), number) :: Schema.t()
-  def gt(%Schema{} = schema \\ t(), value) when is_number(value) do
-    Schema.validate(
-      schema,
-      :gt,
-      fn actual_value ->
-        actual_value > value
-      end,
-      %{value: value}
-    )
+  @spec gt(t, number) :: t
+  def gt(type \\ t(), value) when is_number(value) do
+    validate(type, :gt, &(&1 > value), %{value: value})
   end
 
-  @spec gteq(Vx.Schema.t(), number) :: Schema.t()
-  def gteq(%Schema{} = schema \\ t(), value)
-      when is_number(value) do
-    Schema.validate(
-      schema,
-      :gteq,
-      fn actual_value ->
-        actual_value >= value
-      end,
-      %{value: value}
-    )
+  @spec gteq(t, number) :: t
+  def gteq(type \\ t(), value) when is_number(value) do
+    validate(type, :gteq, &(&1 >= value), %{value: value})
   end
 
-  @spec range(Schema.t(), Range.t(number, number)) :: Schema.t()
-  def range(%Schema{} = schema \\ t(), range) do
-    Schema.validate(schema, :range, &(&1 in range), %{range: range})
+  @spec range(t, Range.t(number, number)) :: t
+  def range(type \\ t(), range) do
+    validate(type, :range, &(&1 in range), %{range: range})
   end
 
-  @spec between(Schema.t(), number, number) :: Schema.t()
-  def between(schema \\ t(), first, last)
+  @spec between(t, number, number) :: t
+  def between(type \\ t(), first, last)
 
-  def between(%Schema{} = schema, min, max)
+  def between(type, min, max)
       when is_number(min) and is_number(max) and min <= max do
-    Schema.validate(
-      schema,
-      :between,
-      fn value -> value >= min && value <= max end,
-      %{min: min, max: max}
-    )
+    validate(type, :between, &(&1 >= min && &1 <= max), %{min: min, max: max})
   end
 
-  def between(%Schema{} = schema, first, last)
+  def between(type, first, last)
       when is_number(first) and is_number(last) and first > last do
-    between(schema, last, first)
+    between(type, last, first)
   end
 end

@@ -1,8 +1,6 @@
 defmodule Vx.Float do
-  alias Vx.Schema
-
-  @type t :: Schema.t(:float)
+  use Vx.Type
 
   @spec t() :: t
-  def t, do: Schema.new(:float, &is_float/1)
+  def t, do: init(&is_float/1)
 end

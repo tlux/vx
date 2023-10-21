@@ -1,49 +1,33 @@
 defmodule Vx.Any do
-  alias Vx.Schema
-
-  @type t :: Schema.t()
+  use Vx.Type
 
   @spec t() :: t
-  def t, do: Schema.new(:any)
+  def t, do: init()
 
   @spec non_nil(t) :: t
-  def non_nil(%Schema{} = schema \\ t()) do
-    not_eq(schema, nil)
+  def non_nil(type \\ t()) do
+    not_eq(type, nil)
   end
 
   @spec eq(t, any) :: t
-  def eq(%Schema{} = schema \\ t(), value) do
-    Schema.validate(
-      schema,
-      :eq,
-      fn actual_value ->
-        actual_value == value
-      end,
-      %{value: value}
-    )
+  def eq(type \\ t(), value) do
+    validate(type, :eq, &(&1 == value), %{value: value})
   end
 
   @spec not_eq(t, any) :: t
-  def not_eq(%Schema{} = schema \\ t(), value) do
-    Schema.validate(
-      schema,
-      :not_eq,
-      fn actual_value ->
-        actual_value != value
-      end,
-      %{value: value}
-    )
+  def not_eq(type \\ t(), value) do
+    validate(type, :not_eq, &(&1 != value), %{value: value})
   end
 
   @spec of(t, [any]) :: t
-  def of(%Schema{} = schema \\ t(), values) when is_list(values) do
-    Schema.validate(schema, :of, &Enum.member?(values, &1), %{values: values})
+  def of(type \\ t(), values) when is_list(values) do
+    validate(type, :of, &Enum.member?(values, &1), %{values: values})
   end
 
   @spec not_of(t, [any]) :: t
-  def not_of(%Schema{} = schema \\ t(), values) when is_list(values) do
-    Schema.validate(
-      schema,
+  def not_of(type \\ t(), values) when is_list(values) do
+    validate(
+      type,
       :not_of,
       fn value -> !Enum.member?(values, value) end,
       %{values: values}
@@ -51,10 +35,10 @@ defmodule Vx.Any do
   end
 
   @spec match(any, any) :: Macro.t()
-  defmacro match(schema \\ quote(do: Vx.Any.t()), pattern) do
+  defmacro match(type \\ quote(do: Vx.Any.t()), pattern) do
     quote do
-      Schema.validate(
-        unquote(schema),
+      Vx.Validatable.validate(
+        unquote(type),
         :match,
         fn value ->
           match?(unquote(pattern), value)

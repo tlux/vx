@@ -1,65 +1,49 @@
 defmodule Vx.List do
-  alias Vx.Schema
-
-  @type t :: Schema.t(:list)
+  use Vx.Type
 
   @spec t() :: t
-  def t, do: Schema.new(:list, &is_list/1)
+  def t, do: init(&is_list/1)
 
-  @spec t(Schema.t() | [Schema.t()]) :: t
-  def t(element_schema_or_schemata)
-
-  def t(element_schemata) when is_list(element_schemata) do
-    element_schemata
-    |> Schema.union()
+  @spec t(Vx.type_or_value() | [Vx.type_or_value()]) :: t
+  def t(types_or_values) when is_list(types_or_values) do
+    types_or_values
+    |> Vx.Union.t()
     |> t()
   end
 
-  def t(%Schema{} = element_schema) do
-    Schema.new(
-      :list,
-      &validate_values(&1, element_schema),
-      %{of: element_schema}
+  def t(type_or_value) do
+    init(
+      &check_member_type(&1, type_or_value),
+      %{of: type_or_value}
     )
   end
 
-  defp validate_values(values, element_schema) when is_list(values) do
+  defp check_member_type(values, type_or_value) when is_list(values) do
     Enum.reduce_while(values, :ok, fn value, _ ->
-      case Schema.eval(element_schema, value) do
+      case Vx.Validatable.validate(type_or_value, value) do
         :ok -> {:cont, :ok}
         {:error, error} -> {:halt, error}
       end
     end)
   end
 
-  defp validate_values(_, _), do: :error
+  defp check_member_type(_, _), do: :error
 
   @spec non_empty(t) :: t
-  def non_empty(%Schema{name: :list} = schema \\ t()) do
-    Schema.validate(schema, :non_empty, fn
+  def non_empty(%__MODULE__{} = type \\ t()) do
+    validate(type, :non_empty, fn
       [] -> false
       _ -> true
     end)
   end
 
-  @spec size(t, non_neg_integer) :: t
-  def size(%Schema{name: :list} = schema \\ t(), count)
-      when is_integer(count) and count >= 0 do
-    Schema.validate(
-      schema,
-      :size,
-      fn list -> length(list) == count end,
-      %{count: count}
-    )
-  end
-
-  @spec shape(t, [Schema.t() | any]) :: t
-  def shape(%Schema{name: :list} = schema \\ t(), structure)
+  @spec shape(t, [Vx.type_or_value()]) :: t
+  def shape(%__MODULE__{} = type \\ t(), structure)
       when is_list(structure) do
     expected_size = length(structure)
 
-    Schema.validate(
-      schema,
+    validate(
+      type,
       :shape,
       &check_list_shape(&1, structure, expected_size),
       %{structure: structure}
@@ -73,7 +57,7 @@ defmodule Vx.List do
     |> Enum.reduce_while(:ok, fn {schema_or_value, index}, _ ->
       value = Enum.at(list, index)
 
-      case Schema.eval(schema_or_value, value) do
+      case Vx.Validatable.validate(schema_or_value, value) do
         :ok -> {:cont, :ok}
         error -> {:halt, error}
       end
@@ -81,4 +65,10 @@ defmodule Vx.List do
   end
 
   defp check_list_shape(_, _, _), do: :error
+
+  @spec size(t, non_neg_integer) :: t
+  def size(%__MODULE__{} = type \\ t(), count)
+      when is_integer(count) and count >= 0 do
+    validate(type, :size, &(length(&1) == count), %{count: count})
+  end
 end

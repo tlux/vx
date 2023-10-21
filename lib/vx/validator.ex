@@ -1,42 +1,29 @@
 defmodule Vx.Validator do
-  alias Vx.ValidationError
+  alias Vx.TypeError
 
-  defstruct [:schema_name, :name, :fun, details: %{}]
+  defstruct [:schema, :name, :fun, details: %{}]
 
   @type name :: atom
   @type details :: %{optional(atom) => any}
   @type fun :: (any -> boolean | :ok | :error | {:error, Exception.t()})
 
   @type t :: %__MODULE__{
-          schema_name: atom,
-          name: name,
+          schema: module,
+          name: name | nil,
           fun: fun,
           details: details
         }
 
   @doc false
-  @spec new(
-          Vx.Schema.name(),
-          name,
-          fun,
-          details
-        ) :: Vx.Validator.t()
-  def new(schema_name, name, fun, details)
-      when is_atom(schema_name) and
-             is_atom(name) and
-             is_function(fun, 1) and
-             is_map(details) do
-    %__MODULE__{
-      schema_name: schema_name,
-      name: name,
-      fun: fun,
-      details: details
-    }
+  @spec new(module, name | nil, fun, details) :: Vx.Validator.t()
+  def new(schema, name, fun, details)
+      when is_function(fun, 1) and is_map(details) do
+    %__MODULE__{schema: schema, name: name, fun: fun, details: details}
   end
 
   @doc false
-  @spec eval(t, any) :: :ok | {:error, ValidationError.t()}
-  def eval(%__MODULE__{fun: fun} = validator, value) do
+  @spec run(t, any) :: :ok | {:error, TypeError.t()}
+  def run(%__MODULE__{fun: fun} = validator, value) do
     case fun.(value) do
       true ->
         :ok
@@ -45,10 +32,10 @@ defmodule Vx.Validator do
         :ok
 
       {:error, error} ->
-        {:error, ValidationError.new(validator, value, error)}
+        {:error, TypeError.new(validator, value, error)}
 
       _ ->
-        {:error, ValidationError.new(validator, value)}
+        {:error, TypeError.new(validator, value)}
     end
   end
 end

@@ -1,11 +1,9 @@
 defmodule Vx.Struct do
-  alias Vx.Schema
-
-  @type t :: Schema.t(:struct)
+  use Vx.Type
 
   @spec t() :: t
   def t do
-    Schema.new(:struct, fn
+    init(fn
       %_{} -> true
       _ -> false
     end)
@@ -13,8 +11,7 @@ defmodule Vx.Struct do
 
   @spec t(struct | module) :: t
   def t(struct) when is_atom(struct) do
-    Schema.new(
-      :struct,
+    init(
       fn
         %^struct{} -> true
         _ -> false

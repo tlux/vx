@@ -1,8 +1,6 @@
 defmodule Vx.Integer do
-  alias Vx.Schema
-
-  @type t :: Schema.t(:integer)
+  use Vx.Type
 
   @spec t() :: t
-  def t, do: Schema.new(:integer, &is_integer/1)
+  def t, do: init(&is_integer/1)
 end

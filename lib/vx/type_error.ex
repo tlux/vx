@@ -1,4 +1,4 @@
-defmodule Vx.ValidationError do
+defmodule Vx.TypeError do
   defexception [:validator, :value, :inner]
 
   @type t :: %__MODULE__{
@@ -19,7 +19,7 @@ defmodule Vx.ValidationError do
   @impl true
   def message(error) do
     msg =
-      "Type error (#{inspect(error.validator.schema_name)}/" <>
+      "Type error (#{inspect(error.validator.schema)}/" <>
         "#{inspect(error.validator.name)}): #{inspect(error.value)}"
 
     if error.inner do
