@@ -120,6 +120,10 @@ defmodule Vx.Schema do
   """
   @spec eval(t | value, value) :: :ok | {:error, Vx.ValidationError.t()}
         when value: var
+  def eval(schema, value)
+
+  def eval(%__MODULE__{validators: []}, _value), do: :ok
+
   def eval(%__MODULE__{validators: validators}, value) do
     validators
     |> Enum.reverse()

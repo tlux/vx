@@ -51,7 +51,7 @@ defmodule Vx.Any do
   end
 
   @spec match(any, any) :: Macro.t()
-  defmacro match(schema, pattern) do
+  defmacro match(schema \\ quote(do: Vx.Any.t()), pattern) do
     quote do
       Schema.validate(
         unquote(schema),
