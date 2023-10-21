@@ -19,6 +19,4 @@ defmodule Vx.Struct do
       %{struct: struct}
     )
   end
-
-  def t(%struct{}), do: t(struct)
 end

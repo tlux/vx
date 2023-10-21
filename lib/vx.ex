@@ -24,4 +24,9 @@ defmodule Vx do
       _ -> false
     end
   end
+
+  @spec optional(Validatable.t()) :: Validatable.t()
+  def optional(type) do
+    Vx.Optional.new(type)
+  end
 end

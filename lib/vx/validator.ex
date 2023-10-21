@@ -1,14 +1,14 @@
 defmodule Vx.Validator do
   alias Vx.TypeError
 
-  defstruct [:schema, :name, :fun, details: %{}]
+  defstruct [:type, :name, :fun, details: %{}]
 
   @type name :: atom
   @type details :: %{optional(atom) => any}
   @type fun :: (any -> boolean | :ok | :error | {:error, Exception.t()})
 
   @type t :: %__MODULE__{
-          schema: module,
+          type: module,
           name: name | nil,
           fun: fun,
           details: details
@@ -16,9 +16,9 @@ defmodule Vx.Validator do
 
   @doc false
   @spec new(module, name | nil, fun, details) :: Vx.Validator.t()
-  def new(schema, name, fun, details)
+  def new(type, name, fun, details)
       when is_function(fun, 1) and is_map(details) do
-    %__MODULE__{schema: schema, name: name, fun: fun, details: details}
+    %__MODULE__{type: type, name: name, fun: fun, details: details}
   end
 
   @doc false

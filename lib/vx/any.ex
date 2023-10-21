@@ -20,8 +20,8 @@ defmodule Vx.Any do
   end
 
   @spec of(t, [any]) :: t
-  def of(type \\ t(), values) when is_list(values) do
-    validate(type, :of, &Enum.member?(values, &1), %{values: values})
+  def of(type \\ t(), members) when is_list(members) do
+    validate(type, :of, &Enum.member?(members, &1), %{members: members})
   end
 
   @spec not_of(t, [any]) :: t
@@ -37,13 +37,13 @@ defmodule Vx.Any do
   @spec match(any, any) :: Macro.t()
   defmacro match(type \\ quote(do: Vx.Any.t()), pattern) do
     quote do
-      Vx.Validatable.validate(
-        unquote(type),
-        :match,
-        fn value ->
-          match?(unquote(pattern), value)
-        end
-      )
+      %{
+        unquote(type)
+        | validators:
+            Vx.Validators.add(unquote(type).validators, :match, fn value ->
+              match?(unquote(pattern), value)
+            end)
+      }
     end
   end
 end

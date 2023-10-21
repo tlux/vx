@@ -34,8 +34,4 @@ defmodule Vx.TypeError do
     |> String.split("\n")
     |> Enum.map_join("\n", &"  #{&1}")
   end
-
-  @spec wrap(t, any) :: t
-  @doc false
-  def wrap(%__MODULE__{} = error, inner), do: %__MODULE__{error | inner: inner}
 end

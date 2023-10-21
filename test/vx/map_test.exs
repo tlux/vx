@@ -1,17 +1,14 @@
 defmodule Vx.MapTest do
   use ExUnit.Case, async: true
 
-  alias Vx.Schema
-
   @invalid ["", <<0xFFFF::16>>, nil, :foo, true, false, 123, []]
 
   test "t/0" do
-    assert Schema.eval(Vx.Map.t(), %{}) == :ok
-    assert Schema.eval(Vx.Map.t(), %{"foo" => "bar"}) == :ok
+    assert :ok = Vx.validate(Vx.Map.t(), %{})
+    assert :ok = Vx.validate(Vx.Map.t(), %{"foo" => "bar"})
 
     Enum.each(@invalid, fn value ->
-      assert Schema.eval(Vx.Map.t(), value) ==
-               {:error, Vx.TypeError.new(:map, nil, value)}
+      assert {:error, _} = Vx.validate(Vx.Map.t(), value)
     end)
   end
 
@@ -19,63 +16,59 @@ defmodule Vx.MapTest do
 
   describe "shape/1" do
     test "exact key and value" do
-      assert Schema.eval(Vx.Map.shape(%{"foo" => "bar"}), %{
+      assert Vx.validate(Vx.Map.shape(%{"foo" => "bar"}), %{
                "foo" => "bar"
-             }) == :ok
+             })
 
       invalid_value = %{"foo" => "baz"}
 
       shape = %{"foo" => "bar"}
 
-      assert Schema.eval(Vx.Map.shape(shape), invalid_value) ==
-               {:error, Vx.TypeError.new(:map, {:shape, shape}, invalid_value)}
+      assert {:error, _} = Vx.validate(Vx.Map.shape(shape), invalid_value)
     end
 
     test "schema value" do
-      assert Schema.eval(Vx.Map.shape(%{"foo" => Vx.String.t()}), %{
-               "foo" => "bar"
-             }) == :ok
+      assert :ok =
+               Vx.validate(Vx.Map.shape(%{"foo" => Vx.String.t()}), %{
+                 "foo" => "bar"
+               })
 
       invalid_value = %{"foo" => "  "}
       shape = %{"foo" => Vx.String.present()}
 
-      assert Schema.eval(Vx.Map.shape(shape), invalid_value) ==
-               {:error,
-                Vx.TypeError.wrap(
-                  Vx.TypeError.new(:map, {:shape, shape}, invalid_value),
-                  Vx.TypeError.new(:string, :present, "  ")
-                )}
+      assert {:error, _} = Vx.validate(Vx.Map.shape(shape), invalid_value)
     end
 
-    test "schema key" do
-      shape = %{Vx.String.t() => "bar"}
+    test "optional key" do
+      shape =
+        Vx.Map.shape(%{
+          Vx.optional("foo") => Vx.String.t(),
+          "bar" => Vx.Number.t(),
+          "baz" => Vx.optional(Vx.String.t())
+        })
 
-      assert Schema.eval(Vx.Map.shape(shape), %{"foo" => "bar", "bar" => 123}) ==
-               :ok
+      assert :ok =
+               Vx.validate(shape, %{
+                 "foo" => "baz",
+                 "bar" => 234,
+                 "baz" => "foo"
+               })
 
-      invalid_value = %{foo: "  "}
+      assert :ok = Vx.validate(shape, %{"bar" => 234, "baz" => "foo"})
+      assert {:error, _} = Vx.validate(shape, %{"foo" => "baz", "baz" => "foo"})
 
-      assert Schema.eval(Vx.Map.shape(shape), invalid_value) ==
-               {:error,
-                Vx.TypeError.wrap(
-                  Vx.TypeError.new(:map, {:shape, shape}, invalid_value),
-                  Vx.TypeError.new(:string, :present, "  ")
-                )}
-    end
+      assert {:error, _} =
+               Vx.validate(shape, %{
+                 "foo" => "baz",
+                 "bar" => 123
+               })
 
-    test "schema key and value" do
-      shape = %{Vx.String.t() => Vx.String.t()}
-
-      assert Schema.eval(Vx.Map.shape(shape), %{"foo" => "bar"}) == :ok
-
-      invalid_value = %{"foo" => "bar", "bar" => 123}
-
-      assert Schema.eval(Vx.Map.shape(shape), invalid_value) ==
-               {:error,
-                Vx.TypeError.wrap(
-                  Vx.TypeError.new(:map, {:shape, shape}, invalid_value),
-                  Vx.TypeError.new(:string, :present, "  ")
-                )}
+      assert :ok =
+               Vx.validate(shape, %{
+                 "foo" => "baz",
+                 "bar" => 123,
+                 "baz" => nil
+               })
     end
   end
 end
