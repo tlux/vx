@@ -1,15 +1,17 @@
 defmodule Vx do
   alias Vx.Validatable
 
+  @type t :: Validatable.t()
+
   @spec validate(Validatable.t(), any) ::
           :ok | {:error, Vx.TypeError.t()}
-  def validate(type_or_value, value) do
-    Validatable.validate(type_or_value, value)
+  def validate(type, value) do
+    Validatable.validate(type, value)
   end
 
   @spec validate!(Validatable.t(), any) :: :ok | no_return
-  def validate!(type_or_value, value) do
-    with {:error, error} <- validate(type_or_value, value) do
+  def validate!(type, value) do
+    with {:error, error} <- validate(type, value) do
       raise error
     end
   end
@@ -18,8 +20,8 @@ defmodule Vx do
   Validates the schema and returns a boolean.
   """
   @spec valid?(Validatable.t(), any) :: boolean
-  def valid?(type_or_value, value) do
-    case validate(type_or_value, value) do
+  def valid?(type, value) do
+    case validate(type, value) do
       :ok -> true
       _ -> false
     end

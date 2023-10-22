@@ -6,8 +6,8 @@ defprotocol Vx.Validatable do
 end
 
 defimpl Vx.Validatable, for: Any do
-  def validate(type_or_value, value) do
-    type_or_value
+  def validate(type, value) do
+    type
     |> Vx.Any.eq()
     |> Vx.Validatable.validate(value)
   end

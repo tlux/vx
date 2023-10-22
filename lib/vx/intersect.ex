@@ -9,8 +9,8 @@ defmodule Vx.Intersect do
   end
 
   defp validate_value(value, inner) do
-    Enum.reduce_while(inner, :ok, fn type_or_value, _ ->
-      case Vx.Validatable.validate(type_or_value, value) do
+    Enum.reduce_while(inner, :ok, fn type, _ ->
+      case Vx.Validatable.validate(type, value) do
         :ok -> {:cont, :ok}
         {:error, error} -> {:halt, error}
       end

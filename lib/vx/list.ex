@@ -5,22 +5,22 @@ defmodule Vx.List do
   def t, do: init(&is_list/1)
 
   @spec t(Vx.Validatable.t() | [Vx.Validatable.t()]) :: t
-  def t(types_or_values) when is_list(types_or_values) do
-    types_or_values
+  def t(types) when is_list(types) do
+    types
     |> Vx.Union.t()
     |> t()
   end
 
-  def t(type_or_value) do
+  def t(type) do
     init(
-      &check_member_type(&1, type_or_value),
-      %{of: type_or_value}
+      &check_member_type(&1, type),
+      %{of: type}
     )
   end
 
-  defp check_member_type(values, type_or_value) when is_list(values) do
+  defp check_member_type(values, type) when is_list(values) do
     Enum.reduce_while(values, :ok, fn value, _ ->
-      case Vx.Validatable.validate(type_or_value, value) do
+      case Vx.Validatable.validate(type, value) do
         :ok -> {:cont, :ok}
         {:error, error} -> {:halt, error}
       end

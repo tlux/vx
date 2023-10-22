@@ -37,10 +37,10 @@ defmodule Vx.Map do
 
   defp check_map_shape(map, structure) do
     Enum.reduce_while(structure, :ok, fn
-      {key, type_or_value}, _ ->
+      {key, type}, _ ->
         with {:ok, key} <- resolve_key(map, key),
              {:ok, value} <- Map.fetch(map, key),
-             :ok <- Vx.Validatable.validate(type_or_value, value) do
+             :ok <- Vx.Validatable.validate(type, value) do
           {:cont, :ok}
         else
           :skip -> {:cont, :ok}
@@ -49,7 +49,7 @@ defmodule Vx.Map do
     end)
   end
 
-  defp resolve_key(map, %Vx.Optional{inner: key}) do
+  defp resolve_key(map, %Vx.Optional{type: key}) do
     if Map.has_key?(map, key) do
       {:ok, key}
     else

@@ -6,23 +6,23 @@ defmodule Vx.Validators do
   alias Vx.TypeError
   alias Vx.Validator
 
-  defstruct [:schema, list: []]
+  defstruct [:type, list: []]
 
-  @opaque t :: %__MODULE__{schema: module, list: [Validator.t()]}
+  @opaque t :: %__MODULE__{type: module, list: [Validator.t()]}
 
   @spec new(module) :: t
-  def new(schema) do
-    %__MODULE__{schema: schema}
+  def new(type) do
+    %__MODULE__{type: type}
   end
 
   @doc """
   Builds a new validator collection.
   """
   @spec new(module, Validator.fun(), Validator.details()) :: t
-  def new(schema, fun, details \\ %{}) when is_atom(schema) do
+  def new(type, fun, details \\ %{}) when is_atom(type) do
     %__MODULE__{
-      schema: schema,
-      list: [Validator.new(schema, nil, fun, details)]
+      type: type,
+      list: [Validator.new(type, nil, fun, details)]
     }
   end
 
@@ -31,12 +31,12 @@ defmodule Vx.Validators do
   """
   @spec add(t, Validator.name(), Validator.fun(), Validator.details()) :: t
   def add(
-        %__MODULE__{schema: schema, list: list} = validators,
+        %__MODULE__{type: type, list: list} = validators,
         name,
         fun,
         details \\ %{}
       ) do
-    %{validators | list: [Validator.new(schema, name, fun, details) | list]}
+    %{validators | list: [Validator.new(type, name, fun, details) | list]}
   end
 
   @doc """

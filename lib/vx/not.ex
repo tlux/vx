@@ -2,9 +2,9 @@ defmodule Vx.Not do
   use Vx.Type
 
   @spec t(Vx.Validatable.t()) :: t
-  def t(inner) do
+  def t(type) do
     init(fn value ->
-      match?({:error, _}, Vx.Validatable.validate(inner, value))
+      match?({:error, _}, Vx.Validatable.validate(type, value))
     end)
   end
 end
