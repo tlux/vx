@@ -46,6 +46,10 @@ defmodule Vx.Validators do
     %{validators | list: [Validator.new(type, name, fun, details) | list]}
   end
 
+  @doc """
+  Gets the default validator.
+  """
+  @spec default(t) :: Validator.t() | nil
   def default(%__MODULE__{default: default}), do: default
 
   @doc false
