@@ -47,13 +47,19 @@ defmodule Vx.Validators do
     Enum.find(validators, &is_nil(&1.name))
   end
 
+  @doc false
+  @spec to_list(t) :: [Validator.t()]
+  def to_list(%__MODULE__{list: list}) do
+    Enum.reverse(list)
+  end
+
   @doc """
   Runs all validators in the list.
   """
   @spec run(t, any) :: :ok | {:error, TypeError.t()}
-  def run(%__MODULE__{list: list}, value) do
-    list
-    |> Enum.reverse()
+  def run(%__MODULE__{} = validators, value) do
+    validators
+    |> to_list()
     |> Enum.reduce_while(:ok, fn validator, _ ->
       case Validator.run(validator, value) do
         :ok -> {:cont, :ok}
