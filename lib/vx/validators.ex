@@ -18,7 +18,7 @@ defmodule Vx.Validators do
   Builds a new validator collection without a default validator.
   """
   @spec new(module) :: t
-  def new(type) do
+  def new(type) when is_atom(type) do
     %__MODULE__{type: type}
   end
 
