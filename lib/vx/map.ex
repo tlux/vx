@@ -49,7 +49,7 @@ defmodule Vx.Map do
     end)
   end
 
-  defp resolve_key(map, %Vx.Optional{member: key}) do
+  defp resolve_key(map, %Vx.Optional{inner: key}) do
     if Map.has_key?(map, key) do
       {:ok, key}
     else

@@ -4,7 +4,7 @@ defmodule Vx.List do
   @spec t() :: t
   def t, do: init(&is_list/1)
 
-  @spec t(Vx.type_or_value() | [Vx.type_or_value()]) :: t
+  @spec t(Vx.Validatable.t() | [Vx.Validatable.t()]) :: t
   def t(types_or_values) when is_list(types_or_values) do
     types_or_values
     |> Vx.Union.t()
@@ -37,7 +37,7 @@ defmodule Vx.List do
     end)
   end
 
-  @spec shape(t, [Vx.type_or_value()]) :: t
+  @spec shape(t, [Vx.Validatable.t()]) :: t
   def shape(%__MODULE__{} = type \\ t(), structure)
       when is_list(structure) do
     expected_size = length(structure)

@@ -1,17 +1,17 @@
 defmodule Vx.Optional do
-  defstruct [:member]
+  defstruct [:inner]
 
   @type t() :: t(any)
-  @opaque t(member) :: %__MODULE__{member: member}
+  @opaque t(inner) :: %__MODULE__{inner: inner}
 
-  @doc false
-  def new(member) do
-    %__MODULE__{member: member}
+  @spec t(Vx.Validatable.t()) :: t
+  def t(inner) do
+    %__MODULE__{inner: inner}
   end
 
   defimpl Vx.Validatable do
     def validate(type, value) do
-      [type.member, nil]
+      [type.inner, nil]
       |> Vx.Union.t()
       |> Vx.Validatable.validate(value)
     end

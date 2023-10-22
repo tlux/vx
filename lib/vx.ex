@@ -26,7 +26,14 @@ defmodule Vx do
   end
 
   @spec optional(Validatable.t()) :: Validatable.t()
-  def optional(type) do
-    Vx.Optional.new(type)
-  end
+  def optional(inner), do: Vx.Optional.t(inner)
+
+  @spec is_not(Validatable.t()) :: Validatable.t()
+  def is_not(inner), do: Vx.Not.t(inner)
+
+  @spec intersect(nonempty_list(Validatable.t())) :: Validatable.t()
+  def intersect(inner), do: Vx.Intersect.t(inner)
+
+  @spec union(nonempty_list(Validatable.t())) :: Validatable.t()
+  def union(inner), do: Vx.Union.t(inner)
 end
