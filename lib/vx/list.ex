@@ -12,10 +12,7 @@ defmodule Vx.List do
   end
 
   def t(type) do
-    init(
-      &check_member_type(&1, type),
-      %{of: type}
-    )
+    init(&check_member_type(&1, type), %{of: type})
   end
 
   defp check_member_type(values, type) when is_list(values) do

@@ -9,7 +9,7 @@ defmodule Vx.Struct do
     end)
   end
 
-  @spec t(struct | module) :: t
+  @spec t(module) :: t
   def t(struct) when is_atom(struct) do
     init(
       fn

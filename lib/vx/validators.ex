@@ -6,23 +6,30 @@ defmodule Vx.Validators do
   alias Vx.TypeError
   alias Vx.Validator
 
-  defstruct [:type, list: []]
+  defstruct [:type, :default, list: []]
 
-  @opaque t :: %__MODULE__{type: module, list: [Validator.t()]}
+  @opaque t :: %__MODULE__{
+            type: module,
+            default: Validator.t() | nil,
+            list: [Validator.t()]
+          }
 
+  @doc """
+  Builds a new validator collection without a default validator.
+  """
   @spec new(module) :: t
   def new(type) do
     %__MODULE__{type: type}
   end
 
   @doc """
-  Builds a new validator collection.
+  Builds a new validator collection setting a default validator.
   """
   @spec new(module, Validator.fun(), Validator.details()) :: t
   def new(type, fun, details \\ %{}) when is_atom(type) do
     %__MODULE__{
       type: type,
-      list: [Validator.new(type, nil, fun, details)]
+      default: Validator.new(type, nil, fun, details)
     }
   end
 
@@ -39,18 +46,16 @@ defmodule Vx.Validators do
     %{validators | list: [Validator.new(type, name, fun, details) | list]}
   end
 
-  @doc """
-  Gets the primary validator.
-  """
-  @spec primary_validator(t) :: Validator.t() | nil
-  def primary_validator(%__MODULE__{list: validators}) do
-    Enum.find(validators, &is_nil(&1.name))
-  end
+  def default(%__MODULE__{default: default}), do: default
 
   @doc false
   @spec to_list(t) :: [Validator.t()]
-  def to_list(%__MODULE__{list: list}) do
+  def to_list(%__MODULE__{default: nil, list: list}) do
     Enum.reverse(list)
+  end
+
+  def to_list(%__MODULE__{default: default, list: list}) do
+    [default | Enum.reverse(list)]
   end
 
   @doc """
