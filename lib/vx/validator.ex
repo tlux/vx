@@ -1,10 +1,12 @@
 defmodule Vx.Validator do
-  alias Vx.TypeError
+  alias Vx.ValidationError
 
   defstruct [:type, :name, :fun, details: %{}]
 
   @type name :: atom
+
   @type details :: %{optional(atom) => any}
+
   @type fun :: (any -> boolean | :ok | :error | {:error, Exception.t()})
 
   @type t :: %__MODULE__{
@@ -22,7 +24,7 @@ defmodule Vx.Validator do
   end
 
   @doc false
-  @spec run(t, any) :: :ok | {:error, TypeError.t()}
+  @spec run(t, any) :: :ok | {:error, ValidationError.t()}
   def run(%__MODULE__{fun: fun} = validator, value) do
     case fun.(value) do
       true ->
@@ -32,10 +34,10 @@ defmodule Vx.Validator do
         :ok
 
       {:error, error} ->
-        {:error, TypeError.new(validator, value, error)}
+        {:error, ValidationError.new(validator, value, error)}
 
       _ ->
-        {:error, TypeError.new(validator, value)}
+        {:error, ValidationError.new(validator, value)}
     end
   end
 end

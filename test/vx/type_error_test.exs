@@ -1,4 +1,4 @@
-defmodule Vx.TypeErrorTest do
+defmodule Vx.ValidationErrorTest do
   use ExUnit.Case
 
   test "message/1"

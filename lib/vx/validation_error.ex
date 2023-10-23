@@ -1,4 +1,4 @@
-defmodule Vx.TypeError do
+defmodule Vx.ValidationError do
   defexception [:validator, :value, :inner]
 
   @type t :: %__MODULE__{
@@ -7,17 +7,15 @@ defmodule Vx.TypeError do
           inner: Exception.t() | nil
         }
 
-  @spec new(
-          Vx.Validator.t(),
-          any,
-          Exception.t() | nil
-        ) :: t
+  @spec new(Vx.Validator.t(), any, Exception.t() | nil) :: t
   def new(validator, value, inner \\ nil) do
     %__MODULE__{validator: validator, value: value, inner: inner}
   end
 
   @impl true
   def message(error) do
+    # TODO: Improve
+
     msg =
       "Type error (#{inspect(error.validator.schema)}/" <>
         "#{inspect(error.validator.name)}): #{inspect(error.value)}"

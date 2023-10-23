@@ -4,6 +4,11 @@ defmodule Vx.Any do
   @spec t() :: t
   def t, do: init()
 
+  @spec is_nil(t) :: t
+  def is_nil(type \\ t()) do
+    eq(type, nil)
+  end
+
   @spec non_nil(t) :: t
   def non_nil(type \\ t()) do
     not_eq(type, nil)

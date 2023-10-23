@@ -5,17 +5,17 @@ defmodule Vx do
   Validates whether the given value matches the given type.
   """
   @spec validate(Validatable.t(), any) ::
-          :ok | {:error, Vx.TypeError.t()}
-  def validate(type, value) do
-    Validatable.validate(type, value)
+          :ok | {:error, Vx.ValidationError.t()}
+  def validate(validatable, value) do
+    Validatable.validate(validatable, value)
   end
 
   @doc """
   Validates whether the given value matches the given type. Raises on error.
   """
   @spec validate!(Validatable.t(), any) :: :ok | no_return
-  def validate!(type, value) do
-    with {:error, error} <- validate(type, value) do
+  def validate!(validatable, value) do
+    with {:error, error} <- validate(validatable, value) do
       raise error
     end
   end

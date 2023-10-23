@@ -2,6 +2,7 @@ defmodule Vx.Optional do
   defstruct [:type]
 
   @type t() :: t(any)
+
   @opaque t(type) :: %__MODULE__{type: type}
 
   @spec t(Vx.Validatable.t()) :: t

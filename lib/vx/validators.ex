@@ -3,7 +3,7 @@ defmodule Vx.Validators do
   A struct that represents a list of validators.
   """
 
-  alias Vx.TypeError
+  alias Vx.ValidationError
   alias Vx.Validator
 
   defstruct [:type, :default, list: []]
@@ -65,7 +65,7 @@ defmodule Vx.Validators do
   @doc """
   Runs all validators in the list.
   """
-  @spec run(t, any) :: :ok | {:error, TypeError.t()}
+  @spec run(t, any) :: :ok | {:error, ValidationError.t()}
   def run(%__MODULE__{} = validators, value) do
     validators
     |> to_list()
