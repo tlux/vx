@@ -5,22 +5,22 @@ defmodule Vx.Tuple do
   def t, do: init(&is_tuple/1)
 
   @spec shape(t, tuple) :: t
-  def shape(%__MODULE__{} = type \\ t(), structure)
-      when is_tuple(structure) do
-    expected_size = tuple_size(structure)
+  def shape(%__MODULE__{} = type \\ t(), shape)
+      when is_tuple(shape) do
+    expected_size = tuple_size(shape)
 
     validate(
       type,
       :shape,
-      &check_tuple_shape(&1, structure, expected_size),
-      %{structure: structure}
+      &check_tuple_shape(&1, shape, expected_size),
+      %{shape: shape}
     )
   end
 
-  defp check_tuple_shape(tuple, structure, expected_size)
+  defp check_tuple_shape(tuple, shape, expected_size)
        when tuple_size(tuple) == expected_size do
     Enum.reduce_while(0..(expected_size - 1), :ok, fn index, _ ->
-      schema_or_value = elem(structure, index)
+      schema_or_value = elem(shape, index)
       value = elem(tuple, index)
 
       case Vx.Validatable.validate(schema_or_value, value) do

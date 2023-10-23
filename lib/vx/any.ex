@@ -25,8 +25,8 @@ defmodule Vx.Any do
   end
 
   @spec of(t, [any]) :: t
-  def of(type \\ t(), members) when is_list(members) do
-    validate(type, :of, &Enum.member?(members, &1), %{members: members})
+  def of(type \\ t(), values) when is_list(values) do
+    validate(type, :of, &Enum.member?(values, &1), %{values: values})
   end
 
   @spec not_of(t, [any]) :: t

@@ -4,7 +4,7 @@ defmodule Vx.Map do
   @spec t() :: t
   def t, do: init(&is_map/1)
 
-  @spec t(Vx.Validatable.t(), Vx.Validatable.t()) :: t
+  @spec t(Vx.t(), Vx.t()) :: t
   def t(key_type, value_type) do
     init(
       &check_member_types(&1, key_type, value_type),
@@ -25,18 +25,18 @@ defmodule Vx.Map do
 
   defp check_member_types(_, _, _), do: :error
 
-  @spec shape(t, %{optional(any) => Vx.Validatable.t()}) :: t
-  def shape(%__MODULE__{} = type \\ t(), structure) do
+  @spec shape(t, %{optional(any) => Vx.t()}) :: t
+  def shape(%__MODULE__{} = type \\ t(), shape) do
     validate(
       type,
       :shape,
-      &check_map_shape(&1, structure),
-      %{structure: structure}
+      &check_map_shape(&1, shape),
+      %{shape: shape}
     )
   end
 
-  defp check_map_shape(map, structure) do
-    Enum.reduce_while(structure, :ok, fn
+  defp check_map_shape(map, shape) do
+    Enum.reduce_while(shape, :ok, fn
       {key, type}, _ ->
         with {:ok, key} <- resolve_key(map, key),
              {:ok, value} <- Map.fetch(map, key),
@@ -49,7 +49,7 @@ defmodule Vx.Map do
     end)
   end
 
-  defp resolve_key(map, %Vx.Optional{type: key}) do
+  defp resolve_key(map, %Vx.Optional{input: key}) do
     if Map.has_key?(map, key) do
       {:ok, key}
     else

@@ -4,32 +4,32 @@ defmodule Vx.Number do
   @spec t() :: t
   def t, do: init(&is_number/1)
 
-  @spec lt(Vx.Validatable.t(), number) :: t
+  @spec lt(Vx.t(), number) :: t
   def lt(type \\ t(), value) when is_number(value) do
     validate(type, :lt, &(&1 < value), %{value: value})
   end
 
-  @spec lteq(Vx.Validatable.t(), number) :: t
+  @spec lteq(Vx.t(), number) :: t
   def lteq(type \\ t(), value) when is_number(value) do
     validate(type, :lteq, &(&1 <= value), %{value: value})
   end
 
-  @spec gt(Vx.Validatable.t(), number) :: t
+  @spec gt(Vx.t(), number) :: t
   def gt(type \\ t(), value) when is_number(value) do
     validate(type, :gt, &(&1 > value), %{value: value})
   end
 
-  @spec gteq(Vx.Validatable.t(), number) :: t
+  @spec gteq(Vx.t(), number) :: t
   def gteq(type \\ t(), value) when is_number(value) do
     validate(type, :gteq, &(&1 >= value), %{value: value})
   end
 
-  @spec range(Vx.Validatable.t(), Range.t(number, number)) :: t
+  @spec range(Vx.t(), Range.t(number, number)) :: t
   def range(type \\ t(), range) do
     validate(type, :range, &(&1 in range), %{range: range})
   end
 
-  @spec between(Vx.Validatable.t(), number, number) :: t
+  @spec between(Vx.t(), number, number) :: t
   def between(type \\ t(), first, last)
 
   def between(type, min, max)
