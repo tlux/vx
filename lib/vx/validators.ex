@@ -25,25 +25,35 @@ defmodule Vx.Validators do
   @doc """
   Builds a new validator collection setting a default validator.
   """
-  @spec new(module, Validator.fun(), Validator.details()) :: t
-  def new(type, fun, details \\ %{}) when is_atom(type) do
+  @spec new(module, Validator.fun(), Validator.details(), String.t() | nil) :: t
+  def new(type, fun, details \\ %{}, message \\ nil) when is_atom(type) do
     %__MODULE__{
       type: type,
-      default: Validator.new(type, nil, fun, details)
+      default: Validator.new(type, nil, fun, details, message)
     }
   end
 
   @doc """
   Adds a validator to the collection.
   """
-  @spec add(t, Validator.name(), Validator.fun(), Validator.details()) :: t
+  @spec add(
+          t,
+          Validator.name(),
+          Validator.fun(),
+          Validator.details(),
+          String.t() | nil
+        ) :: t
   def add(
         %__MODULE__{type: type, list: list} = validators,
         name,
         fun,
-        details \\ %{}
+        details \\ %{},
+        message \\ nil
       ) do
-    %{validators | list: [Validator.new(type, name, fun, details) | list]}
+    %{
+      validators
+      | list: [Validator.new(type, name, fun, details, message) | list]
+    }
   end
 
   @doc """

@@ -1,7 +1,7 @@
 defmodule Vx.Validator do
   alias Vx.ValidationError
 
-  defstruct [:type, :name, :fun, details: %{}]
+  defstruct [:type, :name, :fun, :message, details: %{}]
 
   @type name :: atom
 
@@ -13,14 +13,22 @@ defmodule Vx.Validator do
           type: module,
           name: name | nil,
           fun: fun,
-          details: details
+          details: details,
+          message: String.t() | nil
         }
 
   @doc false
-  @spec new(module, name | nil, fun, details) :: Vx.Validator.t()
-  def new(type, name, fun, details)
+  @spec new(module, name | nil, fun, details, String.t() | nil) ::
+          Vx.Validator.t()
+  def new(type, name, fun, details, message)
       when is_function(fun, 1) and is_map(details) do
-    %__MODULE__{type: type, name: name, fun: fun, details: details}
+    %__MODULE__{
+      type: type,
+      name: name,
+      fun: fun,
+      details: details,
+      message: message
+    }
   end
 
   @doc false
