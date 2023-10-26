@@ -1,4 +1,29 @@
 defmodule Vx.Type do
+  @moduledoc """
+  The Type module provides a default implementation for types.
+  You can use it to define custom types for your application.
+
+  ## Example
+
+    defmodule MyType do
+      use Vx.Type
+
+      def t do
+        init(fn actual_value -> is_string() end)
+      end
+
+      def equal(%__MODULE__{} = type \\ t(), expected_value) do
+        validate(
+          type,
+          :equal,
+          fn actual_value -> actual_value == expected_value end,
+          %{expected_value: expected_value},
+          "is not equal to \#{inspect(expected_value)}"
+        )
+      end
+    end
+  """
+
   alias Vx.Validators
 
   defmacro __using__(_) do
@@ -15,10 +40,11 @@ defmodule Vx.Type do
         %__MODULE__{validators: Validators.new(__MODULE__, fun, details)}
       end
 
-      defp validate(type, name, fun, details \\ %{}) do
+      defp validate(type, name, fun, details \\ %{}, message \\ nil) do
         %{
           type
-          | validators: Validators.add(type.validators, name, fun, details)
+          | validators:
+              Validators.add(type.validators, name, fun, details, message)
         }
       end
 

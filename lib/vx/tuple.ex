@@ -1,12 +1,21 @@
 defmodule Vx.Tuple do
+  @moduledoc """
+  The Tuple type provides validators for tuples.
+  """
+
   use Vx.Type
 
+  @doc """
+  Checks whether a value is a tuple.
+  """
   @spec t() :: t
   def t, do: init(&is_tuple/1)
 
+  @doc """
+  Checks whether a value is a tuple of the given size and types.
+  """
   @spec shape(t, tuple) :: t
-  def shape(%__MODULE__{} = type \\ t(), shape)
-      when is_tuple(shape) do
+  def shape(%__MODULE__{} = type \\ t(), shape) when is_tuple(shape) do
     expected_size = tuple_size(shape)
 
     validate(
@@ -32,6 +41,9 @@ defmodule Vx.Tuple do
 
   defp check_tuple_shape(_, _, _), do: :error
 
+  @doc """
+  Checks whether a value is a tuple of the given size.
+  """
   @spec size(t, non_neg_integer) :: t
   def size(%__MODULE__{} = type \\ t(), count)
       when is_integer(count) and count >= 0 do

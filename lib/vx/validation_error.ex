@@ -1,4 +1,10 @@
 defmodule Vx.ValidationError do
+  @moduledoc """
+  An error that is returned or raised when the validation against a type fails.
+  It returns information about the failed validator, the value and (optionally)
+  an inner error that caused the validation to fail.
+  """
+
   defexception [:validator, :value, :inner]
 
   @opaque t :: %__MODULE__{

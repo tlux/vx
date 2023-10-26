@@ -1,9 +1,19 @@
 defmodule Vx.Map do
+  @moduledoc """
+  The Map type provides validators for maps.
+  """
+
   use Vx.Type
 
+  @doc """
+  Checks whether a value is a map.
+  """
   @spec t() :: t
   def t, do: init(&is_map/1)
 
+  @doc """
+  Checks whether a value is a map with the given key and value types.
+  """
   @spec t(Vx.t(), Vx.t()) :: t
   def t(key_type, value_type) do
     init(
@@ -25,6 +35,9 @@ defmodule Vx.Map do
 
   defp check_member_types(_, _, _), do: :error
 
+  @doc """
+  Checks whether a value is a map with the given key and value types.
+  """
   @spec shape(t, %{optional(any) => Vx.t()}) :: t
   def shape(%__MODULE__{} = type \\ t(), shape) do
     validate(
@@ -59,6 +72,9 @@ defmodule Vx.Map do
 
   defp resolve_key(_map, key), do: {:ok, key}
 
+  @doc """
+  Checks whether a value is a map with the given size.
+  """
   @spec size(t, non_neg_integer) :: t
   def size(%__MODULE__{} = type \\ t(), count)
       when is_integer(count) and count >= 0 do
