@@ -36,19 +36,67 @@ defmodule Vx.Map do
   defp check_member_types(_, _, _), do: :error
 
   @doc """
-  Checks whether a value is a map with the given key and value types.
+  Checks whether a value is a map partially matching the given key and value
+  types. The map may contain additional items that remain unvalidated.
+
+  ## Example
+
+      iex> schema = Vx.Map.partial(%{foo: Vx.String.t(), bar: Vx.Integer.t()})
+      ...> Vx.valid?(schema, %{foo: "hey!", bar: 123})
+      true
+
+      iex> schema = Vx.Map.partial(%{foo: Vx.String.t(), bar: Vx.Integer.t()})
+      ...> Vx.valid?(schema, %{foo: "hey!", bar: 123, baz: "boom!"})
+      true
+  """
+  @spec partial(t, %{optional(any) => Vx.t()}) :: t
+  def partial(%__MODULE__{} = type \\ t(), shape) do
+    validate(
+      type,
+      :shape,
+      &check_map_shape(&1, shape, :partial),
+      %{shape: shape}
+    )
+  end
+
+  @doc """
+  Checks whether a value is a map with exactly the given key and value types.
+  Validation fails if the map contains other than the expected items.
+
+  ## Example
+
+      iex> schema = Vx.Map.shape(%{foo: Vx.String.t(), bar: Vx.Integer.t()})
+      ...> Vx.valid?(schema, %{foo: "hey!", bar: 123})
+      true
+
+      iex> schema = Vx.Map.shape(%{foo: Vx.String.t(), bar: Vx.Integer.t()})
+      ...> Vx.valid?(schema, %{foo: "hey!", bar: "123"})
+      false
+
+      iex> schema = Vx.Map.shape(%{foo: Vx.String.t(), bar: Vx.Integer.t()})
+      ...> Vx.valid?(schema, %{foo: "hey!"})
+      false
+
+      iex> schema = Vx.Map.shape(%{foo: Vx.String.t(), bar: Vx.Integer.t()})
+      ...> Vx.valid?(schema, %{foo: "hey!", bar: 123, baz: "boom!"})
+      false
+
+      iex> schema = Vx.Map.shape(%{foo: Vx.String.t(), bar: Vx.Integer.t()})
+      ...> Vx.valid?(schema, %{foo: "hey!", bar: 123, baz: "boom!"})
+      false
   """
   @spec shape(t, %{optional(any) => Vx.t()}) :: t
   def shape(%__MODULE__{} = type \\ t(), shape) do
     validate(
       type,
       :shape,
-      &check_map_shape(&1, shape),
+      &check_map_shape(&1, shape, :exact),
       %{shape: shape}
     )
   end
 
-  defp check_map_shape(map, shape) do
+  # FIXME: handle exact shape matching!
+  defp check_map_shape(map, shape, _) do
     Enum.reduce_while(shape, :ok, fn
       {key, type}, _ ->
         with {:ok, key} <- resolve_key(map, key),
@@ -71,6 +119,15 @@ defmodule Vx.Map do
   end
 
   defp resolve_key(_map, key), do: {:ok, key}
+
+  @doc """
+  Checks whether a value is a map with the given key and value types.
+  """
+  @spec pairs(t, Vx.t(), Vx.t()) :: t
+  def pairs(%__MODULE__{} = type \\ t, _key_type, _value_type) do
+    # TODO
+    t()
+  end
 
   @doc """
   Checks whether a value is a map with the given size.

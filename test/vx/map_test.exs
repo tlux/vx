@@ -1,6 +1,8 @@
 defmodule Vx.MapTest do
   use ExUnit.Case, async: true
 
+  doctest Vx.Map
+
   @invalid ["", <<0xFFFF::16>>, nil, :foo, true, false, 123, []]
 
   test "t/0" do
