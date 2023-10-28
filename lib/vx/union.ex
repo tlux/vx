@@ -1,4 +1,10 @@
 defmodule Vx.Union do
+  @moduledoc """
+  The Union type is a special type that allows you to combine multiple types
+  into a single one. It checks whether any of the combined types matches the
+  validated value.
+  """
+
   use Vx.Type
 
   @spec t(nonempty_list(Vx.t())) :: t
@@ -9,8 +15,8 @@ defmodule Vx.Union do
   end
 
   defp validate_value(value, inputs) do
-    Enum.reduce_while(inputs, :ok, fn type, _ ->
-      case Vx.Validatable.validate(type, value) do
+    Enum.reduce_while(inputs, :ok, fn input, _ ->
+      case Vx.Validatable.validate(input, value) do
         :ok -> {:halt, :ok}
         {:error, error} -> {:cont, error}
       end

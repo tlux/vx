@@ -1,4 +1,8 @@
 defmodule Vx do
+  @moduledoc """
+  Vx is an extensible schema validation library for Elixir.
+  """
+
   alias Vx.Validatable
 
   @type t :: Validatable.t()

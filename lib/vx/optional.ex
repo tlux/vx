@@ -1,6 +1,6 @@
 defmodule Vx.Optional do
   @moduledoc """
-  The optional type provides validators to mark values optional.
+  The Optional type provides validators to mark values optional.
   """
 
   defstruct [:input]

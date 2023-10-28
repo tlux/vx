@@ -1,4 +1,10 @@
 defmodule Vx.Intersect do
+  @moduledoc """
+  The Intersect type is a special type that allows you to combine multiple types
+  into a single one. It checks whether all of the combined types match the
+  validated value.
+  """
+
   use Vx.Type
 
   @spec t(nonempty_list(Vx.t())) :: t
