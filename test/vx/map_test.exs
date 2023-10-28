@@ -14,19 +14,30 @@ defmodule Vx.MapTest do
     end)
   end
 
-  test "pairs/3"
+  test "t/2" do
+    schema = Vx.Map.t(Vx.String.t(), Vx.Number.t())
+
+    assert :ok = Vx.validate(schema, %{"foo" => 123, "bar" => 234.5})
+    assert {:error, _} = Vx.validate(schema, %{:foo => 123, "bar" => 234.5})
+    assert {:error, _} = Vx.validate(schema, %{"foo" => "bar"})
+    assert {:error, _} = Vx.validate(schema, %{"foo" => 123, "bar" => "bar"})
+
+    schema = Vx.Map.t(Vx.Atom.t(), Vx.union([Vx.Number.t(), Vx.String.t()]))
+
+    assert :ok = Vx.validate(schema, %{foo: 123, bar: "baz"})
+    assert :ok = Vx.validate(schema, %{bar: "baz"})
+    assert :ok = Vx.validate(schema, %{foo: 123, bar: 234})
+  end
 
   describe "partial/1" do
     test "exact key and value" do
-      assert Vx.validate(Vx.Map.partial(%{"foo" => "bar"}), %{
-               "foo" => "bar"
-             })
+      assert :ok =
+               Vx.validate(Vx.Map.partial(%{"foo" => "bar"}), %{"foo" => "bar"})
 
-      invalid_value = %{"foo" => "baz"}
+      assert {:error, _} =
+               Vx.validate(Vx.Map.partial(%{"foo" => "bar"}), %{"foo" => "baz"})
 
-      shape = %{"foo" => "bar"}
-
-      assert {:error, _} = Vx.validate(Vx.Map.partial(shape), invalid_value)
+      assert {:error, _} = Vx.validate(Vx.Map.partial(%{"foo" => "bar"}), %{})
     end
 
     test "schema value" do
@@ -35,10 +46,13 @@ defmodule Vx.MapTest do
                  "foo" => "bar"
                })
 
-      invalid_value = %{"foo" => "  "}
-      shape = %{"foo" => Vx.String.present()}
+      assert {:error, _} =
+               Vx.validate(Vx.Map.partial(%{"foo" => Vx.String.present()}), %{
+                 "foo" => "  "
+               })
 
-      assert {:error, _} = Vx.validate(Vx.Map.partial(shape), invalid_value)
+      assert {:error, _} =
+               Vx.validate(Vx.Map.partial(%{"foo" => Vx.String.present()}), %{})
     end
 
     test "optional key" do
@@ -73,7 +87,7 @@ defmodule Vx.MapTest do
                })
     end
 
-    test "ignore additional keys" do
+    test "additional keys" do
       shape = Vx.Map.partial(%{"foo" => Vx.Number.t()})
 
       assert :ok = Vx.validate(shape, %{"foo" => 123, "bar" => "baz"})
@@ -85,15 +99,13 @@ defmodule Vx.MapTest do
 
   describe "shape/1" do
     test "exact key and value" do
-      assert Vx.validate(Vx.Map.shape(%{"foo" => "bar"}), %{
-               "foo" => "bar"
-             })
+      assert :ok =
+               Vx.validate(Vx.Map.shape(%{"foo" => "bar"}), %{"foo" => "bar"})
 
-      invalid_value = %{"foo" => "baz"}
+      assert {:error, _} =
+               Vx.validate(Vx.Map.shape(%{"foo" => "bar"}), %{"foo" => "baz"})
 
-      shape = %{"foo" => "bar"}
-
-      assert {:error, _} = Vx.validate(Vx.Map.shape(shape), invalid_value)
+      assert {:error, _} = Vx.validate(Vx.Map.shape(%{"foo" => "bar"}), %{})
     end
 
     test "schema value" do
@@ -102,10 +114,13 @@ defmodule Vx.MapTest do
                  "foo" => "bar"
                })
 
-      invalid_value = %{"foo" => "  "}
-      shape = %{"foo" => Vx.String.present()}
+      assert {:error, _} =
+               Vx.validate(Vx.Map.shape(%{"foo" => Vx.String.present()}), %{})
 
-      assert {:error, _} = Vx.validate(Vx.Map.shape(shape), invalid_value)
+      assert {:error, _} =
+               Vx.validate(Vx.Map.shape(%{"foo" => Vx.String.present()}), %{
+                 "foo" => "  "
+               })
     end
 
     test "optional key" do
@@ -121,6 +136,14 @@ defmodule Vx.MapTest do
                  "foo" => "baz",
                  "bar" => 234,
                  "baz" => "foo"
+               })
+
+      assert {:error, _} =
+               Vx.validate(shape, %{
+                 "foo" => "baz",
+                 "bar" => 234,
+                 "baz" => "foo",
+                 "qix" => "hey"
                })
 
       assert :ok = Vx.validate(shape, %{"bar" => 234, "baz" => "foo"})
@@ -140,7 +163,7 @@ defmodule Vx.MapTest do
                })
     end
 
-    test "fail on additional keys" do
+    test "additional keys" do
       shape = Vx.Map.shape(%{"foo" => Vx.Number.t()})
 
       assert {:error, _} = Vx.validate(shape, %{"foo" => 123, "bar" => "baz"})

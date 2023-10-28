@@ -36,6 +36,55 @@ defmodule Vx.Map do
   defp check_member_types(_, _, _), do: :error
 
   @doc """
+  Checks whether a value is a map partially matching the given key and value
+  types. The map may contain additional items that remain unvalidated.
+
+  ## Example
+
+      iex> schema = Vx.Map.partial(%{foo: Vx.String.t(), bar: Vx.Integer.t()})
+      ...> Vx.valid?(schema, %{foo: "hey!", bar: 123})
+      true
+
+      iex> schema = Vx.Map.partial(%{foo: Vx.String.t(), bar: Vx.Integer.t()})
+      ...> Vx.valid?(schema, %{foo: "hey!", bar: 123, baz: "boom!"})
+      true
+  """
+  @spec partial(t, %{optional(any) => Vx.t()}) :: t
+  def partial(%__MODULE__{} = type \\ t(), shape) do
+    validate(
+      type,
+      :partial,
+      &check_partial(&1, shape),
+      %{shape: shape},
+      "does not have the expected partial shape"
+    )
+  end
+
+  defp check_partial(map, shape) do
+    Enum.reduce_while(shape, :ok, fn
+      {key, value_type}, _ ->
+        with {:ok, key} <- resolve_key(map, key),
+             {:ok, value} <- Map.fetch(map, key),
+             :ok <- Vx.Validatable.validate(value_type, value) do
+          {:cont, :ok}
+        else
+          :skip -> {:cont, :ok}
+          error -> {:halt, error}
+        end
+    end)
+  end
+
+  defp resolve_key(map, %Vx.Optional{input: key}) do
+    if Map.has_key?(map, key) do
+      {:ok, key}
+    else
+      :skip
+    end
+  end
+
+  defp resolve_key(_map, key), do: {:ok, key}
+
+  @doc """
   Validation fails if the map contains other than the expected items.
   Checks whether a value is a map with exactly the given key and value types.
 
@@ -68,85 +117,43 @@ defmodule Vx.Map do
       :shape,
       &check_shape(&1, shape),
       %{shape: shape},
-      "does not have exact shape"
+      "does not have the expected shape"
     )
   end
 
   defp check_shape(map, shape) do
-    Enum.reduce_while(map, :ok, fn {key, value}, _ ->
-      with {:ok, value_type} <- fetch_value_type(shape, key),
-           :ok <- Vx.Validatable.validate(value_type, value) do
-        {:cont, :ok}
-      else
-        error -> {:halt, error}
-      end
-    end)
+    required_keys =
+      shape
+      |> Map.keys()
+      |> Enum.reject(&optional_key?/1)
+      |> MapSet.new()
+
+    actual_keys = map |> Map.keys() |> MapSet.new()
+
+    if MapSet.subset?(required_keys, actual_keys) do
+      Enum.reduce_while(map, :ok, fn {key, value}, _ ->
+        with {:ok, value_type} <- fetch_value_type(shape, key),
+             :ok <- Vx.Validatable.validate(value_type, value) do
+          {:cont, :ok}
+        else
+          error -> {:halt, error}
+        end
+      end)
+    else
+      :error
+    end
   end
 
+  defp optional_key?(%Vx.Optional{}), do: true
+  defp optional_key?(_), do: false
+
+  # finds a value type using the given key
   defp fetch_value_type(shape, key) do
     Enum.find_value(shape, :error, fn
       {%Vx.Optional{input: ^key}, value_type} -> {:ok, value_type}
       {^key, value_type} -> {:ok, value_type}
       _ -> nil
     end)
-  end
-
-  @doc """
-  Checks whether a value is a map partially matching the given key and value
-  types. The map may contain additional items that remain unvalidated.
-
-  ## Example
-
-      iex> schema = Vx.Map.partial(%{foo: Vx.String.t(), bar: Vx.Integer.t()})
-      ...> Vx.valid?(schema, %{foo: "hey!", bar: 123})
-      true
-
-      iex> schema = Vx.Map.partial(%{foo: Vx.String.t(), bar: Vx.Integer.t()})
-      ...> Vx.valid?(schema, %{foo: "hey!", bar: 123, baz: "boom!"})
-      true
-  """
-  @spec partial(t, %{optional(any) => Vx.t()}) :: t
-  def partial(%__MODULE__{} = type \\ t(), shape) do
-    validate(
-      type,
-      :partial,
-      &check_partial(&1, shape),
-      %{shape: shape},
-      "does not have partial shape"
-    )
-  end
-
-  defp check_partial(map, shape) do
-    Enum.reduce_while(shape, :ok, fn
-      {key, value_type}, _ ->
-        with {:ok, key} <- resolve_key(map, key),
-             {:ok, value} <- Map.fetch(map, key),
-             :ok <- Vx.Validatable.validate(value_type, value) do
-          {:cont, :ok}
-        else
-          :skip -> {:cont, :ok}
-          error -> {:halt, error}
-        end
-    end)
-  end
-
-  defp resolve_key(map, %Vx.Optional{input: key}) do
-    if Map.has_key?(map, key) do
-      {:ok, key}
-    else
-      :skip
-    end
-  end
-
-  defp resolve_key(_map, key), do: {:ok, key}
-
-  @doc """
-  Checks whether a value is a map with the given key and value types.
-  """
-  @spec pairs(t, Vx.t(), Vx.t()) :: t
-  def pairs(%__MODULE__{} = type \\ t, _key_type, _value_type) do
-    # TODO
-    t()
   end
 
   @doc """
@@ -160,7 +167,7 @@ defmodule Vx.Map do
       :size,
       &(map_size(&1) == count),
       %{count: count},
-      "does not have exact size of #{count}"
+      "does not have the expected size of #{count}"
     )
   end
 end
