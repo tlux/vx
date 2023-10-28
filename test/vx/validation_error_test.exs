@@ -44,13 +44,13 @@ defmodule Vx.ValidationErrorTest do
                    type: Vx.Number,
                    name: :lt,
                    details: %{value: 123},
-                   message: "must be less than 123"
+                   message: fn value -> "#{value} is not less than 123" end
                  },
                  value: 124
                }
              }) ==
                ~s[Invalid Vx.Map: does not have shape %{foo: Vx.String} (was %{foo: 234.5})\n] <>
-                 ~s[  Invalid Vx.Number: must be less than 123 (was 124)]
+                 ~s[  Invalid Vx.Number: 124 is not less than 123]
     end
   end
 end

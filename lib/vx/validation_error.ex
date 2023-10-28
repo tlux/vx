@@ -22,9 +22,9 @@ defmodule Vx.ValidationError do
   @impl true
   def message(error) do
     msg =
-      "Invalid #{inspect(error.validator.type)}" <>
-        rule_message(error.validator) <>
-        " (was #{inspect(error.value)})"
+      "Invalid " <>
+        inspect(error.validator.type) <>
+        rule_message(error.validator, error.value)
 
     if error.inner do
       "#{msg}\n#{indent(Exception.message(error.inner))}"
@@ -33,14 +33,18 @@ defmodule Vx.ValidationError do
     end
   end
 
-  defp rule_message(%{name: nil}), do: ""
+  defp rule_message(%{name: nil}, value), do: " (was #{inspect(value)})"
 
-  defp rule_message(%{name: name, message: nil}) do
-    ": #{name} validation failed"
+  defp rule_message(%{name: name, message: nil}, value) do
+    ": #{name} validation failed (was #{inspect(value)})"
   end
 
-  defp rule_message(%{message: message}) do
-    ": #{message}"
+  defp rule_message(%{message: message}, value) when is_function(message, 1) do
+    ": #{message.(value)}"
+  end
+
+  defp rule_message(%{message: message}, value) when is_binary(message) do
+    ": #{message} (was #{inspect(value)})"
   end
 
   defp indent(str) do

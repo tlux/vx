@@ -9,7 +9,7 @@ defmodule Vx.Type do
       use Vx.Type
 
       def t do
-        init(fn actual_value -> is_string() end)
+        init(fn actual_value -> is_string(actual_value) end)
       end
 
       def equal(%__MODULE__{} = type \\ t(), expected_value) do
@@ -36,8 +36,10 @@ defmodule Vx.Type do
         %__MODULE__{validators: Validators.new(__MODULE__)}
       end
 
-      defp init(fun, details \\ %{}) do
-        %__MODULE__{validators: Validators.new(__MODULE__, fun, details)}
+      defp init(fun, details \\ %{}, message \\ nil) do
+        %__MODULE__{
+          validators: Validators.new(__MODULE__, fun, details, message)
+        }
       end
 
       defp validate(type, name, fun, details \\ %{}, message \\ nil) do

@@ -1,4 +1,8 @@
 defmodule Vx.Validator do
+  @moduledoc """
+  A struct that represents a validator.
+  """
+
   alias Vx.ValidationError
 
   defstruct [:type, :name, :fun, :message, details: %{}]
@@ -9,16 +13,18 @@ defmodule Vx.Validator do
 
   @type fun :: (any -> boolean | :ok | :error | {:error, Exception.t()})
 
+  @type message :: String.t() | (any -> String.t())
+
   @type t :: %__MODULE__{
           type: module,
           name: name | nil,
           fun: fun,
           details: details,
-          message: String.t() | nil
+          message: message | nil
         }
 
   @doc false
-  @spec new(module, name | nil, fun, details, String.t() | nil) ::
+  @spec new(module, name | nil, fun, details, message | nil) ::
           Vx.Validator.t()
   def new(type, name, fun, details, message)
       when is_function(fun, 1) and is_map(details) do

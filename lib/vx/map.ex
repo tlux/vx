@@ -36,32 +36,8 @@ defmodule Vx.Map do
   defp check_member_types(_, _, _), do: :error
 
   @doc """
-  Checks whether a value is a map partially matching the given key and value
-  types. The map may contain additional items that remain unvalidated.
-
-  ## Example
-
-      iex> schema = Vx.Map.partial(%{foo: Vx.String.t(), bar: Vx.Integer.t()})
-      ...> Vx.valid?(schema, %{foo: "hey!", bar: 123})
-      true
-
-      iex> schema = Vx.Map.partial(%{foo: Vx.String.t(), bar: Vx.Integer.t()})
-      ...> Vx.valid?(schema, %{foo: "hey!", bar: 123, baz: "boom!"})
-      true
-  """
-  @spec partial(t, %{optional(any) => Vx.t()}) :: t
-  def partial(%__MODULE__{} = type \\ t(), shape) do
-    validate(
-      type,
-      :shape,
-      &check_map_shape(&1, shape, :partial),
-      %{shape: shape}
-    )
-  end
-
-  @doc """
-  Checks whether a value is a map with exactly the given key and value types.
   Validation fails if the map contains other than the expected items.
+  Checks whether a value is a map with exactly the given key and value types.
 
   ## Example
 
@@ -90,18 +66,62 @@ defmodule Vx.Map do
     validate(
       type,
       :shape,
-      &check_map_shape(&1, shape, :exact),
-      %{shape: shape}
+      &check_shape(&1, shape),
+      %{shape: shape},
+      "does not have exact shape"
     )
   end
 
-  # FIXME: handle exact shape matching!
-  defp check_map_shape(map, shape, _) do
+  defp check_shape(map, shape) do
+    Enum.reduce_while(map, :ok, fn {key, value}, _ ->
+      with {:ok, value_type} <- fetch_value_type(shape, key),
+           :ok <- Vx.Validatable.validate(value_type, value) do
+        {:cont, :ok}
+      else
+        error -> {:halt, error}
+      end
+    end)
+  end
+
+  defp fetch_value_type(shape, key) do
+    Enum.find_value(shape, :error, fn
+      {%Vx.Optional{input: ^key}, value_type} -> {:ok, value_type}
+      {^key, value_type} -> {:ok, value_type}
+      _ -> nil
+    end)
+  end
+
+  @doc """
+  Checks whether a value is a map partially matching the given key and value
+  types. The map may contain additional items that remain unvalidated.
+
+  ## Example
+
+      iex> schema = Vx.Map.partial(%{foo: Vx.String.t(), bar: Vx.Integer.t()})
+      ...> Vx.valid?(schema, %{foo: "hey!", bar: 123})
+      true
+
+      iex> schema = Vx.Map.partial(%{foo: Vx.String.t(), bar: Vx.Integer.t()})
+      ...> Vx.valid?(schema, %{foo: "hey!", bar: 123, baz: "boom!"})
+      true
+  """
+  @spec partial(t, %{optional(any) => Vx.t()}) :: t
+  def partial(%__MODULE__{} = type \\ t(), shape) do
+    validate(
+      type,
+      :partial,
+      &check_partial(&1, shape),
+      %{shape: shape},
+      "does not have partial shape"
+    )
+  end
+
+  defp check_partial(map, shape) do
     Enum.reduce_while(shape, :ok, fn
-      {key, type}, _ ->
+      {key, value_type}, _ ->
         with {:ok, key} <- resolve_key(map, key),
              {:ok, value} <- Map.fetch(map, key),
-             :ok <- Vx.Validatable.validate(type, value) do
+             :ok <- Vx.Validatable.validate(value_type, value) do
           {:cont, :ok}
         else
           :skip -> {:cont, :ok}
@@ -135,6 +155,12 @@ defmodule Vx.Map do
   @spec size(t, non_neg_integer) :: t
   def size(%__MODULE__{} = type \\ t(), count)
       when is_integer(count) and count >= 0 do
-    validate(type, :size, &(map_size(&1) == count), %{count: count})
+    validate(
+      type,
+      :size,
+      &(map_size(&1) == count),
+      %{count: count},
+      "does not have exact size of #{count}"
+    )
   end
 end
