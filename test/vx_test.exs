@@ -31,5 +31,12 @@ defmodule VxTest do
                @valid_values
                | "hobbies" => ["foo", "  "]
              })
+
+    assert {:error, _} =
+             Vx.validate(schema, %{
+               @valid_values
+               | "addresses" =>
+                   @valid_values["addresses"] ++ [%Country{code: "DE"}]
+             })
   end
 end
