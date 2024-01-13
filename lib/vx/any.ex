@@ -12,22 +12,6 @@ defmodule Vx.Any do
   def t, do: init()
 
   @doc """
-  Checks whether a value is nil.
-  """
-  @spec is_nil(Vx.t()) :: t
-  def is_nil(type \\ t()) do
-    eq(type, nil)
-  end
-
-  @doc """
-  Checks whether a value is not nil.
-  """
-  @spec non_nil(Vx.t()) :: t
-  def non_nil(type \\ t()) do
-    not_eq(type, nil)
-  end
-
-  @doc """
   Checks whether a value is equal to the given value.
   """
   @spec eq(Vx.t(), any) :: t
@@ -36,32 +20,11 @@ defmodule Vx.Any do
   end
 
   @doc """
-  Checks whether a value is not equal to the given value.
-  """
-  @spec not_eq(Vx.t(), any) :: t
-  def not_eq(type \\ t(), value) do
-    validate(type, :not_eq, &(&1 != value), %{value: value})
-  end
-
-  @doc """
   Checks whether a value is one of the given values.
   """
   @spec of(Vx.t(), [any]) :: t
   def of(type \\ t(), values) when is_list(values) do
     validate(type, :of, &Enum.member?(values, &1), %{values: values})
-  end
-
-  @doc """
-  Checks whether a value is not one of the given values.
-  """
-  @spec not_of(Vx.t(), [any]) :: t
-  def not_of(type \\ t(), values) when is_list(values) do
-    validate(
-      type,
-      :not_of,
-      fn value -> !Enum.member?(values, value) end,
-      %{values: values}
-    )
   end
 
   @doc """

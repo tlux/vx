@@ -45,8 +45,20 @@ defmodule Vx do
   @doc """
   Inverts the given type
   """
-  @spec is_not(t) :: Vx.Not.t()
-  def is_not(type), do: Vx.Not.t(type)
+  @spec non(t) :: Vx.Not.t()
+  def non(type), do: Vx.Not.t(type)
+
+  @doc """
+  Marks the given type or field as nullable.
+  """
+  @spec null() :: t
+  def null, do: Vx.Any.eq(nil)
+
+  @doc """
+  Marks the given type or field as non-nullable.
+  """
+  @spec non_null() :: t
+  def non_null, do: non(null())
 
   @doc """
   Intersects the given types.
