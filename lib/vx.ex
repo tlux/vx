@@ -52,13 +52,25 @@ defmodule Vx do
   Marks the given type or field as nullable.
   """
   @spec null() :: t
-  def null, do: Vx.Any.eq(nil)
+  def null, do: eq(nil)
 
   @doc """
   Marks the given type or field as non-nullable.
   """
   @spec non_null() :: t
   def non_null, do: non(null())
+
+  @doc """
+  Checks whether a value is equal to the given value.
+  """
+  @spec eq(t, any) :: t
+  defdelegate eq(type \\ Vx.Any.t(), value), to: Vx.Any
+
+  @doc """
+  Checks whether a value is one of the given values.
+  """
+  @spec of(t, [any]) :: t
+  defdelegate of(type \\ Vx.Any.t(), value), to: Vx.Any
 
   @doc """
   Intersects the given types.

@@ -30,7 +30,7 @@ defmodule Vx.Type do
     quote do
       defstruct [:validators]
 
-      @opaque t :: %__MODULE__{validators: Validators.t()}
+      @type t :: %__MODULE__{validators: Validators.t()}
 
       defp init do
         %__MODULE__{validators: Validators.new(__MODULE__)}

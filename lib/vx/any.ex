@@ -11,17 +11,13 @@ defmodule Vx.Any do
   @spec t() :: t
   def t, do: init()
 
-  @doc """
-  Checks whether a value is equal to the given value.
-  """
+  @doc false
   @spec eq(Vx.t(), any) :: t
   def eq(type \\ t(), value) do
     validate(type, :eq, &(&1 == value), %{value: value})
   end
 
-  @doc """
-  Checks whether a value is one of the given values.
-  """
+  @doc false
   @spec of(Vx.t(), [any]) :: t
   def of(type \\ t(), values) when is_list(values) do
     validate(type, :of, &Enum.member?(values, &1), %{values: values})
