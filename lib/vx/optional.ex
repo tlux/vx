@@ -6,8 +6,7 @@ defmodule Vx.Optional do
   defstruct [:input]
 
   @type t() :: t(any)
-
-  @opaque t(input) :: %__MODULE__{input: input}
+  @type t(input) :: %__MODULE__{input: input}
 
   @doc """
   Marks a value optional.

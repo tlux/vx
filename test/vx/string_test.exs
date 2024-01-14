@@ -3,55 +3,66 @@ defmodule Vx.StringTest do
 
   @invalid [<<0xFFFF::16>>, nil, :foo, true, false, 123, %{}, []]
 
-  test "t/0" do
-    assert Vx.validate(Vx.String.t(), "") == :ok
-    assert Vx.validate(Vx.String.t(), "foo") == :ok
+  describe "t/0" do
+    test "match" do
+      assert Vx.validate(Vx.String.t(), "") == :ok
+      assert Vx.validate(Vx.String.t(), "foo") == :ok
+    end
 
-    Enum.each(@invalid, fn value ->
-      assert {:error,
-              %Vx.ValidationError{
-                validator: %Vx.Validator{type: Vx.String, name: nil}
-              }} = Vx.validate(Vx.String.t(), value)
+    test "no match" do
+      Enum.each(@invalid, fn value ->
+        assert {:error,
+                %Vx.ValidationError{
+                  validator: %Vx.Validator{type: Vx.String, name: nil}
+                }} = Vx.validate(Vx.String.t(), value)
 
-      {:error, Vx.ValidationError.new(:string, nil, value)}
-    end)
+        {:error, Vx.ValidationError.new(:string, nil, value)}
+      end)
+    end
   end
 
-  test "non_empty/0" do
-    assert Vx.validate(Vx.String.non_empty(), "foo") == :ok
+  describe "non_empty/0" do
+    test "match" do
+      assert Vx.validate(Vx.String.non_empty(), "foo") == :ok
+      assert Vx.validate(Vx.String.non_empty(), "  ") == :ok
+    end
 
-    assert {:error,
-            %Vx.ValidationError{
-              validator: %Vx.Validator{type: Vx.String, name: :non_empty}
-            }} = Vx.validate(Vx.String.non_empty(), "")
-
-    assert Vx.validate(Vx.String.non_empty(), "  ") == :ok
-
-    Enum.each(@invalid, fn value ->
+    test "no match" do
       assert {:error,
               %Vx.ValidationError{
-                validator: %Vx.Validator{type: Vx.String, name: nil}
-              }} = Vx.validate(Vx.String.non_empty(), value)
-    end)
+                validator: %Vx.Validator{type: Vx.String, name: :non_empty}
+              }} = Vx.validate(Vx.String.non_empty(), "")
+
+      Enum.each(@invalid, fn value ->
+        assert {:error,
+                %Vx.ValidationError{
+                  validator: %Vx.Validator{type: Vx.String, name: nil}
+                }} = Vx.validate(Vx.String.non_empty(), value)
+      end)
+    end
   end
 
-  test "present/0" do
-    assert Vx.validate(Vx.String.present(), "foo") == :ok
+  describe "present/0" do
+    test "match" do
+      assert Vx.validate(Vx.String.present(), "foo") == :ok
+    end
 
-    Enum.each(["", "   "], fn value ->
-      assert {:error,
-              %Vx.ValidationError{
-                validator: %Vx.Validator{type: Vx.String, name: :present},
-                value: ^value
-              }} = Vx.validate(Vx.String.present(), value)
-    end)
+    test "no match" do
+      Enum.each(["", "   "], fn value ->
+        assert {:error,
+                %Vx.ValidationError{
+                  validator: %Vx.Validator{type: Vx.String, name: :present},
+                  value: ^value
+                }} = Vx.validate(Vx.String.present(), value)
+      end)
 
-    Enum.each(@invalid, fn value ->
-      assert {:error,
-              %Vx.ValidationError{
-                validator: %Vx.Validator{type: Vx.String, name: nil},
-                value: ^value
-              }} = Vx.validate(Vx.String.present(), value)
-    end)
+      Enum.each(@invalid, fn value ->
+        assert {:error,
+                %Vx.ValidationError{
+                  validator: %Vx.Validator{type: Vx.String, name: nil},
+                  value: ^value
+                }} = Vx.validate(Vx.String.present(), value)
+      end)
+    end
   end
 end

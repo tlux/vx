@@ -1,13 +1,17 @@
 defmodule Vx.NumberTest do
   use ExUnit.Case, async: true
 
-  test "t/0" do
-    assert :ok = Vx.validate(Vx.Number.t(), 123)
-    assert :ok = Vx.validate(Vx.Number.t(), 123.0)
-    assert :ok = Vx.validate(Vx.Number.t(), 123.4)
+  describe "t/0" do
+    test "match" do
+      assert :ok = Vx.validate(Vx.Number.t(), 123)
+      assert :ok = Vx.validate(Vx.Number.t(), 123.0)
+      assert :ok = Vx.validate(Vx.Number.t(), 123.4)
+    end
 
-    Enum.each(["foo", :foo, true, false], fn value ->
-      assert {:error, _} = Vx.validate(Vx.Number.t(), value)
-    end)
+    test "no match" do
+      Enum.each(["foo", :foo, true, false], fn value ->
+        assert {:error, _} = Vx.validate(Vx.Number.t(), value)
+      end)
+    end
   end
 end

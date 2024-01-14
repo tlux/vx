@@ -51,7 +51,7 @@ defmodule Vx.Map do
   """
   @spec partial(t, %{optional(any) => Vx.t()}) :: t
   def partial(%__MODULE__{} = type \\ t(), shape) do
-    validate(
+    add_validator(
       type,
       :partial,
       &check_partial(&1, shape),
@@ -112,7 +112,7 @@ defmodule Vx.Map do
   """
   @spec shape(t, %{optional(any) => Vx.t()}) :: t
   def shape(%__MODULE__{} = type \\ t(), shape) do
-    validate(
+    add_validator(
       type,
       :shape,
       &check_shape(&1, shape),
@@ -162,7 +162,7 @@ defmodule Vx.Map do
   @spec size(t, non_neg_integer) :: t
   def size(%__MODULE__{} = type \\ t(), count)
       when is_integer(count) and count >= 0 do
-    validate(
+    add_validator(
       type,
       :size,
       &(map_size(&1) == count),

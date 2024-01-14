@@ -1,12 +1,16 @@
 defmodule Vx.FloatTest do
   use ExUnit.Case, async: true
 
-  test "t/0" do
-    assert :ok = Vx.validate(Vx.Float.t(), 123.0)
-    assert :ok = Vx.validate(Vx.Float.t(), 123.4)
+  describe "t/0" do
+    test "match" do
+      assert :ok = Vx.validate(Vx.Float.t(), 123.0)
+      assert :ok = Vx.validate(Vx.Float.t(), 123.4)
+    end
 
-    Enum.each([123, "foo", :foo, true, false], fn value ->
-      assert {:error, _} = Vx.validate(Vx.Float.t(), value)
-    end)
+    test "no match" do
+      Enum.each([123, "foo", :foo, true, false], fn value ->
+        assert {:error, _} = Vx.validate(Vx.Float.t(), value)
+      end)
+    end
   end
 end

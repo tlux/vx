@@ -21,7 +21,7 @@ defmodule Vx.Number do
   """
   @spec lt(num, number) :: t
   def lt(type \\ t(), value) when is_number(value) do
-    validate(type, :lt, &(&1 < value), %{value: value})
+    add_validator(type, :lt, &(&1 < value), %{value: value})
   end
 
   @doc """
@@ -29,7 +29,7 @@ defmodule Vx.Number do
   """
   @spec lteq(num, number) :: t
   def lteq(type \\ t(), value) when is_number(value) do
-    validate(type, :lteq, &(&1 <= value), %{value: value})
+    add_validator(type, :lteq, &(&1 <= value), %{value: value})
   end
 
   @doc """
@@ -37,7 +37,7 @@ defmodule Vx.Number do
   """
   @spec gt(num, number) :: t
   def gt(type \\ t(), value) when is_number(value) do
-    validate(type, :gt, &(&1 > value), %{value: value})
+    add_validator(type, :gt, &(&1 > value), %{value: value})
   end
 
   @doc """
@@ -45,7 +45,7 @@ defmodule Vx.Number do
   """
   @spec gteq(num, number) :: t
   def gteq(type \\ t(), value) when is_number(value) do
-    validate(type, :gteq, &(&1 >= value), %{value: value})
+    add_validator(type, :gteq, &(&1 >= value), %{value: value})
   end
 
   @doc """
@@ -53,7 +53,7 @@ defmodule Vx.Number do
   """
   @spec range(num, Range.t(number, number)) :: t
   def range(type \\ t(), range) do
-    validate(type, :range, &(&1 in range), %{range: range})
+    add_validator(type, :range, &(&1 in range), %{range: range})
   end
 
   @doc """
@@ -64,7 +64,12 @@ defmodule Vx.Number do
 
   def between(type, min, max)
       when is_number(min) and is_number(max) and min <= max do
-    validate(type, :between, &(&1 >= min && &1 <= max), %{min: min, max: max})
+    add_validator(
+      type,
+      :between,
+      &(&1 >= min && &1 <= max),
+      %{min: min, max: max}
+    )
   end
 
   def between(type, first, last)
@@ -78,7 +83,7 @@ defmodule Vx.Number do
   """
   @spec integer(t) :: t
   def integer(%__MODULE__{} = type \\ t()) do
-    validate(type, :integer, fn
+    add_validator(type, :integer, fn
       value when is_integer(value) -> true
       value when is_float(value) -> Float.floor(value) == value
     end)

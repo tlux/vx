@@ -5,28 +5,39 @@ defmodule Vx.MapTest do
 
   @invalid ["", <<0xFFFF::16>>, nil, :foo, true, false, 123, []]
 
-  test "t/0" do
-    assert :ok = Vx.validate(Vx.Map.t(), %{})
-    assert :ok = Vx.validate(Vx.Map.t(), %{"foo" => "bar"})
+  describe "t/0" do
+    test "match" do
+      assert :ok = Vx.validate(Vx.Map.t(), %{})
+      assert :ok = Vx.validate(Vx.Map.t(), %{"foo" => "bar"})
+    end
 
-    Enum.each(@invalid, fn value ->
-      assert {:error, _} = Vx.validate(Vx.Map.t(), value)
-    end)
+    test "no match" do
+      Enum.each(@invalid, fn value ->
+        assert {:error, _} = Vx.validate(Vx.Map.t(), value)
+      end)
+    end
   end
 
-  test "t/2" do
-    schema = Vx.Map.t(Vx.String.t(), Vx.Number.t())
+  describe "t/2" do
+    test "match" do
+      schema = Vx.Map.t(Vx.String.t(), Vx.Number.t())
 
-    assert :ok = Vx.validate(schema, %{"foo" => 123, "bar" => 234.5})
-    assert {:error, _} = Vx.validate(schema, %{:foo => 123, "bar" => 234.5})
-    assert {:error, _} = Vx.validate(schema, %{"foo" => "bar"})
-    assert {:error, _} = Vx.validate(schema, %{"foo" => 123, "bar" => "bar"})
+      assert :ok = Vx.validate(schema, %{"foo" => 123, "bar" => 234.5})
 
-    schema = Vx.Map.t(Vx.Atom.t(), Vx.union([Vx.Number.t(), Vx.String.t()]))
+      schema = Vx.Map.t(Vx.Atom.t(), Vx.union([Vx.Number.t(), Vx.String.t()]))
 
-    assert :ok = Vx.validate(schema, %{foo: 123, bar: "baz"})
-    assert :ok = Vx.validate(schema, %{bar: "baz"})
-    assert :ok = Vx.validate(schema, %{foo: 123, bar: 234})
+      assert :ok = Vx.validate(schema, %{foo: 123, bar: "baz"})
+      assert :ok = Vx.validate(schema, %{bar: "baz"})
+      assert :ok = Vx.validate(schema, %{foo: 123, bar: 234})
+    end
+
+    test "no match" do
+      schema = Vx.Map.t(Vx.String.t(), Vx.Number.t())
+
+      assert {:error, _} = Vx.validate(schema, %{:foo => 123, "bar" => 234.5})
+      assert {:error, _} = Vx.validate(schema, %{"foo" => "bar"})
+      assert {:error, _} = Vx.validate(schema, %{"foo" => 123, "bar" => "bar"})
+    end
   end
 
   describe "partial/1" do

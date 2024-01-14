@@ -42,7 +42,7 @@ defmodule Vx.List do
   """
   @spec non_empty(t) :: t
   def non_empty(%__MODULE__{} = type \\ t()) do
-    validate(type, :non_empty, fn
+    add_validator(type, :non_empty, fn
       [] -> false
       _ -> true
     end)
@@ -56,7 +56,7 @@ defmodule Vx.List do
   def shape(%__MODULE__{} = type \\ t(), shape) when is_list(shape) do
     expected_size = length(shape)
 
-    validate(
+    add_validator(
       type,
       :shape,
       &check_list_shape(&1, shape, expected_size),
@@ -86,6 +86,6 @@ defmodule Vx.List do
   @spec size(t, non_neg_integer) :: t
   def size(%__MODULE__{} = type \\ t(), count)
       when is_integer(count) and count >= 0 do
-    validate(type, :size, &(length(&1) == count), %{count: count})
+    add_validator(type, :size, &(length(&1) == count), %{count: count})
   end
 end
