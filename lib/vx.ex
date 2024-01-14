@@ -30,10 +30,7 @@ defmodule Vx do
   """
   @spec valid?(t, any) :: boolean
   def valid?(type, value) do
-    case validate(type, value) do
-      :ok -> true
-      _ -> false
-    end
+    match?(:ok, validate(type, value))
   end
 
   @doc """

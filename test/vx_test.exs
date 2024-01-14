@@ -119,20 +119,23 @@ defmodule VxTest do
   end
 
   describe "optional/1" do
-    @map_with_optional_key Vx.Map.shape(%{Vx.optional("foo") => Vx.Any.t()})
+    setup do
+      {:ok,
+       map_with_optional_key: Vx.Map.shape(%{Vx.optional("foo") => Vx.Any.t()})}
+    end
 
-    test "match" do
+    test "match", %{map_with_optional_key: map_with_optional_key} do
       assert Vx.valid?(Vx.optional(Vx.String.t()), "foo")
       assert Vx.valid?(Vx.optional(Vx.String.t()), "bar")
       assert Vx.valid?(Vx.optional(Vx.String.t()), nil)
-      assert Vx.valid?(@map_with_optional_key, %{"foo" => true})
-      assert Vx.valid?(@map_with_optional_key, %{})
+      assert Vx.valid?(map_with_optional_key, %{"foo" => true})
+      assert Vx.valid?(map_with_optional_key, %{})
     end
 
-    test "no match" do
+    test "no match", %{map_with_optional_key: map_with_optional_key} do
       refute Vx.valid?(Vx.optional("foo"), "bar")
       refute Vx.valid?(Vx.optional(Vx.String.t()), 1)
-      refute Vx.valid?(@map_with_optional_key, %{"bar" => true})
+      refute Vx.valid?(map_with_optional_key, %{"bar" => true})
     end
   end
 
