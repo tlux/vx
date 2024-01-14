@@ -5,5 +5,7 @@ defmodule Address do
 end
 
 defmodule Country do
+  @moduledoc false
+
   defstruct [:code]
 end
