@@ -17,7 +17,7 @@ defmodule VxTest do
         "hobbies" =>
           Vx.List.t(Vx.String.present())
           |> Vx.List.non_empty(),
-        "type" => Vx.Any.of(["user", "admin"]),
+        "type" => Vx.union(["user", "admin"]),
         "addresses" => Vx.List.t(Vx.Struct.t(Address))
       })
 

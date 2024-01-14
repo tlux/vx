@@ -40,6 +40,14 @@ defmodule Vx do
   def optional(type), do: Vx.Optional.t(type)
 
   @doc """
+  Marks the given type or field as nullable.
+  """
+  @spec nullable(t) :: t
+  def nullable(type \\ Vx.Any.t()) do
+    Vx.Union.t([type, nil])
+  end
+
+  @doc """
   Inverts the given type
   """
   @spec non(t) :: Vx.Not.t()
@@ -66,9 +74,15 @@ defmodule Vx do
   end
 
   @doc """
+  Checks whether a value is not equal to the given value.
+  """
+  @spec neq(t, any) :: t
+  def neq(type \\ Vx.Any.t(), value), do: non(eq(type, value))
+
+  @doc """
   Checks whether a value is one of the given values.
   """
-  @spec of([any]) :: t
+  @spec of(t, [any]) :: t
   def of(type \\ Vx.Any.t(), values) do
     Vx.Type.add_validator(
       type,

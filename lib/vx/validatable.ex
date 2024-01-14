@@ -15,7 +15,7 @@ end
 defimpl Vx.Validatable, for: Any do
   def validate(input, value) do
     input
-    |> Vx.Any.eq()
+    |> Vx.eq()
     |> Vx.Validatable.validate(value)
   end
 end
