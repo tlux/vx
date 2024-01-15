@@ -1,5 +1,5 @@
 defmodule Vx.AnyTest do
-  use ExUnit.Case
+  use ExUnit.Case, async: true
 
   describe "t/0" do
     test "match" do

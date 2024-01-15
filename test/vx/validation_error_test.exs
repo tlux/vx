@@ -1,5 +1,5 @@
 defmodule Vx.ValidationErrorTest do
-  use ExUnit.Case
+  use ExUnit.Case, async: true
 
   alias Vx.ValidationError
   alias Vx.Validator

@@ -1,5 +1,5 @@
 defmodule Vx.UnionTest do
-  use ExUnit.Case
+  use ExUnit.Case, async: true
 
   describe "t/1" do
     test "match" do
