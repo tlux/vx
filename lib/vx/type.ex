@@ -13,7 +13,7 @@ defmodule Vx.Type do
       end
 
       def equal(%__MODULE__{} = type \\ t(), expected_value) do
-        validate(
+        add_validator(
           type,
           :equal,
           fn actual_value -> actual_value == expected_value end,
