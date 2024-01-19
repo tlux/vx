@@ -55,7 +55,7 @@ defmodule Vx.Map do
       type,
       :partial,
       &check_partial(&1, shape),
-      %{shape: shape},
+      %{shape: shape, match_mode: :partial},
       "does not have the expected partial shape"
     )
   end
@@ -116,7 +116,7 @@ defmodule Vx.Map do
       type,
       :shape,
       &check_shape(&1, shape),
-      %{shape: shape},
+      %{shape: shape, match_mode: :exact},
       "does not have the expected shape"
     )
   end
