@@ -67,6 +67,14 @@ defmodule Vx.Validators do
   @spec default(t) :: Validator.t() | nil
   def default(%__MODULE__{default: default}), do: default
 
+  @doc """
+  Gets the validator with the given name.
+  """
+  @spec get(t, Validator.name()) :: Validator.t() | nil
+  def get(%__MODULE__{list: list}, name) do
+    Enum.find(list, &(&1.name == name))
+  end
+
   @doc false
   @spec to_list(t) :: [Validator.t()]
   def to_list(%__MODULE__{default: nil, list: list}) do
