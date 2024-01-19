@@ -70,9 +70,12 @@ defmodule Vx.Validators do
   @doc """
   Gets the validator with the given name.
   """
-  @spec get(t, Validator.name()) :: Validator.t() | nil
-  def get(%__MODULE__{list: list}, name) do
-    Enum.find(list, &(&1.name == name))
+  @spec fetch(t, Validator.name()) :: {:ok, Validator.t()} | :error
+  def fetch(%__MODULE__{list: list}, name) do
+    Enum.find_value(list, :error, fn
+      %{name: ^name} = validator -> {:ok, validator}
+      _ -> nil
+    end)
   end
 
   @doc false
