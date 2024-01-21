@@ -3,22 +3,13 @@ defmodule Vx.Literal do
   The List type provides a validator for literals.
   """
 
-  defstruct [:value]
-
-  @type t() :: t(any)
-  @type t(value) :: %__MODULE__{value: value}
+  use Vx.Type
 
   @doc """
-  Defines a literal.
+  Creates a no-op type.
   """
   @spec t(any) :: t
-  def t(value), do: %__MODULE__{value: value}
-
-  defimpl Vx.Validatable do
-    def validate(literal, value) do
-      literal.value
-      |> Vx.eq()
-      |> Vx.Validatable.validate(value)
-    end
+  def t(value) do
+    init(&(&1 == value), %{value: value})
   end
 end
