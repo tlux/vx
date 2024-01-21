@@ -6,7 +6,7 @@ defmodule Vx.Any do
   use Vx.Type
 
   @doc """
-  A no-op validator.
+  Creates a no-op type.
   """
   @spec t() :: t
   def t, do: init()

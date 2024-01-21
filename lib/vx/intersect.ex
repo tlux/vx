@@ -7,8 +7,11 @@ defmodule Vx.Intersect do
 
   use Vx.Type
 
+  @doc """
+  Creates a type that allows you to combine multiple types into one.
+  """
   @spec t(nonempty_list(Vx.t())) :: t
-  def t([inputs]), do: inputs
+  def t([input]), do: input
 
   def t([_ | _] = inputs) do
     init(&validate_value(&1, inputs), %{inputs: inputs})

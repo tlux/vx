@@ -8,7 +8,7 @@ defmodule Vx.Union do
   use Vx.Type
 
   @spec t(nonempty_list(Vx.t())) :: t
-  def t([inputs]), do: inputs
+  def t([type]), do: type
 
   def t([_ | _] = inputs) do
     init(&validate_value(&1, inputs), %{inputs: inputs})

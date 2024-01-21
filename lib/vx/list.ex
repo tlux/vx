@@ -13,7 +13,7 @@ defmodule Vx.List do
 
   @doc """
   Checks whether a value is a list containing only elements of the specified
-  type or types.
+  type or types. When a list of types is given, it will be treated as a union.
   """
   @spec t(Vx.t() | [Vx.t()]) :: t
   def t(types) when is_list(types) do

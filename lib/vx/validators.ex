@@ -78,7 +78,9 @@ defmodule Vx.Validators do
     end)
   end
 
-  @doc false
+  @doc """
+  Gets all validators as a list.
+  """
   @spec to_list(t) :: [Validator.t()]
   def to_list(%__MODULE__{default: nil, list: list}) do
     Enum.reverse(list)
