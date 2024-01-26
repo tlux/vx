@@ -34,8 +34,8 @@ defmodule Vx.Type do
 
   @doc false
   @spec new(module) :: t
-  def new(type) do
-    struct!(type, validators: Validators.new(type))
+  def new(module) do
+    struct!(module, validators: Validators.new(module))
   end
 
   @doc false
@@ -45,8 +45,8 @@ defmodule Vx.Type do
           Vx.Validator.details(),
           Vx.Validator.message() | nil
         ) :: t
-  def new(type, fun, details \\ %{}, message \\ nil) do
-    struct!(type, validators: Validators.new(type, fun, details, message))
+  def new(module, fun, details \\ %{}, message \\ nil) do
+    struct!(module, validators: Validators.new(module, fun, details, message))
   end
 
   @doc false
