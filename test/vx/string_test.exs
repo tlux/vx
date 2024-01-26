@@ -13,7 +13,7 @@ defmodule Vx.StringTest do
       Enum.each(@invalid, fn value ->
         assert {:error,
                 %Vx.ValidationError{
-                  validator: %Vx.Validator{type: Vx.String, name: nil}
+                  validator: %Vx.Validator{module: Vx.String, name: nil}
                 }} = Vx.validate(Vx.String.t(), value)
 
         {:error, Vx.ValidationError.new(:string, nil, value)}
@@ -30,13 +30,13 @@ defmodule Vx.StringTest do
     test "no match" do
       assert {:error,
               %Vx.ValidationError{
-                validator: %Vx.Validator{type: Vx.String, name: :non_empty}
+                validator: %Vx.Validator{module: Vx.String, name: :non_empty}
               }} = Vx.validate(Vx.String.non_empty(), "")
 
       Enum.each(@invalid, fn value ->
         assert {:error,
                 %Vx.ValidationError{
-                  validator: %Vx.Validator{type: Vx.String, name: nil}
+                  validator: %Vx.Validator{module: Vx.String, name: nil}
                 }} = Vx.validate(Vx.String.non_empty(), value)
       end)
     end
@@ -51,7 +51,7 @@ defmodule Vx.StringTest do
       Enum.each(["", "   "], fn value ->
         assert {:error,
                 %Vx.ValidationError{
-                  validator: %Vx.Validator{type: Vx.String, name: :present},
+                  validator: %Vx.Validator{module: Vx.String, name: :present},
                   value: ^value
                 }} = Vx.validate(Vx.String.present(), value)
       end)
@@ -59,7 +59,7 @@ defmodule Vx.StringTest do
       Enum.each(@invalid, fn value ->
         assert {:error,
                 %Vx.ValidationError{
-                  validator: %Vx.Validator{type: Vx.String, name: nil},
+                  validator: %Vx.Validator{module: Vx.String, name: nil},
                   value: ^value
                 }} = Vx.validate(Vx.String.present(), value)
       end)

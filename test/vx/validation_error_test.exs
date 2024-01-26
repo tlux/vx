@@ -7,13 +7,13 @@ defmodule Vx.ValidationErrorTest do
   describe "message/1" do
     test "without inner errors" do
       assert Exception.message(%ValidationError{
-               validator: %Validator{type: Vx.Number},
+               validator: %Validator{module: Vx.Number},
                value: "foo"
              }) == ~s[Invalid Vx.Number (was "foo")]
 
       assert Exception.message(%ValidationError{
                validator: %Validator{
-                 type: Vx.Number,
+                 module: Vx.Number,
                  name: :integer
                },
                value: 123.4
@@ -21,7 +21,7 @@ defmodule Vx.ValidationErrorTest do
 
       assert Exception.message(%ValidationError{
                validator: %Validator{
-                 type: Vx.Number,
+                 module: Vx.Number,
                  name: :lt,
                  details: %{value: 123},
                  message: "must be less than 123"
@@ -33,7 +33,7 @@ defmodule Vx.ValidationErrorTest do
     test "with inner errors" do
       assert Exception.message(%ValidationError{
                validator: %Validator{
-                 type: Vx.Map,
+                 module: Vx.Map,
                  name: :shape,
                  details: %{shape: %{foo: Vx.String}},
                  message: "does not have shape #{inspect(%{foo: Vx.String})}"
@@ -41,7 +41,7 @@ defmodule Vx.ValidationErrorTest do
                value: %{foo: 234.5},
                inner: %ValidationError{
                  validator: %Validator{
-                   type: Vx.Number,
+                   module: Vx.Number,
                    name: :lt,
                    details: %{value: 123},
                    message: fn value -> "#{value} is not less than 123" end

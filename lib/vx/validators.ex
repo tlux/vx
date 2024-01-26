@@ -6,10 +6,10 @@ defmodule Vx.Validators do
   alias Vx.ValidationError
   alias Vx.Validator
 
-  defstruct [:type, :default, list: []]
+  defstruct [:module, :default, list: []]
 
   @opaque t :: %__MODULE__{
-            type: module,
+            module: module,
             default: Validator.t() | nil,
             list: [Validator.t()]
           }
@@ -18,8 +18,8 @@ defmodule Vx.Validators do
   Builds a new validator collection without a default validator.
   """
   @spec new(module) :: t
-  def new(type) when is_atom(type) do
-    %__MODULE__{type: type}
+  def new(module) when is_atom(module) do
+    %__MODULE__{module: module}
   end
 
   @doc """
@@ -31,10 +31,10 @@ defmodule Vx.Validators do
           Validator.details(),
           Validator.message() | nil
         ) :: t
-  def new(type, fun, details \\ %{}, message \\ nil) when is_atom(type) do
+  def new(module, fun, details \\ %{}, message \\ nil) when is_atom(module) do
     %__MODULE__{
-      type: type,
-      default: Validator.new(type, nil, fun, details, message)
+      module: module,
+      default: Validator.new(module, nil, fun, details, message)
     }
   end
 
@@ -49,7 +49,7 @@ defmodule Vx.Validators do
           Validator.message() | nil
         ) :: t
   def add(
-        %__MODULE__{type: type, list: list} = validators,
+        %__MODULE__{module: module, list: list} = validators,
         name,
         fun,
         details \\ %{},
@@ -57,7 +57,7 @@ defmodule Vx.Validators do
       ) do
     %{
       validators
-      | list: [Validator.new(type, name, fun, details, message) | list]
+      | list: [Validator.new(module, name, fun, details, message) | list]
     }
   end
 

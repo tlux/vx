@@ -26,11 +26,13 @@ defmodule Vx.Type do
 
   alias Vx.Validators
 
-  @type t :: %{
-          :__struct__ => module,
-          :validators => Vx.Validators.t(),
+  @type t(mod) :: %{
+          :__struct__ => mod,
+          :validators => Validators.t(),
           optional(atom) => any
         }
+
+  @type t :: t(module)
 
   @doc false
   @spec new(module) :: t
