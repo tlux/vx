@@ -82,7 +82,7 @@ defmodule Vx.Type do
   @doc """
   Validates a value against the type.
   """
-  @spec validate(t, any) :: :ok | {:error, Vx.ValidationError.t()}
+  @spec validate(type, any) :: :ok | {:error, Vx.ValidationError.t()}
   def validate(%__MODULE__{check: nil} = type, value) do
     validate_rules(type, value)
   end
@@ -93,20 +93,28 @@ defmodule Vx.Type do
     end
   end
 
+  def validate(type, value) do
+    type |> resolve_type() |> validate(value)
+  end
+
   @doc """
   Validates a value exclusively against the type's rules without performing any
   type check.
   """
-  @spec validate_rules(t, any) :: :ok | {:error, Vx.ValidationError.t()}
-  def validate_rules(%__MODULE__{rules: rules}, value) do
-    rules
-    |> Enum.reverse()
+  @spec validate_rules(type, any) :: :ok | {:error, Vx.ValidationError.t()}
+  def validate_rules(%__MODULE__{} = type, value) do
+    type
+    |> get_rules()
     |> Enum.reduce_while(:ok, fn validator, _ ->
       case Validator.run(validator, value) do
         :ok -> {:cont, :ok}
         error -> {:halt, error}
       end
     end)
+  end
+
+  def validate_rules(type, value) do
+    type |> resolve_type() |> validate_rules(value)
   end
 
   @doc """
@@ -125,8 +133,10 @@ defmodule Vx.Type do
   Gets details for the rule validator with the given name.
   """
   @spec details(type, Validator.name()) :: Validator.details() | nil
-  def details(%__MODULE__{rules: rules}, rule) do
-    Enum.find_value(rules, %{}, fn
+  def details(%__MODULE__{} = type, rule) do
+    type
+    |> get_rules()
+    |> Enum.find_value(%{}, fn
       %Validator{name: ^rule, details: details} -> details
       _ -> nil
     end)
@@ -136,8 +146,24 @@ defmodule Vx.Type do
     type |> resolve_type() |> details(rule)
   end
 
+  @doc """
+  A list of all validation rules defined for the type.
+  """
+  @spec validators(type) :: [Validator.t()]
+  def validators(%__MODULE__{check: nil} = type), do: get_rules(type)
+
+  def validators(%__MODULE__{check: check} = type) do
+    [check | get_rules(type)]
+  end
+
+  def validators(type) do
+    type |> resolve_type() |> validators()
+  end
+
   defp resolve_type(%_{__type__: %__MODULE__{} = type}), do: type
   defp resolve_type(%__MODULE__{} = type), do: type
+
+  defp get_rules(%__MODULE__{rules: rules}), do: Enum.reverse(rules)
 
   defmacro __using__(_) do
     quote do
