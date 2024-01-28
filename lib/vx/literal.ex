@@ -6,7 +6,7 @@ defmodule Vx.Literal do
   use Vx.Type
 
   @doc """
-  Creates a no-op type.
+  Creates a literal type.
   """
   @spec t(any) :: t
   def t(value) do

@@ -17,7 +17,7 @@ defmodule VxTest do
         "hobbies" =>
           Vx.List.t(Vx.String.present())
           |> Vx.List.non_empty(),
-        "type" => Vx.union(["user", "admin"]),
+        "type" => Vx.Any.of(["user", "admin"]),
         "addresses" => Vx.List.t(Vx.Struct.t(Address))
       })
 
@@ -156,7 +156,7 @@ defmodule VxTest do
     end
 
     test "no match" do
-      refute Vx.valid?(Vx.union(["bar", Vx.Integer.t()]), "foo")
+      refute Vx.valid?(Vx.union([Vx.Literal.t("bar"), Vx.Integer.t()]), "foo")
 
       refute Vx.valid?(
                Vx.union([Vx.String.min_length(4), Vx.Integer.t()]),
