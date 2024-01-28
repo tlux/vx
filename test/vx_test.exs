@@ -24,6 +24,9 @@ defmodule VxTest do
     assert :ok = Vx.validate(schema, @valid_values)
     assert :ok = Vx.validate(schema, %{@valid_values | "type" => "user"})
 
+    assert {:error, _} =
+             Vx.validate(schema, %{@valid_values | "type" => "guest"})
+
     assert {:error, _} = Vx.validate(schema, %{@valid_values | "hobbies" => []})
 
     assert {:error, _} =
