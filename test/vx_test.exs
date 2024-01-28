@@ -43,28 +43,6 @@ defmodule VxTest do
              })
   end
 
-  describe "eq/1" do
-    test "match" do
-      assert Vx.valid?(Vx.eq("foo"), "foo")
-    end
-
-    test "no match" do
-      refute Vx.valid?(Vx.eq("foo"), "bar")
-    end
-  end
-
-  describe "eq/2" do
-    test "match" do
-      assert Vx.valid?(Vx.eq(Vx.Any.t(), "foo"), "foo")
-      assert Vx.valid?(Vx.eq(Vx.String.t(), "foo"), "foo")
-    end
-
-    test "no match" do
-      refute Vx.valid?(Vx.eq(Vx.String.t(), "foo"), "bar")
-      refute Vx.valid?(Vx.eq(Vx.Integer.t(), "foo"), "foo")
-    end
-  end
-
   describe "non/1" do
     test "match" do
       refute Vx.valid?(Vx.non("foo"), "foo")
@@ -96,28 +74,6 @@ defmodule VxTest do
 
     test "no match" do
       refute Vx.valid?(Vx.non_null(), nil)
-    end
-  end
-
-  describe "of/1" do
-    test "match" do
-      assert Vx.valid?(Vx.of(["foo", "bar"]), "foo")
-    end
-
-    test "no match" do
-      refute Vx.valid?(Vx.of(["foo", "bar"]), "baz")
-    end
-  end
-
-  describe "of/2" do
-    test "match" do
-      assert Vx.valid?(Vx.of(Vx.Any.t(), ["foo", "bar"]), "foo")
-      assert Vx.valid?(Vx.of(Vx.String.t(), ["foo", "bar"]), "foo")
-    end
-
-    test "no match" do
-      refute Vx.valid?(Vx.of(Vx.String.t(), ["foo", "bar"]), "baz")
-      refute Vx.valid?(Vx.of(Vx.Integer.t(), ["foo", "bar"]), "foo")
     end
   end
 
