@@ -9,5 +9,5 @@ defmodule Vx.Atom do
   Checks whether a value is an atom.
   """
   @spec t() :: t
-  def t, do: init(&is_atom/1)
+  def t, do: new(&is_atom/1)
 end

@@ -10,7 +10,7 @@ defmodule Vx.Struct do
   """
   @spec t() :: t
   def t do
-    init(fn
+    new(fn
       %_{} -> true
       _ -> false
     end)
@@ -21,7 +21,7 @@ defmodule Vx.Struct do
   """
   @spec t(module) :: t
   def t(struct) when is_atom(struct) do
-    init(
+    new(
       fn
         %^struct{} -> true
         _ -> false

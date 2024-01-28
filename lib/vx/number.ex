@@ -14,14 +14,14 @@ defmodule Vx.Number do
   Checks whether a value is a number.
   """
   @spec t() :: t
-  def t, do: init(&is_number/1)
+  def t, do: new(&is_number/1)
 
   @doc """
   Checks whether a value is less than the given value.
   """
   @spec lt(num, number) :: t
   def lt(type \\ t(), value) when is_number(value) do
-    add_validator(type, :lt, &(&1 < value), %{value: value})
+    add_rule(type, :lt, &(&1 < value), %{value: value})
   end
 
   @doc """
@@ -29,7 +29,7 @@ defmodule Vx.Number do
   """
   @spec lteq(num, number) :: t
   def lteq(type \\ t(), value) when is_number(value) do
-    add_validator(type, :lteq, &(&1 <= value), %{value: value})
+    add_rule(type, :lteq, &(&1 <= value), %{value: value})
   end
 
   @doc """
@@ -37,7 +37,7 @@ defmodule Vx.Number do
   """
   @spec gt(num, number) :: t
   def gt(type \\ t(), value) when is_number(value) do
-    add_validator(type, :gt, &(&1 > value), %{value: value})
+    add_rule(type, :gt, &(&1 > value), %{value: value})
   end
 
   @doc """
@@ -45,7 +45,7 @@ defmodule Vx.Number do
   """
   @spec gteq(num, number) :: t
   def gteq(type \\ t(), value) when is_number(value) do
-    add_validator(type, :gteq, &(&1 >= value), %{value: value})
+    add_rule(type, :gteq, &(&1 >= value), %{value: value})
   end
 
   @doc """
@@ -53,7 +53,7 @@ defmodule Vx.Number do
   """
   @spec range(num, Range.t(number, number)) :: t
   def range(type \\ t(), range) do
-    add_validator(type, :range, &(&1 in range), %{range: range})
+    add_rule(type, :range, &(&1 in range), %{range: range})
   end
 
   @doc """
@@ -64,7 +64,7 @@ defmodule Vx.Number do
 
   def between(type, min, max)
       when is_number(min) and is_number(max) and min <= max do
-    add_validator(
+    add_rule(
       type,
       :between,
       &(&1 >= min && &1 <= max),
@@ -83,7 +83,7 @@ defmodule Vx.Number do
   """
   @spec integer(t) :: t
   def integer(%__MODULE__{} = type \\ t()) do
-    add_validator(type, :integer, fn
+    add_rule(type, :integer, fn
       value when is_integer(value) -> true
       value when is_float(value) -> Float.floor(value) == value
     end)

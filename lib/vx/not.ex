@@ -7,7 +7,7 @@ defmodule Vx.Not do
 
   @spec t(Vx.t()) :: t
   def t(type) do
-    init(fn value ->
+    new(fn value ->
       match?({:error, _}, Vx.Validatable.validate(type, value))
     end)
   end

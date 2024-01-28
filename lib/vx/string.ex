@@ -10,7 +10,7 @@ defmodule Vx.String do
   """
   @spec t() :: t
   def t do
-    init(&String.valid?/1)
+    new(&String.valid?/1)
   end
 
   @doc """
@@ -18,7 +18,7 @@ defmodule Vx.String do
   """
   @spec non_empty(t) :: t
   def non_empty(%__MODULE__{} = type \\ t()) do
-    add_validator(type, :non_empty, fn
+    add_rule(type, :non_empty, fn
       "" -> false
       _ -> true
     end)
@@ -30,7 +30,7 @@ defmodule Vx.String do
   """
   @spec present(t) :: t
   def present(%__MODULE__{} = type \\ t()) do
-    add_validator(type, :present, &(String.trim(&1) != ""))
+    add_rule(type, :present, &(String.trim(&1) != ""))
   end
 
   @doc """
@@ -39,7 +39,7 @@ defmodule Vx.String do
   @spec min_length(t, non_neg_integer) :: t
   def min_length(%__MODULE__{} = type \\ t(), length)
       when is_integer(length) and length >= 0 do
-    add_validator(
+    add_rule(
       type,
       :min_length,
       &(String.length(&1) >= length),
@@ -53,7 +53,7 @@ defmodule Vx.String do
   @spec max_length(t, non_neg_integer) :: t
   def max_length(%__MODULE__{} = type \\ t(), length)
       when is_integer(length) and length >= 0 do
-    add_validator(
+    add_rule(
       type,
       :max_length,
       &(String.length(&1) <= length),
@@ -66,6 +66,6 @@ defmodule Vx.String do
   """
   @spec format(t, Regex.t()) :: t
   def format(%__MODULE__{} = type \\ t(), %Regex{} = regex) do
-    add_validator(type, :format, &Regex.match?(regex, &1), %{regex: regex})
+    add_rule(type, :format, &Regex.match?(regex, &1), %{regex: regex})
   end
 end

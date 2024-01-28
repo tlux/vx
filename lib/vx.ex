@@ -69,9 +69,7 @@ defmodule Vx do
   Checks whether a value is equal to the given value.
   """
   @spec eq(t, any) :: t
-  def eq(type \\ Vx.Any.t(), value) do
-    Vx.Type.add_validator(type, :eq, &(&1 == value), %{value: value})
-  end
+  defdelegate eq(type \\ Vx.Any.t(), value), to: Vx.Any
 
   @doc """
   Checks whether a value is not equal to the given value.
@@ -83,26 +81,7 @@ defmodule Vx do
   Checks whether a value is one of the given values.
   """
   @spec of(t, [any]) :: t
-  def of(type \\ Vx.Any.t(), values) do
-    Vx.Type.add_validator(
-      type,
-      :of,
-      &Enum.member?(values, &1),
-      %{values: values}
-    )
-  end
-
-  @doc """
-  Checks whether a value matches the given pattern.
-  """
-  @spec match(any, any) :: Macro.t()
-  defmacro match(type \\ quote(do: Vx.Any.t()), pattern) do
-    quote do
-      Vx.Type.add_validator(unquote(type), :match, fn value ->
-        match?(unquote(pattern), value)
-      end)
-    end
-  end
+  defdelegate of(type \\ Vx.Any.t(), values), to: Vx.Any
 
   @doc """
   Intersects the given types.

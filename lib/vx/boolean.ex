@@ -9,5 +9,5 @@ defmodule Vx.Boolean do
   Checks whether a value is a boolean.
   """
   @spec t() :: t
-  def t, do: init(&is_boolean/1)
+  def t, do: new(&is_boolean/1)
 end

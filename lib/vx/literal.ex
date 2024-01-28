@@ -10,6 +10,6 @@ defmodule Vx.Literal do
   """
   @spec t(any) :: t
   def t(value) do
-    init(&(&1 == value), %{value: value})
+    new(&(&1 == value), %{value: value})
   end
 end

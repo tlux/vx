@@ -9,7 +9,7 @@ defmodule Vx.List do
   Checks whether a value is a list.
   """
   @spec t() :: t
-  def t, do: init(&is_list/1)
+  def t, do: new(&is_list/1)
 
   @doc """
   Checks whether a value is a list containing only elements of the specified
@@ -23,7 +23,7 @@ defmodule Vx.List do
   end
 
   def t(type) do
-    init(&check_member_type(&1, type), %{of: type})
+    new(&check_member_type(&1, type), %{of: type})
   end
 
   defp check_member_type(values, type) when is_list(values) do
@@ -42,7 +42,7 @@ defmodule Vx.List do
   """
   @spec non_empty(t) :: t
   def non_empty(%__MODULE__{} = type \\ t()) do
-    add_validator(type, :non_empty, fn
+    add_rule(type, :non_empty, fn
       [] -> false
       _ -> true
     end)
@@ -56,7 +56,7 @@ defmodule Vx.List do
   def shape(%__MODULE__{} = type \\ t(), shape) when is_list(shape) do
     expected_size = length(shape)
 
-    add_validator(
+    add_rule(
       type,
       :shape,
       &check_list_shape(&1, shape, expected_size),
@@ -86,6 +86,6 @@ defmodule Vx.List do
   @spec size(t, non_neg_integer) :: t
   def size(%__MODULE__{} = type \\ t(), count)
       when is_integer(count) and count >= 0 do
-    add_validator(type, :size, &(length(&1) == count), %{count: count})
+    add_rule(type, :size, &(length(&1) == count), %{count: count})
   end
 end

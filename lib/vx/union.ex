@@ -8,15 +8,13 @@ defmodule Vx.Union do
   use Vx.Type
 
   @spec t(nonempty_list(Vx.t())) :: t
-  def t([input]), do: input
-
-  def t([_ | _] = inputs) do
-    init(&validate_value(&1, inputs), %{inputs: inputs})
+  def t([_ | _] = types) do
+    new(&validate_value(&1, types), %{types: types})
   end
 
-  defp validate_value(value, inputs) do
-    Enum.reduce_while(inputs, :ok, fn input, _ ->
-      case Vx.Validatable.validate(input, value) do
+  defp validate_value(value, types) do
+    Enum.reduce_while(types, :ok, fn type, _ ->
+      case Vx.Validatable.validate(type, value) do
         :ok -> {:halt, :ok}
         {:error, error} -> {:cont, error}
       end
