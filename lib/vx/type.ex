@@ -109,27 +109,35 @@ defmodule Vx.Type do
     end)
   end
 
-  # @doc """
-  # Gets details for the type validator.
-  # """
-  # @spec details(t) :: Validator.details() | nil
-  # def details(%{validators: validators}) do
-  #   case Validators.type(validators) do
-  #     %{details: details} -> details
-  #     nil -> nil
-  #   end
-  # end
+  @doc """
+  Gets details for the type check validator.
+  """
+  @spec details(type) :: Validator.details() | nil
+  def details(%__MODULE__{check: nil}), do: %{}
 
-  # @doc """
-  # Gets details for the rule validator with the given name.
-  # """
-  # @spec details(t, Validator.name()) :: Validator.details() | nil
-  # def details(%{validators: validators}, validator) do
-  #   case Validators.fetch_rule(validators, validator) do
-  #     {:ok, %{details: details}} -> details
-  #     :error -> nil
-  #   end
-  # end
+  def details(%__MODULE__{check: check}), do: check.details
+
+  def details(type) do
+    type |> resolve_type() |> details()
+  end
+
+  @doc """
+  Gets details for the rule validator with the given name.
+  """
+  @spec details(type, Validator.name()) :: Validator.details() | nil
+  def details(%__MODULE__{rules: rules}, rule) do
+    Enum.find_value(rules, %{}, fn
+      %Validator{name: ^rule, details: details} -> details
+      _ -> nil
+    end)
+  end
+
+  def details(type, rule) do
+    type |> resolve_type() |> details(rule)
+  end
+
+  defp resolve_type(%_{__type__: %__MODULE__{} = type}), do: type
+  defp resolve_type(%__MODULE__{} = type), do: type
 
   defmacro __using__(_) do
     quote do
