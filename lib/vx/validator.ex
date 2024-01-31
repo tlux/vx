@@ -5,36 +5,30 @@ defmodule Vx.Validator do
 
   alias Vx.ValidationError
 
-  defstruct [:module, :name, :fun, :message, details: %{}]
-
-  @type name :: atom
-
-  @type details :: %{optional(atom) => any}
+  defstruct [:fun, :message, details: %{}]
 
   @type fun :: (any -> boolean | :ok | :error | {:error, Exception.t()})
-
   @type message :: String.t() | (any -> String.t())
+  @type details :: %{optional(atom) => any}
 
   @type t :: %__MODULE__{
-          module: module,
-          name: name | nil,
           fun: fun,
           details: details,
           message: message | nil
         }
 
-  @doc false
-  @spec new(module, name | nil, fun, details, message | nil) ::
-          Vx.Validator.t()
-  def new(module, name, fun, details, message)
-      when is_function(fun, 1) and is_map(details) do
-    %__MODULE__{
-      module: module,
-      name: name,
-      fun: fun,
-      details: details,
-      message: message
-    }
+  @doc """
+  A validator that performs no validation at all.
+  """
+  @spec noop() :: t
+  def noop, do: new(fn _ -> true end)
+
+  @doc """
+  Creates a new validator.
+  """
+  @spec new(fun, details, message | nil) :: t
+  def new(fun, details \\ %{}, message \\ nil) do
+    %__MODULE__{fun: fun, details: details, message: message}
   end
 
   @doc false

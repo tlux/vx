@@ -1,21 +1,17 @@
 defprotocol Vx.Validatable2 do
-  # @spec validate_type(t, any) :: :ok | {:error, ValidationError.t()}
-  # def validate_type(type, value)
+  alias Vx.Validator
 
-  # @spec validate_rules(t, any) :: :ok | {:error, [Vx.ValidationError.t()]}
-  # def validate_rules(type, value)
+  # @fallback_to_any true
 
-  @fallback_to_any true
-
-  @spec type(t) :: Validator.t() | nil
-  def type(type)
+  @spec type(t) :: Validator.t()
+  def type(term)
 
   @spec rules(t) :: [Validator.t()]
-  def rules(type)
+  def rules(term)
 end
 
-defimpl Vx.Validatable2, for: Any do
-  def type(value), do: Vx.eq(value)
+# defimpl Vx.Validatable2, for: Any do
+#   def type(value), do: Vx.Validator.
 
-  def rules(_value), do: []
-end
+#   def rules(_value), do: []
+# end

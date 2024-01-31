@@ -23,7 +23,6 @@ defmodule Vx.ValidationError do
   def message(error) do
     msg =
       "Invalid " <>
-        inspect(error.validator.module) <>
         rule_message(error.validator, error.value)
 
     if error.inner do
