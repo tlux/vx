@@ -10,7 +10,9 @@ defmodule Vx.String do
   """
   @spec t() :: t
   def t do
-    new(&String.valid?/1)
+    new(fn value ->
+      is_binary(value) && String.valid?(value)
+    end)
   end
 
   @doc """

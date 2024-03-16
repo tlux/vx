@@ -44,7 +44,7 @@ defmodule Vx do
   """
   @spec nullable(t) :: t
   def nullable(type \\ Vx.Any.t()) do
-    Vx.Union.t([type, nil])
+    Vx.Union.t([nil, type])
   end
 
   @doc """
