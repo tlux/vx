@@ -27,3 +27,7 @@ vx-*.tar
 
 /.elixir_ls/
 /priv/
+
+# Ignore VS Code settings except for recommended extensions
+/.vscode
+!/.vscode/.extensions
