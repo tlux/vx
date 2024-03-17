@@ -1,5 +1,5 @@
 defmodule VxTest do
-  use ExUnit.Case
+  use ExUnit.Case, async: true
 
   @valid_values %{
     "name" => "foo",

@@ -1,5 +1,5 @@
 defmodule Vx.TypeTest do
-  use ExUnit.Case
+  use ExUnit.Case, async: true
 
   import Vx.Type
 
