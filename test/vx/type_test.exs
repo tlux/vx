@@ -8,6 +8,10 @@ defmodule Vx.TypeTest do
     assert details(Vx.List.t()) == %{}
     assert details(Vx.List.t(Vx.String.t())) == %{of: Vx.String.t()}
     assert details(Vx.String.min_length(3)) == %{}
+
+    assert_raise ArgumentError, "expected argument to be a Vx.Type", fn ->
+      details(%Country{})
+    end
   end
 
   test "details/2" do
@@ -25,6 +29,12 @@ defmodule Vx.TypeTest do
     test "invalid" do
       assert {:error, error} = validate(Vx.List.t(), "foo")
       assert Exception.message(error) == "must be a list"
+    end
+
+    test "invalid argument" do
+      assert_raise ArgumentError, "expected argument to be a Vx.Type", fn ->
+        validate(%Country{}, "foo")
+      end
     end
   end
 end

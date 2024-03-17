@@ -138,7 +138,10 @@ defmodule Vx.Type do
   end
 
   defp resolve_type(%_{__type__: %__MODULE__{} = type}), do: type
-  defp resolve_type(%__MODULE__{} = type), do: type
+
+  defp resolve_type(_) do
+    raise ArgumentError, "expected argument to be a Vx.Type"
+  end
 
   defmacro __using__(_) do
     quote do
