@@ -61,6 +61,9 @@ defmodule Vx.Type do
     }
   end
 
+  @doc """
+  Adds a rule to the type.
+  """
   @spec add_rule(
           t,
           Validator.name(),
@@ -68,7 +71,6 @@ defmodule Vx.Type do
           Validator.details(),
           Validator.message() | nil
         ) :: t
-
   def add_rule(%__MODULE__{} = type, name, fun, details \\ %{}, message \\ nil) do
     %{
       type
@@ -82,7 +84,7 @@ defmodule Vx.Type do
   @doc """
   Validates a value against the type.
   """
-  @spec validate(t, any) :: :ok | {:error, Vx.ValidationError.t()}
+  @spec validate(type, any) :: :ok | {:error, Exception.t()}
   def validate(%__MODULE__{check: nil} = type, value) do
     validate_rules(type, value)
   end
@@ -93,12 +95,11 @@ defmodule Vx.Type do
     end
   end
 
-  @doc """
-  Validates a value exclusively against the type's rules without performing any
-  type check.
-  """
-  @spec validate_rules(t, any) :: :ok | {:error, Vx.ValidationError.t()}
-  def validate_rules(%__MODULE__{rules: rules}, value) do
+  def validate(type, value) do
+    type |> resolve_type() |> validate(value)
+  end
+
+  defp validate_rules(%__MODULE__{rules: rules}, value) do
     rules
     |> Enum.reverse()
     |> Enum.reduce_while(:ok, fn validator, _ ->
@@ -112,7 +113,7 @@ defmodule Vx.Type do
   @doc """
   Gets details for the type check validator.
   """
-  @spec details(type) :: Validator.details() | nil
+  @spec details(type) :: Validator.details()
   def details(%__MODULE__{check: nil}), do: %{}
 
   def details(%__MODULE__{check: check}), do: check.details
@@ -124,7 +125,7 @@ defmodule Vx.Type do
   @doc """
   Gets details for the rule validator with the given name.
   """
-  @spec details(type, Validator.name()) :: Validator.details() | nil
+  @spec details(type, Validator.name()) :: Validator.details()
   def details(%__MODULE__{rules: rules}, rule) do
     Enum.find_value(rules, %{}, fn
       %Validator{name: ^rule, details: details} -> details
@@ -162,7 +163,7 @@ defmodule Vx.Type do
       end
 
       defimpl Vx.Validatable do
-        def validate(%{__type__: type}, value) do
+        def validate(type, value) do
           Vx.Type.validate(type, value)
         end
       end
