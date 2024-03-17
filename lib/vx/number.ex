@@ -14,14 +14,20 @@ defmodule Vx.Number do
   Checks whether a value is a number.
   """
   @spec t() :: t
-  def t, do: new(&is_number/1)
+  def t, do: new(&is_number/1, %{}, "must be a number")
 
   @doc """
   Checks whether a value is less than the given value.
   """
   @spec lt(num, number) :: t
   def lt(type \\ t(), value) when is_number(value) do
-    add_rule(type, :lt, &(&1 < value), %{value: value})
+    add_rule(
+      type,
+      :lt,
+      &(&1 < value),
+      %{value: value},
+      "must be less than #{value}"
+    )
   end
 
   @doc """
@@ -29,7 +35,13 @@ defmodule Vx.Number do
   """
   @spec lteq(num, number) :: t
   def lteq(type \\ t(), value) when is_number(value) do
-    add_rule(type, :lteq, &(&1 <= value), %{value: value})
+    add_rule(
+      type,
+      :lteq,
+      &(&1 <= value),
+      %{value: value},
+      "must be less than or equal to #{value}"
+    )
   end
 
   @doc """
@@ -37,7 +49,13 @@ defmodule Vx.Number do
   """
   @spec gt(num, number) :: t
   def gt(type \\ t(), value) when is_number(value) do
-    add_rule(type, :gt, &(&1 > value), %{value: value})
+    add_rule(
+      type,
+      :gt,
+      &(&1 > value),
+      %{value: value},
+      "must be greater than #{value}"
+    )
   end
 
   @doc """
@@ -45,7 +63,13 @@ defmodule Vx.Number do
   """
   @spec gteq(num, number) :: t
   def gteq(type \\ t(), value) when is_number(value) do
-    add_rule(type, :gteq, &(&1 >= value), %{value: value})
+    add_rule(
+      type,
+      :gteq,
+      &(&1 >= value),
+      %{value: value},
+      "must be greater than or equal to #{value}"
+    )
   end
 
   @doc """
@@ -53,7 +77,13 @@ defmodule Vx.Number do
   """
   @spec range(num, Range.t(number, number)) :: t
   def range(type \\ t(), range) do
-    add_rule(type, :range, &(&1 in range), %{range: range})
+    add_rule(
+      type,
+      :range,
+      &(&1 in range),
+      %{range: range},
+      "must be in range #{inspect(range)}"
+    )
   end
 
   @doc """
@@ -68,7 +98,8 @@ defmodule Vx.Number do
       type,
       :between,
       &(&1 >= min && &1 <= max),
-      %{min: min, max: max}
+      %{min: min, max: max},
+      "must be between #{min} and #{max}"
     )
   end
 
@@ -83,9 +114,15 @@ defmodule Vx.Number do
   """
   @spec integer(t) :: t
   def integer(%__MODULE__{} = type \\ t()) do
-    add_rule(type, :integer, fn
-      value when is_integer(value) -> true
-      value when is_float(value) -> Float.floor(value) == value
-    end)
+    add_rule(
+      type,
+      :integer,
+      fn
+        value when is_integer(value) -> true
+        value when is_float(value) -> Float.floor(value) == value
+      end,
+      %{},
+      "must be an integer"
+    )
   end
 end

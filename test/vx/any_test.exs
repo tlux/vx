@@ -16,7 +16,7 @@ defmodule Vx.AnyTest do
 
     test "no match" do
       assert {:error, error} = Vx.validate(Vx.Any.eq("foo"), "bar")
-      assert Exception.message(error) =~ ~s[must be equal to "foo" (was "bar")]
+      assert Exception.message(error) =~ ~s[must be equal to "foo"]
     end
   end
 
@@ -30,12 +30,12 @@ defmodule Vx.AnyTest do
       assert {:error, error} =
                Vx.validate(Vx.Any.eq(Vx.String.t(), "foo"), "bar")
 
-      assert Exception.message(error) =~ ~s[must be equal to "foo" (was "bar")]
+      assert Exception.message(error) == ~s[must be equal to "foo"]
 
       assert {:error, error} =
-               Vx.validate(Vx.Any.eq(Vx.Integer.t(), "foo"), "foo")
+               Vx.validate(Vx.Any.eq(Vx.Integer.t(), "foo"), 123)
 
-      assert Exception.message(error) == ~s[Invalid Vx.Integer (was "foo")]
+      assert Exception.message(error) == ~s[must be equal to "foo"]
     end
   end
 
@@ -49,7 +49,7 @@ defmodule Vx.AnyTest do
                Vx.validate(Vx.Any.of(["foo", "bar", "boom"]), "baz")
 
       assert Exception.message(error) =~
-               ~s[must be one of "foo", "bar", "boom" (was "baz")]
+               ~s[must be one of "foo", "bar", "boom"]
     end
   end
 
@@ -63,13 +63,12 @@ defmodule Vx.AnyTest do
       assert {:error, error} =
                Vx.validate(Vx.Any.of(Vx.String.t(), ["foo", "bar"]), "baz")
 
-      assert Exception.message(error) =~
-               ~s[must be one of "foo", "bar" (was "baz")]
+      assert Exception.message(error) == ~s[must be one of "foo", "bar"]
 
       assert {:error, error} =
                Vx.validate(Vx.Any.of(Vx.Integer.t(), ["foo", "bar"]), "foo")
 
-      assert Exception.message(error) == ~s[Invalid Vx.Integer (was "foo")]
+      assert Exception.message(error) == "must be an integer"
     end
   end
 
@@ -84,13 +83,12 @@ defmodule Vx.AnyTest do
     test "no match" do
       assert {:error, error} = Vx.validate(Vx.Any.match("foo"), "bar")
 
-      assert Exception.message(error) =~ ~s[must match "foo" (was "bar")]
+      assert Exception.message(error) == ~s[must match "foo"]
 
       assert {:error, error} =
                Vx.validate(Vx.Any.match({:error, _}), {:ok, "foo"})
 
-      assert Exception.message(error) =~
-               ~s[must match {:error, _} (was {:ok, "foo"})]
+      assert Exception.message(error) == ~s[must match {:error, _}]
     end
   end
 end

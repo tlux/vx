@@ -10,9 +10,13 @@ defmodule Vx.String do
   """
   @spec t() :: t
   def t do
-    new(fn value ->
-      is_binary(value) && String.valid?(value)
-    end)
+    new(
+      fn value ->
+        is_binary(value) && String.valid?(value)
+      end,
+      %{},
+      "must be a string"
+    )
   end
 
   @doc """
@@ -20,10 +24,16 @@ defmodule Vx.String do
   """
   @spec non_empty(t) :: t
   def non_empty(%__MODULE__{} = type \\ t()) do
-    add_rule(type, :non_empty, fn
-      "" -> false
-      _ -> true
-    end)
+    add_rule(
+      type,
+      :non_empty,
+      fn
+        "" -> false
+        _ -> true
+      end,
+      %{},
+      "must be non-empty"
+    )
   end
 
   @doc """
@@ -32,7 +42,7 @@ defmodule Vx.String do
   """
   @spec present(t) :: t
   def present(%__MODULE__{} = type \\ t()) do
-    add_rule(type, :present, &(String.trim(&1) != ""))
+    add_rule(type, :present, &(String.trim(&1) != ""), %{}, "must be present")
   end
 
   @doc """
@@ -45,7 +55,11 @@ defmodule Vx.String do
       type,
       :min_length,
       &(String.length(&1) >= length),
-      %{length: length}
+      %{length: length},
+      fn actual_value ->
+        "must be at least #{length} characters long " <>
+          "(was #{String.length(actual_value)})"
+      end
     )
   end
 
@@ -59,7 +73,11 @@ defmodule Vx.String do
       type,
       :max_length,
       &(String.length(&1) <= length),
-      %{length: length}
+      %{length: length},
+      fn actual_value ->
+        "must be at most #{length} characters long " <>
+          "(was #{String.length(actual_value)})"
+      end
     )
   end
 
@@ -68,6 +86,12 @@ defmodule Vx.String do
   """
   @spec format(t, Regex.t()) :: t
   def format(%__MODULE__{} = type \\ t(), %Regex{} = regex) do
-    add_rule(type, :format, &Regex.match?(regex, &1), %{regex: regex})
+    add_rule(
+      type,
+      :format,
+      &Regex.match?(regex, &1),
+      %{regex: regex},
+      "has an unexpected format"
+    )
   end
 end

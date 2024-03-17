@@ -9,7 +9,7 @@ defmodule Vx.List do
   Checks whether a value is a list.
   """
   @spec t() :: t
-  def t, do: new(&is_list/1)
+  def t, do: new(&is_list/1, %{}, "must be a list")
 
   @doc """
   Checks whether a value is a list containing only elements of the specified
@@ -23,14 +23,18 @@ defmodule Vx.List do
   end
 
   def t(type) do
-    new(&check_member_type(&1, type), %{of: type})
+    new(
+      &check_member_type(&1, type),
+      %{of: type},
+      "must be a typed list"
+    )
   end
 
   defp check_member_type(values, type) when is_list(values) do
     Enum.reduce_while(values, :ok, fn value, _ ->
       case Vx.Validatable.validate(type, value) do
         :ok -> {:cont, :ok}
-        {:error, error} -> {:halt, error}
+        error -> {:halt, error}
       end
     end)
   end
@@ -42,10 +46,16 @@ defmodule Vx.List do
   """
   @spec non_empty(t) :: t
   def non_empty(%__MODULE__{} = type \\ t()) do
-    add_rule(type, :non_empty, fn
-      [] -> false
-      _ -> true
-    end)
+    add_rule(
+      type,
+      :non_empty,
+      fn
+        [] -> false
+        _ -> true
+      end,
+      %{},
+      "must not be empty"
+    )
   end
 
   @doc """
@@ -60,7 +70,8 @@ defmodule Vx.List do
       type,
       :shape,
       &check_list_shape(&1, shape, expected_size),
-      %{shape: shape}
+      %{shape: shape},
+      "does not match expected shape"
     )
   end
 
@@ -86,6 +97,12 @@ defmodule Vx.List do
   @spec size(t, non_neg_integer) :: t
   def size(%__MODULE__{} = type \\ t(), count)
       when is_integer(count) and count >= 0 do
-    add_rule(type, :size, &(length(&1) == count), %{count: count})
+    add_rule(
+      type,
+      :size,
+      &(length(&1) == count),
+      %{count: count},
+      "does not match expected size of #{count}"
+    )
   end
 end

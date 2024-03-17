@@ -11,12 +11,8 @@ defmodule Vx.StringTest do
 
     test "no match" do
       Enum.each(@invalid, fn value ->
-        assert {:error,
-                %Vx.ValidationError{
-                  validator: %Vx.Validator{module: Vx.String, name: nil}
-                }} = Vx.validate(Vx.String.t(), value)
-
-        {:error, Vx.ValidationError.new(:string, nil, value)}
+        assert {:error, error} = Vx.validate(Vx.String.t(), value)
+        assert Exception.message(error) == "must be a string"
       end)
     end
   end
@@ -25,19 +21,15 @@ defmodule Vx.StringTest do
     test "match" do
       assert Vx.validate(Vx.String.non_empty(), "foo") == :ok
       assert Vx.validate(Vx.String.non_empty(), "  ") == :ok
+      assert Vx.validate(Vx.String.non_empty(), "\n \n") == :ok
     end
 
     test "no match" do
-      assert {:error,
-              %Vx.ValidationError{
-                validator: %Vx.Validator{module: Vx.String, name: :non_empty}
-              }} = Vx.validate(Vx.String.non_empty(), "")
+      assert {:error, error} = Vx.validate(Vx.String.non_empty(), "")
+      assert Exception.message(error) == "must be non-empty"
 
       Enum.each(@invalid, fn value ->
-        assert {:error,
-                %Vx.ValidationError{
-                  validator: %Vx.Validator{module: Vx.String, name: nil}
-                }} = Vx.validate(Vx.String.non_empty(), value)
+        assert {:error, _} = Vx.validate(Vx.String.non_empty(), value)
       end)
     end
   end
@@ -48,21 +40,57 @@ defmodule Vx.StringTest do
     end
 
     test "no match" do
-      Enum.each(["", "   "], fn value ->
-        assert {:error,
-                %Vx.ValidationError{
-                  validator: %Vx.Validator{module: Vx.String, name: :present},
-                  value: ^value
-                }} = Vx.validate(Vx.String.present(), value)
+      Enum.each(["", "   ", "\n \n"], fn value ->
+        assert {:error, error} = Vx.validate(Vx.String.present(), value)
+        assert Exception.message(error) == "must be present"
       end)
 
       Enum.each(@invalid, fn value ->
-        assert {:error,
-                %Vx.ValidationError{
-                  validator: %Vx.Validator{module: Vx.String, name: nil},
-                  value: ^value
-                }} = Vx.validate(Vx.String.present(), value)
+        assert {:error, _} = Vx.validate(Vx.String.present(), value)
       end)
+    end
+  end
+
+  describe "min_length/1" do
+    test "match" do
+      assert :ok = Vx.validate(Vx.String.min_length(3), "foo")
+      assert :ok = Vx.validate(Vx.String.min_length(3), "foob")
+      assert :ok = Vx.validate(Vx.String.min_length(3), "fooba")
+    end
+
+    test "no match" do
+      assert {:error, error} = Vx.validate(Vx.String.min_length(3), "fo")
+
+      assert Exception.message(error) ==
+               "must be at least 3 characters long (was 2)"
+    end
+  end
+
+  describe "max_length/1" do
+    test "match" do
+      assert :ok = Vx.validate(Vx.String.max_length(3), "f")
+      assert :ok = Vx.validate(Vx.String.max_length(3), "fo")
+      assert :ok = Vx.validate(Vx.String.max_length(3), "foo")
+    end
+
+    test "no match" do
+      assert {:error, error} = Vx.validate(Vx.String.max_length(3), "foob")
+
+      assert Exception.message(error) ==
+               "must be at most 3 characters long (was 4)"
+    end
+  end
+
+  describe "format/1" do
+    test "match" do
+      assert :ok = Vx.validate(Vx.String.format(~r/\AFOO\z/i), "foo")
+    end
+
+    test "no match" do
+      assert {:error, error} =
+               Vx.validate(Vx.String.format(~r/\AFOO\z/i), "foob")
+
+      assert Exception.message(error) == "has an unexpected format"
     end
   end
 end

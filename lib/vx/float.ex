@@ -9,5 +9,5 @@ defmodule Vx.Float do
   Checks whether a value is a float.
   """
   @spec t() :: t
-  def t, do: new(&is_float/1)
+  def t, do: new(&is_float/1, %{}, "must be a float")
 end

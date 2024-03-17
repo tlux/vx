@@ -9,7 +9,7 @@ defmodule Vx.Tuple do
   Checks whether a value is a tuple.
   """
   @spec t() :: t
-  def t, do: new(&is_tuple/1)
+  def t, do: new(&is_tuple/1, %{}, "must be a tuple")
 
   @doc """
   Checks whether a value is a tuple of the given size and types.
@@ -22,7 +22,8 @@ defmodule Vx.Tuple do
       type,
       :shape,
       &check_tuple_shape(&1, shape, expected_size),
-      %{shape: shape}
+      %{shape: shape},
+      "does not match expected shape"
     )
   end
 
@@ -51,7 +52,8 @@ defmodule Vx.Tuple do
       type,
       :size,
       fn tuple -> tuple_size(tuple) == count end,
-      %{count: count}
+      %{count: count},
+      "does not match expected size of #{count}"
     )
   end
 end

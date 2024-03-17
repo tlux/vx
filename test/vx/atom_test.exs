@@ -10,7 +10,8 @@ defmodule Vx.AtomTest do
 
     test "no match" do
       Enum.each([123, 123.4, "foo", %{}, []], fn value ->
-        assert {:error, _} = Vx.validate(Vx.Atom.t(), value)
+        assert {:error, error} = Vx.validate(Vx.Atom.t(), value)
+        assert Exception.message(error) =~ "must be an atom"
       end)
     end
   end

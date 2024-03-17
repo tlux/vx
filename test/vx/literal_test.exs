@@ -10,7 +10,8 @@ defmodule Vx.LiteralTest do
 
     test "no match" do
       Enum.each([123, 123.4, "foo", %{}, []], fn value ->
-        assert {:error, _} = Vx.validate(Vx.Literal.t(value), "bar")
+        assert {:error, error} = Vx.validate(Vx.Literal.t(value), "bar")
+        assert Exception.message(error) == "must be #{inspect(value)}"
       end)
     end
   end

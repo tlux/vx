@@ -9,5 +9,5 @@ defmodule Vx.Integer do
   Checks whether a value is an integer.
   """
   @spec t() :: t
-  def t, do: new(&is_integer/1)
+  def t, do: new(&is_integer/1, %{}, "must be an integer")
 end

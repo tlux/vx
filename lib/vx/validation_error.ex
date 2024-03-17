@@ -5,26 +5,25 @@ defmodule Vx.ValidationError do
   an inner error that caused the validation to fail.
   """
 
+  alias Vx.Validator
+
   defexception [:validator, :value, :inner]
 
   @opaque t :: %__MODULE__{
-            validator: Vx.Validator.t(),
+            validator: Validator.t(),
             value: any,
             inner: Exception.t() | nil
           }
 
   @doc false
-  @spec new(Vx.Validator.t(), any, Exception.t() | nil) :: t
+  @spec new(Validator.t(), any, Exception.t() | nil) :: t
   def new(validator, value, inner \\ nil) do
     %__MODULE__{validator: validator, value: value, inner: inner}
   end
 
   @impl true
   def message(error) do
-    msg =
-      "Invalid " <>
-        inspect(error.validator.module) <>
-        rule_message(error.validator, error.value)
+    msg = message(error.validator, error.value)
 
     if error.inner do
       "#{msg}\n#{indent(Exception.message(error.inner))}"
@@ -33,18 +32,24 @@ defmodule Vx.ValidationError do
     end
   end
 
-  defp rule_message(%{name: nil}, value), do: " (was #{inspect(value)})"
-
-  defp rule_message(%{name: name, message: nil}, value) do
-    ": #{name} validation failed (was #{inspect(value)})"
+  defp message(%Validator{module: module, name: nil, message: nil}, _value) do
+    "invalid #{inspect(module)}"
   end
 
-  defp rule_message(%{message: message}, value) when is_function(message, 1) do
-    ": #{message.(value)}"
+  defp message(%Validator{module: module, name: name, message: nil}, _value) do
+    "invalid #{inspect(module)}: rule #{inspect(name)} failed"
   end
 
-  defp rule_message(%{message: message}, value) when is_binary(message) do
-    ": #{message} (was #{inspect(value)})"
+  defp message(%Validator{message: message}, value) do
+    expand_message(message, value)
+  end
+
+  defp expand_message(message, value) when is_function(message, 1) do
+    message.(value)
+  end
+
+  defp expand_message(message, _value) when is_binary(message) do
+    message
   end
 
   defp indent(str) do

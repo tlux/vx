@@ -10,10 +10,14 @@ defmodule Vx.Struct do
   """
   @spec t() :: t
   def t do
-    new(fn
-      %_{} -> true
-      _ -> false
-    end)
+    new(
+      fn
+        %_{} -> true
+        _ -> false
+      end,
+      %{},
+      "must be a struct"
+    )
   end
 
   @doc """
@@ -26,7 +30,8 @@ defmodule Vx.Struct do
         %^struct{} -> true
         _ -> false
       end,
-      %{struct: struct}
+      %{struct: struct},
+      "must be a struct of type #{inspect(struct)}"
     )
   end
 end

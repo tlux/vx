@@ -12,14 +12,14 @@ defmodule Vx.Intersect do
   """
   @spec t(nonempty_list(Vx.t())) :: t
   def t([_ | _] = types) do
-    new(&validate_value(&1, types), %{types: types})
+    new(&validate_value(&1, types), %{types: types}, "not all types match")
   end
 
   defp validate_value(value, types) do
     Enum.reduce_while(types, :ok, fn type, _ ->
       case Vx.Validatable.validate(type, value) do
         :ok -> {:cont, :ok}
-        {:error, error} -> {:halt, error}
+        error -> {:halt, error}
       end
     end)
   end

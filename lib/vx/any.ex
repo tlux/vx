@@ -21,9 +21,7 @@ defmodule Vx.Any do
       :eq,
       &(&1 == value),
       %{value: value},
-      fn actual_value ->
-        "must be equal to #{inspect(value)} (was #{inspect(actual_value)})"
-      end
+      "must be equal to #{inspect(value)}"
     )
   end
 
@@ -37,9 +35,8 @@ defmodule Vx.Any do
       :of,
       &Enum.member?(values, &1),
       %{values: values},
-      fn actual_value ->
-        "must be one of #{Enum.map_join(values, ", ", &inspect/1)} " <>
-          "(was #{inspect(actual_value)})"
+      fn _ ->
+        "must be one of #{Enum.map_join(values, ", ", &inspect/1)}"
       end
     )
   end
@@ -62,9 +59,8 @@ defmodule Vx.Any do
                 match?(unquote(pattern), value)
               end,
               %{},
-              fn actual_value ->
-                "must match #{unquote(pattern_as_str)} " <>
-                  "(was #{inspect(actual_value)})"
+              fn _ ->
+                "must match #{unquote(pattern_as_str)}"
               end
             )
       }

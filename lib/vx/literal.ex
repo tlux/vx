@@ -10,6 +10,6 @@ defmodule Vx.Literal do
   """
   @spec t(any) :: t
   def t(value) do
-    new(&(&1 == value), %{value: value})
+    new(&(&1 == value), %{value: value}, "must be #{inspect(value)}")
   end
 end
