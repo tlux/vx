@@ -1,6 +1,6 @@
 defmodule Vx.Literal do
   @moduledoc """
-  The List type provides a validator for literals.
+  The Literal type provides validators for literals.
   """
 
   use Vx.Type
