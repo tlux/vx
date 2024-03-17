@@ -16,7 +16,15 @@ defmodule Vx.Any do
   """
   @spec eq(t, any) :: t
   def eq(type \\ t(), value) do
-    add_rule(type, :eq, &(&1 == value), %{value: value})
+    add_rule(
+      type,
+      :eq,
+      &(&1 == value),
+      %{value: value},
+      fn actual_value ->
+        "must be equal to #{inspect(value)} (was #{inspect(actual_value)})"
+      end
+    )
   end
 
   @doc """
@@ -28,7 +36,11 @@ defmodule Vx.Any do
       type,
       :of,
       &Enum.member?(values, &1),
-      %{values: values}
+      %{values: values},
+      fn actual_value ->
+        "must be one of #{Enum.map_join(values, ", ", &inspect/1)} " <>
+          "(was #{inspect(actual_value)})"
+      end
     )
   end
 
@@ -37,13 +49,24 @@ defmodule Vx.Any do
   """
   @spec match(any, any) :: Macro.t()
   defmacro match(type \\ quote(do: Vx.Any.t()), pattern) do
+    pattern_as_str = Macro.to_string(pattern)
+
     quote do
       %{
         unquote(type)
         | __type__:
-            Vx.Type.add_rule(unquote(type).__type__, :match, fn value ->
-              match?(unquote(pattern), value)
-            end)
+            Vx.Type.add_rule(
+              unquote(type).__type__,
+              :match,
+              fn value ->
+                match?(unquote(pattern), value)
+              end,
+              %{},
+              fn actual_value ->
+                "must match #{unquote(pattern_as_str)} " <>
+                  "(was #{inspect(actual_value)})"
+              end
+            )
       }
     end
   end

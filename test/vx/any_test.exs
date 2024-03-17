@@ -11,45 +11,86 @@ defmodule Vx.AnyTest do
 
   describe "eq/1" do
     test "match" do
-      assert Vx.valid?(Vx.Any.eq("foo"), "foo")
+      assert :ok = Vx.validate(Vx.Any.eq("foo"), "foo")
     end
 
     test "no match" do
-      refute Vx.valid?(Vx.Any.eq("foo"), "bar")
+      assert {:error, error} = Vx.validate(Vx.Any.eq("foo"), "bar")
+      assert Exception.message(error) =~ ~s[must be equal to "foo" (was "bar")]
     end
   end
 
   describe "eq/2" do
     test "match" do
-      assert Vx.valid?(Vx.Any.eq(Vx.Any.t(), "foo"), "foo")
-      assert Vx.valid?(Vx.Any.eq(Vx.String.t(), "foo"), "foo")
+      assert :ok = Vx.validate(Vx.Any.eq(Vx.Any.t(), "foo"), "foo")
+      assert :ok = Vx.validate(Vx.Any.eq(Vx.String.t(), "foo"), "foo")
     end
 
     test "no match" do
-      refute Vx.valid?(Vx.Any.eq(Vx.String.t(), "foo"), "bar")
-      refute Vx.valid?(Vx.Any.eq(Vx.Integer.t(), "foo"), "foo")
+      assert {:error, error} =
+               Vx.validate(Vx.Any.eq(Vx.String.t(), "foo"), "bar")
+
+      assert Exception.message(error) =~ ~s[must be equal to "foo" (was "bar")]
+
+      assert {:error, error} =
+               Vx.validate(Vx.Any.eq(Vx.Integer.t(), "foo"), "foo")
+
+      assert Exception.message(error) == ~s[Invalid Vx.Integer (was "foo")]
     end
   end
 
   describe "of/1" do
     test "match" do
-      assert Vx.valid?(Vx.Any.of(["foo", "bar"]), "foo")
+      assert :ok = Vx.validate(Vx.Any.of(["foo", "bar"]), "foo")
     end
 
     test "no match" do
-      refute Vx.valid?(Vx.Any.of(["foo", "bar"]), "baz")
+      assert {:error, error} =
+               Vx.validate(Vx.Any.of(["foo", "bar", "boom"]), "baz")
+
+      assert Exception.message(error) =~
+               ~s[must be one of "foo", "bar", "boom" (was "baz")]
     end
   end
 
   describe "of/2" do
     test "match" do
-      assert Vx.valid?(Vx.Any.of(Vx.Any.t(), ["foo", "bar"]), "foo")
-      assert Vx.valid?(Vx.Any.of(Vx.String.t(), ["foo", "bar"]), "foo")
+      assert :ok = Vx.validate(Vx.Any.of(Vx.Any.t(), ["foo", "bar"]), "foo")
+      assert :ok = Vx.validate(Vx.Any.of(Vx.String.t(), ["foo", "bar"]), "foo")
     end
 
     test "no match" do
-      refute Vx.valid?(Vx.Any.of(Vx.String.t(), ["foo", "bar"]), "baz")
-      refute Vx.valid?(Vx.Any.of(Vx.Integer.t(), ["foo", "bar"]), "foo")
+      assert {:error, error} =
+               Vx.validate(Vx.Any.of(Vx.String.t(), ["foo", "bar"]), "baz")
+
+      assert Exception.message(error) =~
+               ~s[must be one of "foo", "bar" (was "baz")]
+
+      assert {:error, error} =
+               Vx.validate(Vx.Any.of(Vx.Integer.t(), ["foo", "bar"]), "foo")
+
+      assert Exception.message(error) == ~s[Invalid Vx.Integer (was "foo")]
+    end
+  end
+
+  describe "match/1" do
+    require Vx.Any
+
+    test "match" do
+      assert :ok = Vx.validate(Vx.Any.match("foo"), "foo")
+      assert :ok = Vx.validate(Vx.Any.match({:ok, _}), {:ok, "foo"})
+    end
+
+    test "no match" do
+      assert {:error, error} = Vx.validate(Vx.Any.match("foo"), "bar")
+
+      assert Exception.message(error) =~ ~s[must match "foo" (was "bar")]
+
+      assert {:error, error} =
+               Vx.validate(Vx.Any.match({:error, _}), {:ok, "foo"})
+
+      assert Exception.message(error) =~
+               ~s[must match {:error, _} (was {:ok, "foo"})]
     end
   end
 end
