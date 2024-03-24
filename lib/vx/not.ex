@@ -9,6 +9,17 @@ defmodule Vx.Not do
   @type t :: t(Vx.t())
   @opaque t(of) :: %__MODULE__{of: of}
 
+  @doc """
+  Builds a new type negating the passed one.
+
+  ## Examples
+
+      iex> Vx.Not.t(Vx.Integer.t()) |> Vx.validate!("foo")
+      :ok
+
+      iex> Vx.Not.t(Vx.Integer.t()) |> Vx.validate!(123)
+      ** (Vx.Error) must not be integer
+  """
   @spec t(of) :: t(of) when of: Vx.t()
   def t(of) do
     %__MODULE__{of: of}

@@ -1,6 +1,8 @@
 defmodule Vx.StringTest do
   use ExUnit.Case, async: true
 
+  doctest Vx.String
+
   @invalid [<<0xFFFF::16>>, nil, :foo, true, false, 123, %{}, []]
 
   describe "t/0" do

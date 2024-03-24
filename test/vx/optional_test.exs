@@ -1,6 +1,8 @@
 defmodule Vx.OptionalTest do
   use ExUnit.Case, async: true
 
+  doctest Vx.Optional
+
   describe "t/1" do
     setup do
       {:ok,

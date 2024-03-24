@@ -5,6 +5,17 @@ defmodule Vx.String do
 
   use Vx.Type, :string
 
+  @doc """
+  Builds a new String type.
+
+  ## Examples
+
+      iex> Vx.String.t() |> Vx.validate!("foo")
+      :ok
+
+      iex> Vx.String.t() |> Vx.validate!(123)
+      ** (Vx.Error) must be a string
+  """
   @spec t() :: t
   def t do
     new(fn value ->
@@ -16,6 +27,21 @@ defmodule Vx.String do
     end)
   end
 
+  @doc """
+  Requires a string to be non-empty after stripping leading and trailing
+  whitespace.
+
+  ## Examples
+
+      iex> Vx.String.t() |> Vx.String.present() |> Vx.validate!("foo")
+      :ok
+
+      iex> Vx.String.t() |> Vx.String.present() |> Vx.validate!("")
+      ** (Vx.Error) must be present
+
+      iex> Vx.String.t() |> Vx.String.present() |> Vx.validate!("   ")
+      ** (Vx.Error) must be present
+  """
   @spec present(t) :: t
   def present(%__MODULE__{} = type \\ t()) do
     constrain(type, :present, fn value ->
@@ -27,6 +53,20 @@ defmodule Vx.String do
     end)
   end
 
+  @doc """
+  Requires a string to be non-empty.
+
+  ## Examples
+
+      iex> Vx.String.t() |> Vx.String.non_empty() |> Vx.validate!("foo")
+      :ok
+
+      iex> Vx.String.t() |> Vx.String.non_empty() |> Vx.validate!("   ")
+      :ok
+
+      iex> Vx.String.t() |> Vx.String.non_empty() |> Vx.validate!("")
+      ** (Vx.Error) must not be empty
+  """
   @spec non_empty(t) :: t
   def non_empty(%__MODULE__{} = type \\ t()) do
     constrain(type, :non_empty, fn value ->
@@ -38,6 +78,20 @@ defmodule Vx.String do
     end)
   end
 
+  @doc """
+  Requires a string to be at least `length` characters long.
+
+  ## Examples
+
+      iex> Vx.String.t() |> Vx.String.min_length(3) |> Vx.validate!("foo")
+      :ok
+
+      iex> Vx.String.t() |> Vx.String.min_length(3) |> Vx.validate!("foob")
+      :ok
+
+      iex> Vx.String.t() |> Vx.String.min_length(3) |> Vx.validate!("fo")
+      ** (Vx.Error) must be at least 3 characters
+  """
   @spec min_length(t, non_neg_integer) :: t
   def min_length(%__MODULE__{} = type \\ t(), length)
       when is_integer(length) and length >= 0 do
@@ -50,6 +104,20 @@ defmodule Vx.String do
     end)
   end
 
+  @doc """
+  Requires a string to be at most `length` characters long.
+
+  ## Examples
+
+      iex> Vx.String.t() |> Vx.String.max_length(3) |> Vx.validate!("foo")
+      :ok
+
+      iex> Vx.String.t() |> Vx.String.max_length(3) |> Vx.validate!("fo")
+      :ok
+
+      iex> Vx.String.t() |> Vx.String.max_length(3) |> Vx.validate!("fooo")
+      ** (Vx.Error) must be at most 3 characters
+  """
   @spec max_length(t, non_neg_integer) :: t
   def max_length(%__MODULE__{} = type \\ t(), length)
       when is_integer(length) and length >= 0 do
@@ -62,6 +130,17 @@ defmodule Vx.String do
     end)
   end
 
+  @doc """
+  Requires a string to match the given regex.
+
+  ## Examples
+
+      iex> Vx.String.t() |> Vx.String.format(~r/\\d+/) |> Vx.validate!("123")
+      :ok
+
+      iex> Vx.String.t() |> Vx.String.format(~r/\\d+/) |> Vx.validate!("foo")
+      ** (Vx.Error) must match expected format
+  """
   @spec format(t, Regex.t()) :: t
   def format(%__MODULE__{} = type \\ t(), regex) do
     constrain(type, :format, regex, fn value ->

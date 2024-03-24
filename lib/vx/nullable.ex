@@ -6,10 +6,24 @@ defmodule Vx.Nullable do
   @enforce_keys [:of]
   defstruct [:of]
 
-  @type t :: t(Vx.t())
+  @type t :: t(any)
   @opaque t(of) :: %__MODULE__{of: of}
 
-  @spec t(of) :: t(of) when of: Vx.t()
+  @doc """
+  Builds a new type that makes the passed type nullable.
+
+  ## Examples
+
+      iex> Vx.Nullable.t(Vx.String.t()) |> Vx.validate!("foo")
+      :ok
+
+      iex> Vx.Nullable.t(Vx.String.t()) |> Vx.validate!(nil)
+      :ok
+
+      iex> Vx.Nullable.t(Vx.String.t()) |> Vx.validate!(123)
+      ** (Vx.Error) must be (string | nil)
+  """
+  @spec t(of) :: t(of) when of: any
   def t(of) do
     %__MODULE__{of: of}
   end

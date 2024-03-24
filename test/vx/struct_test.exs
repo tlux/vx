@@ -1,6 +1,8 @@
 defmodule Vx.StructTest do
   use ExUnit.Case, async: true
 
+  doctest Vx.Struct
+
   describe "t/0" do
     test "match" do
       assert :ok = Vx.validate(Vx.Struct.t(), %Address{})

@@ -1,6 +1,8 @@
 defmodule Vx.TupleTest do
   use ExUnit.Case, async: true
 
+  doctest Vx.Tuple
+
   describe "t/0" do
     test "match" do
       assert :ok = Vx.validate(Vx.Tuple.t(), {1})
@@ -55,7 +57,7 @@ defmodule Vx.TupleTest do
 
     test "no match" do
       assert {:error, error} = Vx.validate(Vx.Tuple.size(2), {1})
-      assert Exception.message(error) == "must have size of 2"
+      assert Exception.message(error) == "must have a size of 2"
 
       assert {:error, _} = Vx.validate(Vx.Tuple.size(2), {1, 2, 3})
     end

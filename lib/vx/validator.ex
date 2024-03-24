@@ -10,6 +10,18 @@ defmodule Vx.Validator do
 
   @type t :: %__MODULE__{fun: fun}
 
+  @doc """
+  Builds a new helper type that can be used to validate values using a custom
+  function.
+
+  ## Examples
+
+      iex> Vx.Validator.t(&(&1 == "foo")) |> Vx.validate!("foo")
+      :ok
+
+      iex> Vx.Validator.t(&(&1 == "foo")) |> Vx.validate!("bar")
+      ** (Vx.Error) is invalid
+  """
   @spec t(fun) :: t
   def t(fun) when is_function(fun, 1) do
     %__MODULE__{fun: fun}

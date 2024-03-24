@@ -1,6 +1,8 @@
 defmodule Vx.ValidatorTest do
   use ExUnit.Case, async: true
 
+  doctest Vx.Validator
+
   @value :foo
 
   describe "t/1" do

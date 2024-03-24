@@ -5,6 +5,17 @@ defmodule Vx.Tuple do
 
   use Vx.Type, :tuple
 
+  @doc """
+  Builds a new Tuple type.
+
+  ## Examples
+
+      iex> Vx.Tuple.t() |> Vx.validate!({:foo, :bar})
+      :ok
+
+      iex> Vx.Tuple.t() |> Vx.validate!(123)
+      ** (Vx.Error) must be a tuple
+  """
   @spec t() :: t
   def t do
     new(fn
@@ -13,6 +24,17 @@ defmodule Vx.Tuple do
     end)
   end
 
+  @doc """
+  Requires a tuple to have a specific size.
+
+  ## Examples
+
+      iex> Vx.Tuple.t() |> Vx.Tuple.size(2) |> Vx.validate!({:foo, :bar})
+      :ok
+
+      iex> Vx.Tuple.t() |> Vx.Tuple.size(2) |> Vx.validate!({:foo})
+      ** (Vx.Error) must have a size of 2
+  """
   @spec size(t, non_neg_integer) :: t
   def size(%__MODULE__{} = type \\ t(), size)
       when is_integer(size) and size > 0 do
@@ -20,11 +42,26 @@ defmodule Vx.Tuple do
       if tuple_size(value) == size do
         :ok
       else
-        {:error, "must have size of #{size}"}
+        {:error, "must have a size of #{size}"}
       end
     end)
   end
 
+  @doc """
+  Requires a tuple to match a specific shape.
+
+  ## Examples
+
+      iex> Vx.Tuple.shape({:foo, :bar}) |> Vx.validate!({:foo, :bar})
+      :ok
+
+      iex> Vx.Tuple.shape({Vx.Atom.t(), Vx.String.t()}) |> Vx.validate!({:ok, "result"})
+      :ok
+
+      iex> Vx.Tuple.shape({Vx.Atom.t(), Vx.String.t()}) |> Vx.validate!({:ok, 123})
+      ** (Vx.Error) must match {atom, string}
+      - element 1: must be a string
+  """
   @spec shape(t, tuple) :: t
   def shape(%__MODULE__{} = type \\ t(), shape) when is_tuple(shape) do
     constrain(type, :shape, shape, fn value ->

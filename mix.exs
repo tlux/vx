@@ -82,15 +82,17 @@ defmodule Vx.MixProject do
           Vx.Nullable,
           Vx.Optional
         ],
+        Helpers: [
+          Vx.Match,
+          Vx.Validator
+        ],
         Protocols: [
           Vx.Validatable,
           Vx.Inspectable
         ],
-        Helpers: [
+        "Low-Level": [
           Vx.Type,
-          Vx.Constraint,
-          Vx.Match,
-          Vx.Validator
+          Vx.Constraint
         ]
       ]
     ]

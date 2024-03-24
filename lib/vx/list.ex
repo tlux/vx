@@ -82,7 +82,7 @@ defmodule Vx.List do
       if length(value) == size do
         :ok
       else
-        {:error, "must have size of #{size}"}
+        {:error, "must have a size of #{size}"}
       end
     end)
   end

@@ -1,6 +1,8 @@
 defmodule Vx.UnionTest do
   use ExUnit.Case, async: true
 
+  doctest Vx.Union
+
   describe "t/1" do
     test "match" do
       assert :ok = Vx.validate(Vx.Union.t([Vx.String.t()]), "foo")

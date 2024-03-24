@@ -10,6 +10,17 @@ defmodule Vx.Union do
   @type t :: t(nonempty_list(Vx.t()))
   @opaque t(of) :: %__MODULE__{of: of}
 
+  @doc """
+  Builds a new Union type.
+
+  # Examples
+
+      iex> Vx.Union.t([Vx.Integer.t(), Vx.String.t()]) |> Vx.validate!(123)
+      :ok
+
+      iex> Vx.Union.t([Vx.Integer.t(), Vx.String.t()]) |> Vx.validate!(:foo)
+      ** (Vx.Error) must be any of (integer | string)
+  """
   @spec t(of) :: t(of) when of: nonempty_list(Vx.t())
   def t([_ | _] = of) do
     %__MODULE__{of: of}

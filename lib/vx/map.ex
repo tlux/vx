@@ -146,7 +146,6 @@ defmodule Vx.Map do
       ...> Vx.validate!(schema, %{a: "foo", b: "bar"})
       ** (Vx.Error) does not match shape
       - key :b: must be a number
-
   """
   @spec shape(t, map) :: t
   def shape(%__MODULE__{} = type \\ t(), shape) when is_map(shape) do

@@ -77,7 +77,7 @@ defmodule Vx.ListTest do
       schema = Vx.List.size(3)
 
       assert {:error, error} = Vx.validate(schema, [])
-      assert Exception.message(error) == "must have size of 3"
+      assert Exception.message(error) == "must have a size of 3"
 
       assert {:error, _} = Vx.validate(schema, ["foo"])
       assert {:error, _} = Vx.validate(schema, ["foo", "bar"])
