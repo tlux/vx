@@ -1,4 +1,8 @@
 defmodule Vx.Tuple do
+  @moduledoc """
+  The Tuple type provides validators for tuples.
+  """
+
   use Vx.Type, :tuple
 
   @spec t() :: t

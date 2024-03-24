@@ -1,4 +1,8 @@
 defmodule Vx.Optional do
+  @moduledoc """
+  The Optional type provides validators for optional values.
+  """
+
   @enforce_keys [:of]
   defstruct [:of]
 

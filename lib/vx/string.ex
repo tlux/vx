@@ -1,4 +1,8 @@
 defmodule Vx.String do
+  @moduledoc """
+  The String type provides validators for strings.
+  """
+
   use Vx.Type, :string
 
   @spec t() :: t

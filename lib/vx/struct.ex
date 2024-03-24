@@ -1,4 +1,8 @@
 defmodule Vx.Struct do
+  @moduledoc """
+  The Struct type provides validators for structs.
+  """
+
   use Vx.Type, :struct
 
   @spec t() :: t
