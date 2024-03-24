@@ -1,6 +1,8 @@
 defmodule Vx.NumberTest do
   use ExUnit.Case, async: true
 
+  doctest Vx.Number
+
   describe "t/0" do
     test "match" do
       assert :ok = Vx.validate(Vx.Number.t(), 123)
