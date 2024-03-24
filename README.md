@@ -24,7 +24,8 @@ end
 
 ## Usage
 
-With Vx, you can define schemata to validate complex data against.
+With Vx, you have the capability to define schemata for validating complex data
+effortlessly.
 
 You first need to define your schema.
 
@@ -32,7 +33,7 @@ You first need to define your schema.
 schema = Vx.String.t()
 ```
 
-Then, you can call `Vx.validate/2` or `Vx.validate!/2` to check if a given
+After that, you can call `Vx.validate/2` or `Vx.validate!/2` to check if a given
 values matches:
 
 ```elixir
@@ -40,15 +41,20 @@ Vx.validate(schema, "foo")
 # :ok
 ```
 
-When the value does not match, an error is returned (or raised respectively)
-pointing out what is wrong:
+When the value does not match, an error is returned (or raised, respectively),
+indicating the specific issue.
+
+```elixir
+Vx.validate(schema, 123)
+# {:error, %Vx.Error{...}}
+```
 
 ```elixir
 Vx.validate!(schema, 123)
 # ** (Vx.Error) must be a string
 ```
 
-Some types can be augmented with additional constraints by piping everything
+Additional constraints can be added to certain types by piping everything
 together:
 
 ```elixir
