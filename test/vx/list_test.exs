@@ -202,8 +202,7 @@ defmodule Vx.ListTest do
                "must match [string, integer, boolean]\n" <>
                  "- element 2 is missing"
 
-      assert {:error, error} =
-               Vx.validate(schema, ["foo", 123, 234])
+      assert {:error, error} = Vx.validate(schema, ["foo", 123, 234])
 
       assert Exception.message(error) ==
                "must match [string, integer, boolean]\n" <>
