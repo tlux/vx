@@ -1,6 +1,6 @@
 defmodule Vx.Struct do
   @moduledoc """
-  The Struct type provides validators for structs.
+  The Struct type.
   """
 
   use Vx.Type, :struct

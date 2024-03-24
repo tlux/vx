@@ -1,6 +1,7 @@
 defmodule Vx.Union do
   @moduledoc """
-  The Union type validates whether a value matches any type in a given list.
+  The Union type combines multiple types into a single type, validating
+  whether any of them is valid.
   """
 
   @enforce_keys [:of]

@@ -1,6 +1,6 @@
 defmodule Vx.Tuple do
   @moduledoc """
-  The Tuple type provides validators for tuples.
+  The Tuple type.
   """
 
   use Vx.Type, :tuple

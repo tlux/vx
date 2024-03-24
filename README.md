@@ -32,7 +32,7 @@ You first need to define your schema.
 schema = Vx.String.t()
 ```
 
-Then, you can call `Vx.validate/2` or `Vx.validate!`/2` to check if a given
+Then, you can call `Vx.validate/2` or `Vx.validate!/2` to check if a given
 values matches:
 
 ```elixir

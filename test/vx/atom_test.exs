@@ -1,6 +1,8 @@
 defmodule Vx.AtomTest do
   use ExUnit.Case, async: true
 
+  doctest Vx.Atom
+
   describe "t/0" do
     test "match" do
       Enum.each([nil, :foo, true, false], fn value ->

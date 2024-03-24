@@ -1,7 +1,7 @@
 defmodule Vx.Intersect do
   @moduledoc """
-  The Intersect type validates whether a value matches all types in a given
-  list.
+  The Intersect type combines multiple types into a single type, validating
+  whether all of them are valid.
   """
 
   @enforce_keys [:of]
@@ -10,6 +10,17 @@ defmodule Vx.Intersect do
   @type t :: t(nonempty_list(Vx.t()))
   @opaque t(of) :: %__MODULE__{of: of}
 
+  @doc """
+  Builds a new Intersect type.
+
+  ## Examples
+
+      iex> Vx.Intersect.t([Vx.Integer.t(), Vx.Number.t()]) |> Vx.validate!(123)
+      :ok
+
+      iex> Vx.Intersect.t([Vx.Integer.t(), Vx.Number.t()]) |> Vx.validate!(12.3)
+      ** (Vx.Error) must be all of (integer & number)
+  """
   @spec t(of) :: t(of) when of: nonempty_list(Vx.t())
   def t([_ | _] = of) do
     %__MODULE__{of: of}

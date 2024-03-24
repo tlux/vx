@@ -1,6 +1,6 @@
 defmodule Vx.Enum do
   @moduledoc """
-  The Enum type validates a value against a fixed list of values.
+  The Enum type.
   """
 
   @enforce_keys [:values]
@@ -9,6 +9,17 @@ defmodule Vx.Enum do
   @type t :: t(nonempty_list(any))
   @opaque t(values) :: %__MODULE__{values: values}
 
+  @doc """
+  Builds a new Enum type.
+
+  ## Examples
+
+      iex> Vx.Enum.t([:foo, :bar]) |> Vx.validate!(:foo)
+      :ok
+
+      iex> Vx.Enum.t([:foo, :bar]) |> Vx.validate!(:baz)
+      ** (Vx.Error) must be one of :foo, :bar
+  """
   @spec t(values) :: t(values) when values: nonempty_list(any)
   def t([_ | _] = values) when is_list(values) do
     %__MODULE__{values: values}

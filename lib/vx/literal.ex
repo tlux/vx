@@ -9,6 +9,27 @@ defmodule Vx.Literal do
   @type t :: t(any)
   @opaque t(value) :: %__MODULE__{value: value}
 
+  @doc """
+  Builds a new Literal type from a value.
+
+  ## Examples
+
+      iex> Vx.Literal.t(:foo) |> Vx.validate!(:foo)
+      :ok
+
+      iex> Vx.Literal.t(:foo) |> Vx.validate!(:bar)
+      ** (Vx.Error) must be :foo
+
+  Note that everything not being a type (to be precise anything not implementing
+  the `Vx.Validatable` protocol) is automatically considered a literal. So this
+  is equivalent to the previous example:
+
+      iex> :foo |> Vx.validate!(:foo)
+      :ok
+
+      iex> :foo |> Vx.validate!(:bar)
+      ** (Vx.Error) must be :foo
+  """
   @spec t(value) :: t(value) when value: var
   def t(value) do
     %__MODULE__{value: value}

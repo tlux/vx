@@ -1,10 +1,24 @@
 defmodule Vx.Float do
   @moduledoc """
-  The Float type provides validators for floats.
+  The Float type.
   """
 
   use Vx.Type, :float
 
+  @doc """
+  Builds a new Float type.
+
+  ## Examples
+
+      iex> Vx.Float.t() |> Vx.validate!(1.0)
+      :ok
+
+      iex> Vx.Float.t() |> Vx.validate!(1)
+      ** (Vx.Error) must be a float
+
+      iex> Vx.Float.t() |> Vx.validate!("foo")
+      ** (Vx.Error) must be a float
+  """
   @spec t() :: t
   def t do
     new(fn

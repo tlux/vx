@@ -1,6 +1,7 @@
 defmodule Vx.Optional do
   @moduledoc """
-  The Optional type provides validators for optional values.
+  The Optional type provides validators for optional keys in a map. When used in
+  other places, it behaves like `Vx.Nullable`.
   """
 
   @enforce_keys [:of]

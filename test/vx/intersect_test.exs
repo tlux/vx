@@ -1,6 +1,8 @@
 defmodule Vx.IntersectTest do
   use ExUnit.Case, async: true
 
+  doctest Vx.Intersect
+
   describe "t/1" do
     test "match" do
       assert :ok = Vx.validate(Vx.Intersect.t([Vx.String.t()]), "foo")

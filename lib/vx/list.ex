@@ -1,10 +1,21 @@
 defmodule Vx.List do
   @moduledoc """
-  The List type provides validators for lists.
+  The List type.
   """
 
   use Vx.Type, :list
 
+  @doc """
+  Builds a new List type.
+
+  ## Examples
+
+      iex> Vx.List.t() |> Vx.validate!([1, 2, 3])
+      :ok
+
+      iex> Vx.List.t() |> Vx.validate!("foo")
+      ** (Vx.Error) must be a list
+  """
   @spec t() :: t
   def t do
     new(fn
@@ -13,6 +24,23 @@ defmodule Vx.List do
     end)
   end
 
+  @doc """
+  Builds a new List type with the given inner type.
+
+  ## Examples
+
+      iex> Vx.List.t(Vx.Number.t()) |> Vx.validate!([1, 2, 3])
+      :ok
+
+      iex> Vx.List.t(Vx.String.t()) |> Vx.validate!("foo")
+      ** (Vx.Error) must be a list
+
+      iex> Vx.List.t(Vx.String.t()) |> Vx.validate!(["foo", 2, "bar"])
+      ** (Vx.Error) must be a list<string>
+      - element 1: must be a string
+
+  """
+  @spec t(Vx.t()) :: t
   def t(type) do
     new([type], &check_inner_type(type, &1))
   end

@@ -1,6 +1,8 @@
 defmodule Vx.ListTest do
   use ExUnit.Case, async: true
 
+  doctest Vx.List
+
   describe "t/0" do
     test "match" do
       assert :ok = Vx.validate(Vx.List.t(), [])

@@ -1,6 +1,8 @@
 defmodule Vx.LiteralTest do
   use ExUnit.Case, async: true
 
+  doctest Vx.Literal
+
   describe "t/1" do
     test "match" do
       Enum.each([nil, :foo, true, false], fn value ->

@@ -60,29 +60,38 @@ defmodule Vx.MixProject do
       source_url: @github_url,
       source_ref: "v#{@version}",
       groups_for_modules: [
-        # Types: [
-        #   Vx.Any,
-        #   Vx.Atom,
-        #   Vx.Float,
-        #   Vx.Integer,
-        #   Vx.List,
-        #   Vx.Map,
-        #   Vx.Number,
-        #   Vx.String,
-        #   Vx.Struct,
-        #   Vx.Tuple
-        # ],
-        # Modifiers: [
-        #   Vx.Intersect,
-        #   Vx.Union,
-        #   Vx.Not,
-        #   Vx.Optional
-        # ],
-        # Helpers: [
-        #   Vx.Type,
-        #   Vx.Validator,
-        #   Vx.Validators
-        # ]
+        Types: [
+          Vx.Any,
+          Vx.Atom,
+          Vx.Float,
+          Vx.Integer,
+          Vx.List,
+          Vx.Literal,
+          Vx.Boolean,
+          Vx.Enum,
+          Vx.Map,
+          Vx.Number,
+          Vx.String,
+          Vx.Struct,
+          Vx.Tuple
+        ],
+        Modifiers: [
+          Vx.Intersect,
+          Vx.Union,
+          Vx.Not,
+          Vx.Nullable,
+          Vx.Optional
+        ],
+        Protocols: [
+          Vx.Validatable,
+          Vx.Inspectable
+        ],
+        Helpers: [
+          Vx.Type,
+          Vx.Constraint,
+          Vx.Match,
+          Vx.Validator
+        ]
       ]
     ]
   end

@@ -1,4 +1,8 @@
 defprotocol Vx.Inspectable do
+  @moduledoc """
+  The Inspectable protocol allows converting types to a string representation.
+  """
+
   @fallback_to_any true
 
   @spec inspect(t) :: String.t()

@@ -1,6 +1,8 @@
 defmodule Vx.FloatTest do
   use ExUnit.Case, async: true
 
+  doctest Vx.Float
+
   describe "t/0" do
     test "match" do
       assert :ok = Vx.validate(Vx.Float.t(), 123.0)

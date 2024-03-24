@@ -1,6 +1,6 @@
 defmodule Vx.Nullable do
   @moduledoc """
-  The Nullable type provides validators for nullable values.
+  The Nullable type modifies a type or value to allow `nil` as a valid value.
   """
 
   @enforce_keys [:of]

@@ -1,6 +1,6 @@
 defmodule Vx.Validator do
   @moduledoc """
-  A type that can be used to validate values using a custom function.
+  A helper that can be used to validate values using a custom function.
   """
 
   @enforce_keys [:fun]

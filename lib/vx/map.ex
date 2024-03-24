@@ -1,12 +1,26 @@
 defmodule Vx.Map do
   @moduledoc """
-  The Map type provides validators for maps.
+  The Map type.
   """
 
   use Vx.Type, :map
 
   import Vx.Util
 
+  @doc """
+  Builds a new Map type that matches any map.
+
+  ## Examples
+
+      iex> Vx.Map.t() |> Vx.validate!(%{})
+      :ok
+
+      iex> Vx.Map.t() |> Vx.validate!(%{a: "foo", b: 123})
+      :ok
+
+      iex> Vx.Map.t() |> Vx.validate!("foo")
+      ** (Vx.Error) must be a map
+  """
   @spec t() :: t
   def t do
     new(fn value ->
@@ -18,6 +32,25 @@ defmodule Vx.Map do
     end)
   end
 
+  @doc """
+  Builds a new Map type with a specific key and value type.
+
+  ## Examples
+
+      iex> Vx.Map.t(Vx.String.t(), Vx.Number.t()) |> Vx.validate!(%{})
+      :ok
+
+      iex> schema = Vx.Map.t(Vx.Atom.t(), Vx.Number.t())
+      ...> Vx.validate!(schema, %{a: 123, b: 234.5})
+      :ok
+
+      iex> Vx.Map.t(Vx.Atom.t(), Vx.Number.t()) |> Vx.validate!("foo")
+      ** (Vx.Error) must be a map<atom, number>
+
+      iex> Vx.Map.t(Vx.Atom.t(), Vx.Number.t()) |> Vx.validate!(%{foo: "bar"})
+      ** (Vx.Error) must be a map<atom, number>
+      - value of element :foo: must be a number
+  """
   @spec t(Vx.t(), Vx.t()) :: t
   def t(key_t, value_t) do
     new([key_t, value_t], &check_map_of(&1, key_t, value_t))
@@ -56,6 +89,17 @@ defmodule Vx.Map do
     "must be a #{Vx.Inspectable.inspect(t(key_t, value_t))}"
   end
 
+  @doc """
+  Checks the size of the map.
+
+  ## Examples
+
+      iex> Vx.Map.size(0) |> Vx.validate!(%{})
+      :ok
+
+      iex> Vx.Map.size(1) |> Vx.validate!(%{a: "foo", b: 123})
+      ** (Vx.Error) must have a size of 1
+  """
   @spec size(t, non_neg_integer) :: t
   def size(%__MODULE__{} = type \\ t(), size)
       when is_integer(size) and size >= 0 do
@@ -63,11 +107,47 @@ defmodule Vx.Map do
       if map_size(value) == size do
         :ok
       else
-        {:error, "must have size of #{size}"}
+        {:error, "must have a size of #{size}"}
       end
     end)
   end
 
+  @doc """
+  Checks the shape of the map.
+
+  ## Examples
+
+      iex> schema = Vx.Map.shape(%{a: Vx.String.t(), b: Vx.Number.t()})
+      ...> Vx.validate!(schema, %{a: "foo", b: 123})
+      :ok
+
+      iex> schema = Vx.Map.shape(%{a: Vx.String.t(), b: Vx.Number.t()})
+      ...> Vx.validate!(schema, %{a: "foo"})
+      ** (Vx.Error) must have key(s) :b
+
+      iex> schema = Vx.Map.shape(%{a: Vx.String.t(), b: Vx.Number.t()})
+      ...> Vx.validate!(schema, %{a: "foo", b: "bar"})
+      ** (Vx.Error) does not match shape
+      - key :b: must be a number
+
+  It is also possible to mark certain keys as optional.
+
+      iex> schema = Vx.Map.shape(%{
+      ...>   :a => Vx.String.t(),
+      ...>   Vx.Optional.t(:b) => Vx.Number.t()
+      ...> })
+      ...> Vx.validate!(schema, %{a: "foo"})
+      :ok
+
+      iex> schema = Vx.Map.shape(%{
+      ...>   :a => Vx.String.t(),
+      ...>   Vx.Optional.t(:b) => Vx.Number.t()
+      ...> })
+      ...> Vx.validate!(schema, %{a: "foo", b: "bar"})
+      ** (Vx.Error) does not match shape
+      - key :b: must be a number
+
+  """
   @spec shape(t, map) :: t
   def shape(%__MODULE__{} = type \\ t(), shape) when is_map(shape) do
     constrain(type, :shape, shape, &check_shape(&1, shape))

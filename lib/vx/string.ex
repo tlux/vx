@@ -1,6 +1,6 @@
 defmodule Vx.String do
   @moduledoc """
-  The String type provides validators for strings.
+  The String type.
   """
 
   use Vx.Type, :string

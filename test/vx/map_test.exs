@@ -194,7 +194,7 @@ defmodule Vx.MapTest do
       assert {:error, error} =
                Vx.validate(Vx.Map.size(1), %{"foo" => "bar", "baz" => "qix"})
 
-      assert Exception.message(error) == "must have size of 1"
+      assert Exception.message(error) == "must have a size of 1"
     end
 
     test "invalid size" do

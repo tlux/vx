@@ -1,6 +1,8 @@
 defmodule Vx.BooleanTest do
   use ExUnit.Case, async: true
 
+  doctest Vx.Boolean
+
   describe "t/0" do
     test "match" do
       Enum.each([true, false], fn value ->

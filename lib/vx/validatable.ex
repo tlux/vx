@@ -2,7 +2,7 @@ defprotocol Vx.Validatable do
   @moduledoc """
   The Validatable protocol that is implemented by all types of the Vx type
   system. As a fallback, any value not having an implementation for the
-  `Vx.Validatable` protocol is considered a literal by Vx when passed to
+  `Vx.Validatable` protocol is considered a `Vx.Literal` when passed to
   `validate/2`.
   """
 

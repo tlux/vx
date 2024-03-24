@@ -1,6 +1,8 @@
 defmodule Vx.MatchTest do
   use ExUnit.Case, async: true
 
+  doctest Vx.Match
+
   require Vx.Match
 
   describe "t/1" do
