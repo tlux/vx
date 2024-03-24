@@ -30,24 +30,42 @@ defmodule VxTest do
     end
 
     test "invalid", %{schema: schema} do
-      assert {:error, _} =
+      assert {:error, error} =
                Vx.validate(schema, %{@valid_values | "type" => "guest"})
 
-      assert {:error, _} =
+      assert Exception.message(error) ==
+               "does not match shape\n" <>
+                 ~s[- key "type": must be one of "user", "admin"]
+
+      assert {:error, error} =
                Vx.validate(schema, %{@valid_values | "hobbies" => []})
 
-      assert {:error, _} =
+      assert Exception.message(error) ==
+               "does not match shape\n" <>
+                 ~s[- key "hobbies": must not be empty]
+
+      assert {:error, error} =
                Vx.validate(schema, %{
                  @valid_values
                  | "hobbies" => ["foo", "  "]
                })
 
-      assert {:error, _} =
+      assert Exception.message(error) ==
+               "does not match shape\n" <>
+                 ~s[- key "hobbies": must be a list<string(present)>\n] <>
+                 "- element 1: must be present"
+
+      assert {:error, error} =
                Vx.validate(schema, %{
                  @valid_values
                  | "addresses" =>
                      @valid_values["addresses"] ++ [%Country{code: "DE"}]
                })
+
+      assert Exception.message(error) ==
+               "does not match shape\n" <>
+                 ~s[- key "addresses": must be a list<struct<Address>>\n] <>
+                 "- element 1: must be a struct of type Address"
     end
   end
 

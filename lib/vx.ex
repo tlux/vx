@@ -1,6 +1,6 @@
 defmodule Vx do
   @moduledoc """
-  Vx is a schema validation library for Elixir.
+  Vx is a schema validation library.
   """
 
   alias Vx.{Error, Validatable}

@@ -24,8 +24,55 @@ end
 
 ## Usage
 
-TODO
+With Vx, you can define schemata to validate complex data against.
+
+You first need to define your schema.
+
+```elixir
+schema = Vx.String.t()
+```
+
+Then, you can call `Vx.validate/2` or `Vx.validate!`/2` to check if a given
+values matches:
+
+```elixir
+Vx.validate(schema, "foo")
+# :ok
+```
+
+When the value does not match, an error is returned (or raised respectively)
+pointing out what is wrong:
+
+```elixir
+Vx.validate!(schema, 123)
+# ** (Vx.Error) must be a string
+```
+
+Some types can be augmented with additional constraints by piping everything
+together:
+
+```elixir
+Vx.Number.t()
+|> Vx.Number.gteq(3)
+|> Vx.Number.lt(7)
+```
+
+You can combine multiple types and constraints to validate more complex
+schemata:
+
+```elixir
+Vx.Map.shape(%{
+  "name" => Vx.String.t(),
+  "age" => Vx.Number.t(),
+  "hobbies" =>
+    Vx.List.t(Vx.String.present())
+    |> Vx.List.non_empty(),
+  "type" => Vx.Enum.t(["user", "admin"]),
+  "addresses" => Vx.List.t(Vx.Struct.t(Address))
+})
+```
 
 ## Docs
 
-Documentation can be found at <https://hexdocs.pm/vx>.
+Take a look at the [documentation](https://hexdocs.pm/vx) to find out available
+types and options.
