@@ -1,128 +1,107 @@
 defmodule Vx.Number do
   @moduledoc """
-  The Number type provides validators for numbers.
+  The Integer type provides validators for integers.
   """
 
-  use Vx.Type
+  use Vx.Type, :number
 
-  @typedoc """
-  All types that can be validated as a number.
-  """
-  @type num :: t | Vx.Integer.t() | Vx.Float.t()
+  @type numeric :: t | Vx.Float.t() | Vx.Integer.t()
 
-  @doc """
-  Checks whether a value is a number.
-  """
   @spec t() :: t
-  def t, do: new(&is_number/1, %{}, "must be a number")
-
-  @doc """
-  Checks whether a value is less than the given value.
-  """
-  @spec lt(num, number) :: t
-  def lt(type \\ t(), value) when is_number(value) do
-    add_rule(
-      type,
-      :lt,
-      &(&1 < value),
-      %{value: value},
-      "must be less than #{value}"
-    )
+  def t do
+    new(fn
+      value when is_number(value) -> :ok
+      _ -> {:error, "must be a number"}
+    end)
   end
 
-  @doc """
-  Checks whether a value is less than or equal to the given value.
-  """
-  @spec lteq(num, number) :: t
-  def lteq(type \\ t(), value) when is_number(value) do
-    add_rule(
-      type,
-      :lteq,
-      &(&1 <= value),
-      %{value: value},
-      "must be less than or equal to #{value}"
-    )
+  @spec integer(type) :: type when type: numeric
+  def integer(type \\ t())
+
+  def integer(%Vx.Integer{} = type), do: type
+
+  def integer(type) do
+    constrain_num(type, :integer, fn
+      value when is_integer(value) ->
+        :ok
+
+      value when is_float(value) ->
+        if value == trunc(value) do
+          :ok
+        else
+          {:error, "must be an integer"}
+        end
+    end)
   end
 
-  @doc """
-  Checks whether a value is greater than the given value.
-  """
-  @spec gt(num, number) :: t
-  def gt(type \\ t(), value) when is_number(value) do
-    add_rule(
-      type,
-      :gt,
-      &(&1 > value),
-      %{value: value},
-      "must be greater than #{value}"
-    )
+  @spec gt(type, number) :: type when type: numeric
+  def gt(type \\ t(), value) do
+    constrain_num(type, :gt, value, fn actual_value ->
+      if actual_value > value do
+        :ok
+      else
+        {:error, "must be greater than #{value}"}
+      end
+    end)
   end
 
-  @doc """
-  Checks whether a value is greater than or equal to the given value.
-  """
-  @spec gteq(num, number) :: t
-  def gteq(type \\ t(), value) when is_number(value) do
-    add_rule(
-      type,
-      :gteq,
-      &(&1 >= value),
-      %{value: value},
-      "must be greater than or equal to #{value}"
-    )
+  @spec gteq(type, number) :: type when type: numeric
+  def gteq(type \\ t(), value) do
+    constrain_num(type, :gteq, value, fn actual_value ->
+      if actual_value >= value do
+        :ok
+      else
+        {:error, "must be greater than or equal to #{value}"}
+      end
+    end)
   end
 
-  @doc """
-  Checks whether a value is within the given range.
-  """
-  @spec range(num, Range.t(number, number)) :: t
-  def range(type \\ t(), range) do
-    add_rule(
-      type,
-      :range,
-      &(&1 in range),
-      %{range: range},
-      "must be in range #{inspect(range)}"
-    )
+  @spec lt(type, number) :: type when type: numeric
+  def lt(type \\ t(), value) do
+    constrain_num(type, :lt, value, fn actual_value ->
+      if actual_value < value do
+        :ok
+      else
+        {:error, "must be less than #{value}"}
+      end
+    end)
   end
 
-  @doc """
-  Checks whether a value is between the given range.
-  """
-  @spec between(num, number, number) :: t
+  @spec lteq(type, number) :: type when type: numeric
+  def lteq(type \\ t(), value) do
+    constrain_num(type, :lteq, value, fn actual_value ->
+      if actual_value <= value do
+        :ok
+      else
+        {:error, "must be less than or equal to #{value}"}
+      end
+    end)
+  end
+
+  @spec between(type, number, number) :: type when type: numeric
   def between(type \\ t(), first, last)
 
-  def between(type, min, max)
-      when is_number(min) and is_number(max) and min <= max do
-    add_rule(
-      type,
-      :between,
-      &(&1 >= min && &1 <= max),
-      %{min: min, max: max},
-      "must be between #{min} and #{max}"
-    )
+  def between(type, last, first) when last > first do
+    range(type, first..last)
   end
 
-  def between(type, first, last)
-      when is_number(first) and is_number(last) and first > last do
-    between(type, last, first)
+  def between(type, first, last) do
+    range(type, first..last)
   end
 
-  @doc """
-  Checks whether a number value is an integer. The check will also match if the
-  number is a float but has no decimal places.
-  """
-  @spec integer(t) :: t
-  def integer(%__MODULE__{} = type \\ t()) do
-    add_rule(
-      type,
-      :integer,
-      fn
-        value when is_integer(value) -> true
-        value when is_float(value) -> Float.floor(value) == value
-      end,
-      %{},
-      "must be an integer"
-    )
+  @spec range(type, Range.t()) :: type when type: numeric
+  def range(type \\ t(), _.._ = range) do
+    constrain_num(type, :range, range, fn actual_value ->
+      if actual_value in range do
+        :ok
+      else
+        {:error, "must be in #{inspect(range)}"}
+      end
+    end)
+  end
+
+  defp constrain_num(%struct{} = type, name, value \\ nil, fun)
+       when struct in [__MODULE__, Vx.Float, Vx.Integer] do
+    Vx.Type.constrain(type, name, value, fun)
   end
 end

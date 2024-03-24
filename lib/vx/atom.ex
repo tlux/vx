@@ -1,13 +1,15 @@
 defmodule Vx.Atom do
   @moduledoc """
-  The Atom type provides validators for atoms.
+  The Atom type.
   """
 
-  use Vx.Type
+  use Vx.Type, :atom
 
-  @doc """
-  Checks whether a value is an atom.
-  """
   @spec t() :: t
-  def t, do: new(&is_atom/1, %{}, "must be an atom")
+  def t do
+    new(fn
+      value when is_atom(value) -> :ok
+      _ -> {:error, "must be an atom"}
+    end)
+  end
 end

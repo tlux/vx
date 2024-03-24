@@ -7,7 +7,7 @@
 [![License](https://img.shields.io/hexpm/l/vx.svg)](https://github.com/tlux/vx/blob/main/LICENSE.md)
 [![Last Updated](https://img.shields.io/github/last-commit/tlux/vx.svg)](https://github.com/tlux/vx/commits/main)
 
-**TODO: Add description**
+The Elixir schema validator.
 
 ## Installation
 
@@ -22,6 +22,10 @@ def deps do
 end
 ```
 
-Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_doc)
-and published on [HexDocs](https://hexdocs.pm). Once published, the docs can
-be found at <https://hexdocs.pm/vx>.
+## Usage
+
+TODO
+
+## Docs
+
+Documentation can be found at <https://hexdocs.pm/vx>.

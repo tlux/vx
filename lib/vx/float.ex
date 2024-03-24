@@ -3,11 +3,18 @@ defmodule Vx.Float do
   The Float type provides validators for floats.
   """
 
-  use Vx.Type
+  use Vx.Type, :float
 
-  @doc """
-  Checks whether a value is a float.
-  """
   @spec t() :: t
-  def t, do: new(&is_float/1, %{}, "must be a float")
+  def t do
+    new(fn
+      value when is_float(value) -> :ok
+      _ -> {:error, "must be a float"}
+    end)
+  end
+
+  @spec integer(t) :: t
+  def integer(%__MODULE__{} = type \\ t()) do
+    Vx.Number.integer(type)
+  end
 end

@@ -1,59 +1,59 @@
 defmodule Vx.Tuple do
-  @moduledoc """
-  The Tuple type provides validators for tuples.
-  """
+  use Vx.Type, :tuple
 
-  use Vx.Type
-
-  @doc """
-  Checks whether a value is a tuple.
-  """
   @spec t() :: t
-  def t, do: new(&is_tuple/1, %{}, "must be a tuple")
-
-  @doc """
-  Checks whether a value is a tuple of the given size and types.
-  """
-  @spec shape(t, tuple) :: t
-  def shape(%__MODULE__{} = type \\ t(), shape) when is_tuple(shape) do
-    expected_size = tuple_size(shape)
-
-    add_rule(
-      type,
-      :shape,
-      &check_tuple_shape(&1, shape, expected_size),
-      %{shape: shape},
-      "does not match expected shape"
-    )
+  def t do
+    new(fn
+      value when is_tuple(value) -> :ok
+      _ -> {:error, "must be a tuple"}
+    end)
   end
 
-  defp check_tuple_shape(tuple, shape, expected_size)
-       when tuple_size(tuple) == expected_size do
-    Enum.reduce_while(0..(expected_size - 1), :ok, fn index, _ ->
-      schema_or_value = elem(shape, index)
-      value = elem(tuple, index)
-
-      case Vx.Validatable.validate(schema_or_value, value) do
-        :ok -> {:cont, :ok}
-        error -> {:halt, error}
+  @spec size(t, non_neg_integer) :: t
+  def size(%__MODULE__{} = type \\ t(), size)
+      when is_integer(size) and size > 0 do
+    constrain(type, :size, size, fn value ->
+      if tuple_size(value) == size do
+        :ok
+      else
+        {:error, "must have size of #{size}"}
       end
     end)
   end
 
-  defp check_tuple_shape(_, _, _), do: :error
+  @spec shape(t, tuple) :: t
+  def shape(%__MODULE__{} = type \\ t(), shape) when is_tuple(shape) do
+    constrain(type, :shape, shape, fn value ->
+      max_size = max(tuple_size(value), tuple_size(shape))
 
-  @doc """
-  Checks whether a value is a tuple of the given size.
-  """
-  @spec size(t, non_neg_integer) :: t
-  def size(%__MODULE__{} = type \\ t(), count)
-      when is_integer(count) and count >= 0 do
-    add_rule(
-      type,
-      :size,
-      fn tuple -> tuple_size(tuple) == count end,
-      %{count: count},
-      "does not match expected size of #{count}"
-    )
+      errors =
+        Enum.flat_map(0..(max_size - 1), fn index ->
+          with {:value_elem, {:ok, value}} <-
+                 {:value_elem, fetch_elem(value, index)},
+               {:shape_elem, {:ok, shape}} <-
+                 {:shape_elem, fetch_elem(shape, index)},
+               {:match, :ok} <- {:match, Vx.Validatable.validate(shape, value)} do
+            []
+          else
+            {:value_elem, :error} -> ["- element #{index} is missing"]
+            {:shape_elem, :error} -> ["- element #{index} is abundant"]
+            {:match, {:error, message}} -> ["- element #{index}: #{message}"]
+          end
+        end)
+
+      if errors == [] do
+        :ok
+      else
+        {:error,
+         "must match #{Vx.Inspectable.inspect(shape)}\n" <>
+           Enum.join(errors, "\n")}
+      end
+    end)
   end
+
+  defp fetch_elem(tuple, index)
+       when index >= 0 and index < tuple_size(tuple),
+       do: {:ok, elem(tuple, index)}
+
+  defp fetch_elem(_tuple, index) when index >= 0, do: :error
 end

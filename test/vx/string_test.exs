@@ -26,7 +26,7 @@ defmodule Vx.StringTest do
 
     test "no match" do
       assert {:error, error} = Vx.validate(Vx.String.non_empty(), "")
-      assert Exception.message(error) == "must be non-empty"
+      assert Exception.message(error) == "must not be empty"
 
       Enum.each(@invalid, fn value ->
         assert {:error, _} = Vx.validate(Vx.String.non_empty(), value)
@@ -60,9 +60,17 @@ defmodule Vx.StringTest do
 
     test "no match" do
       assert {:error, error} = Vx.validate(Vx.String.min_length(3), "fo")
+      assert Exception.message(error) == "must be at least 3 characters"
+    end
 
-      assert Exception.message(error) ==
-               "must be at least 3 characters long (was 2)"
+    test "invalid size" do
+      assert_raise FunctionClauseError, fn ->
+        Vx.String.min_length(-1)
+      end
+
+      assert_raise FunctionClauseError, fn ->
+        Vx.String.min_length(1.1)
+      end
     end
   end
 
@@ -75,9 +83,17 @@ defmodule Vx.StringTest do
 
     test "no match" do
       assert {:error, error} = Vx.validate(Vx.String.max_length(3), "foob")
+      assert Exception.message(error) == "must be at most 3 characters"
+    end
 
-      assert Exception.message(error) ==
-               "must be at most 3 characters long (was 4)"
+    test "invalid size" do
+      assert_raise FunctionClauseError, fn ->
+        Vx.String.max_length(-1)
+      end
+
+      assert_raise FunctionClauseError, fn ->
+        Vx.String.max_length(1.1)
+      end
     end
   end
 
@@ -90,7 +106,7 @@ defmodule Vx.StringTest do
       assert {:error, error} =
                Vx.validate(Vx.String.format(~r/\AFOO\z/i), "foob")
 
-      assert Exception.message(error) == "has an unexpected format"
+      assert Exception.message(error) == "must match expected format"
     end
   end
 end

@@ -1,13 +1,15 @@
 defmodule Vx.Boolean do
   @moduledoc """
-  The Boolean type provides validators for booleans.
+  The Boolean type.
   """
 
-  use Vx.Type
+  use Vx.Type, :boolean
 
-  @doc """
-  Checks whether a value is a boolean.
-  """
   @spec t() :: t
-  def t, do: new(&is_boolean/1, %{}, "must be a boolean")
+  def t do
+    new(fn
+      value when is_boolean(value) -> :ok
+      _ -> {:error, "must be a boolean"}
+    end)
+  end
 end

@@ -1,6 +1,6 @@
-defmodule Vx.Not do
+defmodule Vx.Nullable do
   @moduledoc """
-  The Not type negates the given type or value.
+  The Nullable type provides validators for nullable values.
   """
 
   @enforce_keys [:of]
@@ -15,17 +15,24 @@ defmodule Vx.Not do
   end
 
   defimpl Vx.Validatable do
+    def validate(_, nil), do: :ok
+
     def validate(%{of: of}, value) do
       case Vx.Validatable.validate(of, value) do
-        :ok -> {:error, "must not be #{Vx.Inspectable.inspect(of)}"}
-        {:error, _} -> :ok
+        :ok ->
+          :ok
+
+        {:error, _} ->
+          {:error, "must be #{Vx.Inspectable.inspect(Vx.Nullable.t(of))}"}
       end
     end
   end
 
   defimpl Vx.Inspectable do
     def inspect(%{of: of}) do
-      "!" <> Vx.Inspectable.inspect(of)
+      [of, nil]
+      |> Vx.Union.t()
+      |> Vx.Inspectable.inspect()
     end
   end
 end

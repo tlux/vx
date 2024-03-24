@@ -30,12 +30,19 @@ defmodule Vx.TupleTest do
 
     test "no match" do
       assert {:error, error} = Vx.validate(Vx.Tuple.shape({1, 2, 3}), {1, 2})
-      assert Exception.message(error) == "does not match expected shape"
+
+      assert Exception.message(error) ==
+               "must match {1, 2, 3}\n" <>
+                 "- element 2 is missing"
 
       assert {:error, _} = Vx.validate(Vx.Tuple.shape({1, 2, 3}), {1, 2, 3, 4})
 
-      assert {:error, _} =
+      assert {:error, error} =
                Vx.validate(Vx.Tuple.shape({1, Vx.String.t(), 3}), {1, 2, 3})
+
+      assert Exception.message(error) ==
+               "must match {1, string, 3}\n" <>
+                 "- element 1: must be a string"
     end
   end
 
@@ -48,7 +55,7 @@ defmodule Vx.TupleTest do
 
     test "no match" do
       assert {:error, error} = Vx.validate(Vx.Tuple.size(2), {1})
-      assert Exception.message(error) == "does not match expected size of 2"
+      assert Exception.message(error) == "must have size of 2"
 
       assert {:error, _} = Vx.validate(Vx.Tuple.size(2), {1, 2, 3})
     end

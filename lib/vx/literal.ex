@@ -1,15 +1,30 @@
 defmodule Vx.Literal do
   @moduledoc """
-  The Literal type provides validators for literals.
+  The Literal type.
   """
 
-  use Vx.Type
+  @enforce_keys [:value]
+  defstruct [:value]
 
-  @doc """
-  Creates a literal type.
-  """
-  @spec t(any) :: t
+  @type t :: t(any)
+  @opaque t(value) :: %__MODULE__{value: value}
+
+  @spec t(value) :: t(value) when value: var
   def t(value) do
-    new(&(&1 == value), %{value: value}, "must be #{inspect(value)}")
+    %__MODULE__{value: value}
+  end
+
+  defimpl Vx.Validatable do
+    def validate(%{value: value}, actual_value) do
+      if value == actual_value do
+        :ok
+      else
+        {:error, "must be #{Kernel.inspect(value)}"}
+      end
+    end
+  end
+
+  defimpl Vx.Inspectable do
+    def inspect(%{value: value}), do: Kernel.inspect(value)
   end
 end

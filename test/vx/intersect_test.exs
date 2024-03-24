@@ -3,9 +3,8 @@ defmodule Vx.IntersectTest do
 
   describe "t/1" do
     test "match" do
-      assert :ok = Vx.validate(Vx.intersect([Vx.String.t()]), "foo")
-
-      assert :ok = Vx.validate(Vx.intersect([Vx.String.t(), "foo"]), "foo")
+      assert :ok = Vx.validate(Vx.Intersect.t([Vx.String.t()]), "foo")
+      assert :ok = Vx.validate(Vx.Intersect.t([Vx.String.t(), "foo"]), "foo")
 
       assert :ok =
                Vx.validate(
@@ -21,9 +20,7 @@ defmodule Vx.IntersectTest do
       assert {:error, error} =
                Vx.validate(Vx.Intersect.t([Vx.Integer.t()]), "foo")
 
-      assert Exception.message(error) ==
-               ~s[not all types match\n] <>
-                 ~s[  must be an integer]
+      assert Exception.message(error) == "must be an integer"
 
       assert {:error, _} =
                Vx.validate(
@@ -44,8 +41,7 @@ defmodule Vx.IntersectTest do
                )
 
       assert Exception.message(error) ==
-               ~s[not all types match\n] <>
-                 ~s[  must be at most 2 characters long (was 3)]
+               "must be all of (string(min_length=1) & string(max_length=2))"
     end
   end
 end

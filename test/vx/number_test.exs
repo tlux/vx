@@ -76,10 +76,11 @@ defmodule Vx.NumberTest do
 
     test "no match" do
       assert {:error, error} = Vx.validate(Vx.Number.range(1..10), 11)
-      assert Exception.message(error) == "must be in range 1..10"
+      assert Exception.message(error) == "must be in 1..10"
 
       assert {:error, _} = Vx.validate(Vx.Number.range(1..10), 0)
-      assert {:error, _} = Vx.validate(Vx.Number.range(1..10//2), 4)
+      assert {:error, error} = Vx.validate(Vx.Number.range(1..10//2), 4)
+      assert Exception.message(error) == "must be in 1..10//2"
     end
   end
 
@@ -96,12 +97,12 @@ defmodule Vx.NumberTest do
 
     test "no match" do
       assert {:error, error} = Vx.validate(Vx.Number.between(1, 10), 0)
-      assert Exception.message(error) == "must be between 1 and 10"
+      assert Exception.message(error) == "must be in 1..10"
 
       assert {:error, _} = Vx.validate(Vx.Number.between(1, 10), 11)
 
       assert {:error, error} = Vx.validate(Vx.Number.between(10, 1), 0)
-      assert Exception.message(error) == "must be between 1 and 10"
+      assert Exception.message(error) == "must be in 1..10"
 
       assert {:error, _} = Vx.validate(Vx.Number.between(10, 1), 11)
     end
@@ -115,6 +116,20 @@ defmodule Vx.NumberTest do
 
     test "no match" do
       assert {:error, error} = Vx.validate(Vx.Number.integer(), 1.1)
+      assert Exception.message(error) == "must be an integer"
+    end
+  end
+
+  describe "integer/1" do
+    test "match" do
+      assert :ok = Vx.validate(Vx.Integer.t() |> Vx.Number.integer(), 1)
+      assert :ok = Vx.validate(Vx.Float.t() |> Vx.Number.integer(), 1.0)
+    end
+
+    test "no match" do
+      assert {:error, error} =
+               Vx.validate(Vx.Float.t() |> Vx.Number.integer(), 1.1)
+
       assert Exception.message(error) == "must be an integer"
     end
   end

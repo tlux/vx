@@ -1,13 +1,15 @@
 defmodule Vx.Integer do
   @moduledoc """
-  The Integer type provides validators for integers.
+  The Integer type.
   """
 
-  use Vx.Type
+  use Vx.Type, :integer
 
-  @doc """
-  Checks whether a value is an integer.
-  """
   @spec t() :: t
-  def t, do: new(&is_integer/1, %{}, "must be an integer")
+  def t do
+    new(fn
+      value when is_integer(value) -> :ok
+      _ -> {:error, "must be an integer"}
+    end)
+  end
 end

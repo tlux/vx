@@ -42,12 +42,10 @@ defmodule Vx.MixProject do
   defp deps do
     [
       {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
-      {:excoveralls, "~> 0.16", only: :test, runtime: false},
-      {:dialyxir, "~> 1.3", only: [:dev, :test], runtime: false},
-      {:ex_doc, "~> 0.29", only: :dev, runtime: false},
+      {:excoveralls, "~> 0.18", only: :test, runtime: false},
+      {:dialyxir, "~> 1.4", only: [:dev, :test], runtime: false},
+      {:ex_doc, "~> 0.31", only: :dev, runtime: false},
       {:mix_audit, "~> 2.1", only: [:dev, :test]}
-      # {:dep_from_hexpm, "~> 0.3.0"},
-      # {:dep_from_git, git: "https://github.com/elixir-lang/my_dep.git", tag: "0.1.0"}
     ]
   end
 
@@ -61,29 +59,29 @@ defmodule Vx.MixProject do
       source_url: @github_url,
       source_ref: "v#{@version}",
       groups_for_modules: [
-        Types: [
-          Vx.Any,
-          Vx.Atom,
-          Vx.Float,
-          Vx.Integer,
-          Vx.List,
-          Vx.Map,
-          Vx.Number,
-          Vx.String,
-          Vx.Struct,
-          Vx.Tuple
-        ],
-        Modifiers: [
-          Vx.Intersect,
-          Vx.Union,
-          Vx.Not,
-          Vx.Optional
-        ],
-        Helpers: [
-          Vx.Type,
-          Vx.Validator,
-          Vx.Validators
-        ]
+        # Types: [
+        #   Vx.Any,
+        #   Vx.Atom,
+        #   Vx.Float,
+        #   Vx.Integer,
+        #   Vx.List,
+        #   Vx.Map,
+        #   Vx.Number,
+        #   Vx.String,
+        #   Vx.Struct,
+        #   Vx.Tuple
+        # ],
+        # Modifiers: [
+        #   Vx.Intersect,
+        #   Vx.Union,
+        #   Vx.Not,
+        #   Vx.Optional
+        # ],
+        # Helpers: [
+        #   Vx.Type,
+        #   Vx.Validator,
+        #   Vx.Validators
+        # ]
       ]
     ]
   end
