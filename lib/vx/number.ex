@@ -67,6 +67,34 @@ defmodule Vx.Number do
   end
 
   @doc """
+  Requires the number to be positive.
+  """
+  @spec positive(type) :: type when type: numeric
+  def positive(type \\ t()) do
+    constrain_num(type, :positive, fn value ->
+      if value > 0 do
+        :ok
+      else
+        {:error, "must be positive"}
+      end
+    end)
+  end
+
+  @doc """
+  Requires the number to be negative.
+  """
+  @spec negative(type) :: type when type: numeric
+  def negative(type \\ t()) do
+    constrain_num(type, :negative, fn value ->
+      if value < 0 do
+        :ok
+      else
+        {:error, "must be negative"}
+      end
+    end)
+  end
+
+  @doc """
   Requires the number to be greater than the given value.
   """
   @spec gt(type, number) :: type when type: numeric

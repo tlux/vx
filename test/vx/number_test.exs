@@ -5,9 +5,9 @@ defmodule Vx.NumberTest do
 
   describe "t/0" do
     test "match" do
-      assert :ok = Vx.validate(Vx.Number.t(), 123)
-      assert :ok = Vx.validate(Vx.Number.t(), 123.0)
-      assert :ok = Vx.validate(Vx.Number.t(), 123.4)
+      assert :ok = Vx.validate!(Vx.Number.t(), 123)
+      assert :ok = Vx.validate!(Vx.Number.t(), 123.0)
+      assert :ok = Vx.validate!(Vx.Number.t(), 123.4)
     end
 
     test "no match" do
@@ -20,7 +20,7 @@ defmodule Vx.NumberTest do
 
   describe "lt/1" do
     test "match" do
-      assert :ok = Vx.validate(Vx.Number.lt(100), 99)
+      assert :ok = Vx.validate!(Vx.Number.lt(100), 99)
     end
 
     test "no match" do
@@ -33,8 +33,8 @@ defmodule Vx.NumberTest do
 
   describe "lteq/1" do
     test "match" do
-      assert :ok = Vx.validate(Vx.Number.lteq(100), 100)
-      assert :ok = Vx.validate(Vx.Number.lteq(100), 99)
+      assert :ok = Vx.validate!(Vx.Number.lteq(100), 100)
+      assert :ok = Vx.validate!(Vx.Number.lteq(100), 99)
     end
 
     test "no match" do
@@ -45,7 +45,7 @@ defmodule Vx.NumberTest do
 
   describe "gt/1" do
     test "match" do
-      assert :ok = Vx.validate(Vx.Number.gt(100), 101)
+      assert :ok = Vx.validate!(Vx.Number.gt(100), 101)
     end
 
     test "no match" do
@@ -58,8 +58,8 @@ defmodule Vx.NumberTest do
 
   describe "gteq/1" do
     test "match" do
-      assert :ok = Vx.validate(Vx.Number.gteq(100), 100)
-      assert :ok = Vx.validate(Vx.Number.gteq(100), 101)
+      assert :ok = Vx.validate!(Vx.Number.gteq(100), 100)
+      assert :ok = Vx.validate!(Vx.Number.gteq(100), 101)
     end
 
     test "no match" do
@@ -70,10 +70,10 @@ defmodule Vx.NumberTest do
 
   describe "range/1" do
     test "match" do
-      assert :ok = Vx.validate(Vx.Number.range(1..10), 1)
-      assert :ok = Vx.validate(Vx.Number.range(1..10), 5)
-      assert :ok = Vx.validate(Vx.Number.range(1..10), 10)
-      assert :ok = Vx.validate(Vx.Number.range(1..10//2), 3)
+      assert :ok = Vx.validate!(Vx.Number.range(1..10), 1)
+      assert :ok = Vx.validate!(Vx.Number.range(1..10), 5)
+      assert :ok = Vx.validate!(Vx.Number.range(1..10), 10)
+      assert :ok = Vx.validate!(Vx.Number.range(1..10//2), 3)
     end
 
     test "no match" do
@@ -88,13 +88,13 @@ defmodule Vx.NumberTest do
 
   describe "between/2" do
     test "match" do
-      assert :ok = Vx.validate(Vx.Number.between(1, 10), 1)
-      assert :ok = Vx.validate(Vx.Number.between(1, 10), 5)
-      assert :ok = Vx.validate(Vx.Number.between(1, 10), 10)
-      assert :ok = Vx.validate(Vx.Number.between(10, 1), 1)
-      assert :ok = Vx.validate(Vx.Number.between(10, 1), 5)
-      assert :ok = Vx.validate(Vx.Number.between(10, 1), 10)
-      assert :ok = Vx.validate(Vx.Number.between(3, 3), 3)
+      assert :ok = Vx.validate!(Vx.Number.between(1, 10), 1)
+      assert :ok = Vx.validate!(Vx.Number.between(1, 10), 5)
+      assert :ok = Vx.validate!(Vx.Number.between(1, 10), 10)
+      assert :ok = Vx.validate!(Vx.Number.between(10, 1), 1)
+      assert :ok = Vx.validate!(Vx.Number.between(10, 1), 5)
+      assert :ok = Vx.validate!(Vx.Number.between(10, 1), 10)
+      assert :ok = Vx.validate!(Vx.Number.between(3, 3), 3)
     end
 
     test "no match" do
@@ -112,8 +112,8 @@ defmodule Vx.NumberTest do
 
   describe "integer/0" do
     test "match" do
-      assert :ok = Vx.validate(Vx.Number.integer(), 1)
-      assert :ok = Vx.validate(Vx.Number.integer(), 1.0)
+      assert :ok = Vx.validate!(Vx.Number.integer(), 1)
+      assert :ok = Vx.validate!(Vx.Number.integer(), 1.0)
     end
 
     test "no match" do
@@ -124,8 +124,8 @@ defmodule Vx.NumberTest do
 
   describe "integer/1" do
     test "match" do
-      assert :ok = Vx.validate(Vx.Integer.t() |> Vx.Number.integer(), 1)
-      assert :ok = Vx.validate(Vx.Float.t() |> Vx.Number.integer(), 1.0)
+      assert :ok = Vx.validate!(Vx.Integer.t() |> Vx.Number.integer(), 1)
+      assert :ok = Vx.validate!(Vx.Float.t() |> Vx.Number.integer(), 1.0)
     end
 
     test "no match" do
@@ -133,6 +133,36 @@ defmodule Vx.NumberTest do
                Vx.validate(Vx.Float.t() |> Vx.Number.integer(), 1.1)
 
       assert Exception.message(error) == "must be an integer"
+    end
+  end
+
+  describe "positive/1" do
+    test "match" do
+      assert :ok = Vx.validate!(Vx.Number.positive(), 1)
+      assert :ok = Vx.validate!(Vx.Number.positive(), 0.1)
+    end
+
+    test "no match" do
+      assert {:error, error} = Vx.validate(Vx.Number.positive(), 0)
+      assert Exception.message(error) == "must be positive"
+
+      assert {:error, _} = Vx.validate(Vx.Number.positive(), -1)
+      assert {:error, _} = Vx.validate(Vx.Number.positive(), -0.1)
+    end
+  end
+
+  describe "negative/1" do
+    test "match" do
+      assert :ok = Vx.validate!(Vx.Number.negative(), -1)
+      assert :ok = Vx.validate!(Vx.Number.negative(), -0.1)
+    end
+
+    test "no match" do
+      assert {:error, error} = Vx.validate(Vx.Number.negative(), 0)
+      assert Exception.message(error) == "must be negative"
+
+      assert {:error, _} = Vx.validate(Vx.Number.negative(), 1)
+      assert {:error, _} = Vx.validate(Vx.Number.negative(), 0.1)
     end
   end
 end
