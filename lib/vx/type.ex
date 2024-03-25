@@ -11,9 +11,11 @@ defmodule Vx.Type do
 
   @type fun :: (any -> :ok | {:error, String.t()})
 
+  @type inner :: any
+
   @type t(name) :: %__MODULE__{
           name: name,
-          of: [any],
+          of: [inner],
           fun: fun,
           constraints: [Constraint.t()]
         }
@@ -29,9 +31,20 @@ defmodule Vx.Type do
   @doc """
   Creates a new type.
   """
-  @spec new(name, [any], fun) :: t(name) when name: atom
+  @spec new(name, [inner], fun) :: t(name) when name: atom
   def new(name, of \\ [], fun) when is_list(of) and is_function(fun, 1) do
     %__MODULE__{name: name, of: of, fun: fun}
+  end
+
+  @doc """
+  Returns a list of inner types or schemata.
+  """
+  @doc since: "0.5.0"
+  @spec of(t(atom) | custom(module, atom)) :: [inner]
+  def of(type) do
+    type
+    |> resolve()
+    |> Map.fetch!(:of)
   end
 
   @doc """
