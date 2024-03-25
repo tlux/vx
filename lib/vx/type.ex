@@ -152,7 +152,7 @@ defmodule Vx.Type do
         # A function that adds a constraint to a type
         @spec foo(t) :: t
         def foo(%__MODULE__{} = type \\\\ t()) do
-          constrain(schema, :my_constraint, fn value ->
+          constrain(type, :my_constraint, fn value ->
             if value < 123, do: :ok, else: {:error, "must be less than 123"}
           end)
         end
