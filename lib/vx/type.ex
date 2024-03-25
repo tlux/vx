@@ -60,6 +60,18 @@ defmodule Vx.Type do
     |> Enum.reverse()
   end
 
+  @doc """
+  Returns the constraints of the type with the given name.
+  """
+  @doc since: "0.4.0"
+  @spec constraints(type, atom) :: [Constraint.t()]
+        when type: t(atom) | custom(module, atom)
+  def constraints(type, name) do
+    type
+    |> constraints()
+    |> Enum.filter(&match?(%Constraint{name: ^name}, &1))
+  end
+
   defp resolve(%{__type__: %__MODULE__{} = type}), do: type
   defp resolve(%__MODULE__{} = type), do: type
 
