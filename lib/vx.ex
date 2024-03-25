@@ -9,6 +9,14 @@ defmodule Vx do
 
   @doc """
   Validates a value against a given schema.
+
+  ## Examples
+
+      iex> Vx.validate(Vx.String.t(), "foo")
+      :ok
+
+      iex> Vx.validate(Vx.String.t(), 123)
+      {:error, %Vx.Error{message: "must be a string", schema: Vx.String.t(), value: 123}}
   """
   @spec validate(t, any) :: :ok | {:error, Error.t()}
   def validate(schema, value) do
@@ -23,11 +31,36 @@ defmodule Vx do
 
   @doc """
   Validates a value against a given schema. Raises on error.
+
+  ## Examples
+
+      iex> Vx.validate!(Vx.String.t(), "foo")
+      :ok
+
+      iex> Vx.validate!(Vx.String.t(), 123)
+      ** (Vx.Error) must be a string
   """
   @spec validate!(t, any) :: :ok | no_return
   def validate!(schema, value) do
     with {:error, error} <- validate(schema, value) do
       raise error
     end
+  end
+
+  @doc """
+  Checks if a value is valid against a given schema.
+
+  ## Examples
+
+      iex> Vx.valid?(Vx.String.t(), "foo")
+      true
+
+      iex> Vx.valid?(Vx.String.t(), 123)
+      false
+  """
+  @doc since: "0.4.0"
+  @spec valid?(t, any) :: boolean
+  def valid?(schema, value) do
+    validate(schema, value) == :ok
   end
 end

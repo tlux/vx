@@ -1,6 +1,8 @@
 defmodule VxTest do
   use ExUnit.Case, async: true
 
+  doctest Vx
+
   @valid_values %{
     "name" => "foo",
     "age" => 18,
