@@ -117,8 +117,8 @@ defmodule Vx.Type do
 
   @doc """
   Turns a module into a custom type. It automatically implements the
-  `Vx.Validatable` protocol for the newly created type and allows easily
-  chaining of constraints on your type.
+  `Vx.Validatable` and `Vx.Inspectable` protocols for the newly created type and
+  allows easily chaining constraints on your type.
 
   ## Example
 
