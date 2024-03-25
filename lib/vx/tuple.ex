@@ -36,9 +36,9 @@ defmodule Vx.Tuple do
       ** (Vx.Error) must have a size of 2
   """
   @spec size(t, non_neg_integer) :: t
-  def size(%__MODULE__{} = type \\ t(), size)
+  def size(%__MODULE__{} = schema \\ t(), size)
       when is_integer(size) and size > 0 do
-    constrain(type, :size, size, fn value ->
+    constrain(schema, :size, size, fn value ->
       if tuple_size(value) == size do
         :ok
       else
@@ -63,8 +63,8 @@ defmodule Vx.Tuple do
       - element 1: must be a string
   """
   @spec shape(t, tuple) :: t
-  def shape(%__MODULE__{} = type \\ t(), shape) when is_tuple(shape) do
-    constrain(type, :shape, shape, fn value ->
+  def shape(%__MODULE__{} = schema \\ t(), shape) when is_tuple(shape) do
+    constrain(schema, :shape, shape, fn value ->
       max_size = max(tuple_size(value), tuple_size(shape))
 
       errors =

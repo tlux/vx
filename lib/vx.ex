@@ -5,7 +5,10 @@ defmodule Vx do
 
   alias Vx.{Error, Validatable}
 
-  @type t :: Validatable.t()
+  @typedoc """
+  A Vx schema is anything that implements the `Vx.Validatable` protocol.
+  """
+  @type schema :: Validatable.t()
 
   @doc """
   Validates a value against a given schema.
@@ -18,7 +21,7 @@ defmodule Vx do
       iex> Vx.validate(Vx.String.t(), 123)
       {:error, %Vx.Error{message: "must be a string", schema: Vx.String.t(), value: 123}}
   """
-  @spec validate(t, any) :: :ok | {:error, Error.t()}
+  @spec validate(schema, any) :: :ok | {:error, Error.t()}
   def validate(schema, value) do
     case Validatable.validate(schema, value) do
       :ok ->
@@ -40,7 +43,7 @@ defmodule Vx do
       iex> Vx.validate!(Vx.String.t(), 123)
       ** (Vx.Error) must be a string
   """
-  @spec validate!(t, any) :: :ok | no_return
+  @spec validate!(schema, any) :: :ok | no_return
   def validate!(schema, value) do
     with {:error, error} <- validate(schema, value) do
       raise error
@@ -59,7 +62,7 @@ defmodule Vx do
       false
   """
   @doc since: "0.4.0"
-  @spec valid?(t, any) :: boolean
+  @spec valid?(schema, any) :: boolean
   def valid?(schema, value) do
     validate(schema, value) == :ok
   end

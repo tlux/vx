@@ -46,13 +46,13 @@ defmodule Vx.Number do
       iex> Vx.Number.integer() |> Vx.validate!("foo")
       ** (Vx.Error) must be a number
   """
-  @spec integer(type) :: type when type: numeric
-  def integer(type \\ t())
+  @spec integer(schema) :: schema when schema: numeric
+  def integer(schema \\ t())
 
-  def integer(%Vx.Integer{} = type), do: type
+  def integer(%Vx.Integer{} = schema), do: schema
 
-  def integer(type) do
-    constrain_num(type, :integer, fn
+  def integer(schema) do
+    constrain_num(schema, :integer, fn
       value when is_integer(value) ->
         :ok
 
@@ -69,9 +69,9 @@ defmodule Vx.Number do
   Requires the number to be positive.
   """
   @doc since: "0.3.0"
-  @spec positive(type) :: type when type: numeric
-  def positive(type \\ t()) do
-    constrain_num(type, :positive, fn value ->
+  @spec positive(schema) :: schema when schema: numeric
+  def positive(schema \\ t()) do
+    constrain_num(schema, :positive, fn value ->
       if value > 0 do
         :ok
       else
@@ -84,9 +84,9 @@ defmodule Vx.Number do
   Requires the number to be negative.
   """
   @doc since: "0.3.0"
-  @spec negative(type) :: type when type: numeric
-  def negative(type \\ t()) do
-    constrain_num(type, :negative, fn value ->
+  @spec negative(schema) :: schema when schema: numeric
+  def negative(schema \\ t()) do
+    constrain_num(schema, :negative, fn value ->
       if value < 0 do
         :ok
       else
@@ -98,9 +98,9 @@ defmodule Vx.Number do
   @doc """
   Requires the number to be greater than the given value.
   """
-  @spec gt(type, number) :: type when type: numeric
-  def gt(type \\ t(), value) when is_number(value) do
-    constrain_num(type, :gt, value, fn actual_value ->
+  @spec gt(schema, number) :: schema when schema: numeric
+  def gt(schema \\ t(), value) when is_number(value) do
+    constrain_num(schema, :gt, value, fn actual_value ->
       if actual_value > value do
         :ok
       else
@@ -112,9 +112,9 @@ defmodule Vx.Number do
   @doc """
   Requires the number to be greater than or equal to the given value.
   """
-  @spec gteq(type, number) :: type when type: numeric
-  def gteq(type \\ t(), value) when is_number(value) do
-    constrain_num(type, :gteq, value, fn actual_value ->
+  @spec gteq(schema, number) :: schema when schema: numeric
+  def gteq(schema \\ t(), value) when is_number(value) do
+    constrain_num(schema, :gteq, value, fn actual_value ->
       if actual_value >= value do
         :ok
       else
@@ -126,9 +126,9 @@ defmodule Vx.Number do
   @doc """
   Requires the number to be less than the given value.
   """
-  @spec lt(type, number) :: type when type: numeric
-  def lt(type \\ t(), value) when is_number(value) do
-    constrain_num(type, :lt, value, fn actual_value ->
+  @spec lt(schema, number) :: schema when schema: numeric
+  def lt(schema \\ t(), value) when is_number(value) do
+    constrain_num(schema, :lt, value, fn actual_value ->
       if actual_value < value do
         :ok
       else
@@ -140,9 +140,9 @@ defmodule Vx.Number do
   @doc """
   Requires the number to be less than or equal to the given value.
   """
-  @spec lteq(type, number) :: type when type: numeric
-  def lteq(type \\ t(), value) when is_number(value) do
-    constrain_num(type, :lteq, value, fn actual_value ->
+  @spec lteq(schema, number) :: schema when schema: numeric
+  def lteq(schema \\ t(), value) when is_number(value) do
+    constrain_num(schema, :lteq, value, fn actual_value ->
       if actual_value <= value do
         :ok
       else
@@ -154,16 +154,16 @@ defmodule Vx.Number do
   @doc """
   Requires the number to be within the given range.
   """
-  @spec between(type, number, number) :: type when type: numeric
-  def between(type \\ t(), first, last)
+  @spec between(schema, number, number) :: schema when schema: numeric
+  def between(schema \\ t(), first, last)
 
-  def between(type, last, first)
+  def between(schema, last, first)
       when is_number(first) and is_number(last) and last > first do
-    range(type, first..last)
+    range(schema, first..last)
   end
 
-  def between(type, first, last) when is_number(first) and is_number(last) do
-    range(type, first..last)
+  def between(schema, first, last) when is_number(first) and is_number(last) do
+    range(schema, first..last)
   end
 
   @doc """
@@ -177,9 +177,9 @@ defmodule Vx.Number do
       iex> Vx.Number.range(1..10) |> Vx.validate!(11)
       ** (Vx.Error) must be in 1..10
   """
-  @spec range(type, Range.t()) :: type when type: numeric
-  def range(type \\ t(), _.._ = range) do
-    constrain_num(type, :range, range, fn actual_value ->
+  @spec range(schema, Range.t()) :: schema when schema: numeric
+  def range(schema \\ t(), _.._ = range) do
+    constrain_num(schema, :range, range, fn actual_value ->
       if actual_value in range do
         :ok
       else
@@ -188,8 +188,8 @@ defmodule Vx.Number do
     end)
   end
 
-  defp constrain_num(%struct{} = type, name, value \\ nil, fun)
+  defp constrain_num(%struct{} = schema, name, value \\ nil, fun)
        when struct in [__MODULE__, Vx.Float, Vx.Integer] do
-    Vx.Type.constrain(type, name, value, fun)
+    Vx.Type.constrain(schema, name, value, fun)
   end
 end

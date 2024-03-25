@@ -48,7 +48,7 @@ defmodule Vx.Map do
       ** (Vx.Error) must be a map<atom, number>
       - value of element :foo: must be a number
   """
-  @spec t(Vx.t(), Vx.t()) :: t
+  @spec t(Vx.schema(), Vx.schema()) :: t
   def t(key_t, value_t) do
     new([key_t, value_t], &check_map_of(&1, key_t, value_t))
   end
@@ -98,9 +98,9 @@ defmodule Vx.Map do
       ** (Vx.Error) must have a size of 1
   """
   @spec size(t, non_neg_integer) :: t
-  def size(%__MODULE__{} = type \\ t(), size)
+  def size(%__MODULE__{} = schema \\ t(), size)
       when is_integer(size) and size >= 0 do
-    constrain(type, :size, size, fn value ->
+    constrain(schema, :size, size, fn value ->
       if map_size(value) == size do
         :ok
       else
@@ -152,8 +152,8 @@ defmodule Vx.Map do
       - key :b: must be a number
   """
   @spec shape(t, map) :: t
-  def shape(%__MODULE__{} = type \\ t(), shape) when is_map(shape) do
-    constrain(type, :shape, shape, &check_shape(&1, shape))
+  def shape(%__MODULE__{} = schema \\ t(), shape) when is_map(shape) do
+    constrain(schema, :shape, shape, &check_shape(&1, shape))
   end
 
   defp check_shape(map, shape) do

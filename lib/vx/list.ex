@@ -40,17 +40,17 @@ defmodule Vx.List do
       - element 1: must be a string
 
   """
-  @spec t(Vx.t()) :: t
-  def t(type) do
-    new([type], &check_inner_type(type, &1))
+  @spec t(Vx.schema()) :: t
+  def t(schema) do
+    new([schema], &check_inner_schema(schema, &1))
   end
 
-  defp check_inner_type(type, values) when is_list(values) do
+  defp check_inner_schema(schema, values) when is_list(values) do
     errors =
       values
       |> Enum.with_index()
       |> Enum.flat_map(fn {value, index} ->
-        case Vx.Validatable.validate(type, value) do
+        case Vx.Validatable.validate(schema, value) do
           :ok -> []
           {:error, message} -> ["- element #{index}: #{message}"]
         end
@@ -60,12 +60,12 @@ defmodule Vx.List do
       :ok
     else
       {:error,
-       "must be a #{Vx.Inspectable.inspect(t(type))}\n" <>
+       "must be a #{Vx.Inspectable.inspect(t(schema))}\n" <>
          Enum.join(errors, "\n")}
     end
   end
 
-  defp check_inner_type(_type, _values), do: {:error, "must be a list"}
+  defp check_inner_schema(_type, _values), do: {:error, "must be a list"}
 
   @doc """
   Requires the list to be non-empty.
@@ -79,17 +79,17 @@ defmodule Vx.List do
       ** (Vx.Error) must not be empty
   """
   @spec non_empty(t) :: t
-  def non_empty(%__MODULE__{} = type \\ t()) do
-    constrain(type, :non_empty, fn
+  def non_empty(%__MODULE__{} = schema \\ t()) do
+    constrain(schema, :non_empty, fn
       [] -> {:error, "must not be empty"}
       _ -> :ok
     end)
   end
 
   @spec size(t, non_neg_integer) :: t
-  def size(%__MODULE__{} = type \\ t(), size)
+  def size(%__MODULE__{} = schema \\ t(), size)
       when is_integer(size) and size >= 0 do
-    constrain(type, :size, size, fn value ->
+    constrain(schema, :size, size, fn value ->
       if length(value) == size do
         :ok
       else
@@ -102,9 +102,9 @@ defmodule Vx.List do
   Requires the list to have a minimum size.
   """
   @spec min_size(t, non_neg_integer) :: t
-  def min_size(%__MODULE__{} = type \\ t(), size)
+  def min_size(%__MODULE__{} = schema \\ t(), size)
       when is_integer(size) and size >= 0 do
-    constrain(type, :min_size, size, fn value ->
+    constrain(schema, :min_size, size, fn value ->
       if length(value) >= size do
         :ok
       else
@@ -117,9 +117,9 @@ defmodule Vx.List do
   Requires the list to have a maximum size.
   """
   @spec max_size(t, non_neg_integer) :: t
-  def max_size(%__MODULE__{} = type \\ t(), size)
+  def max_size(%__MODULE__{} = schema \\ t(), size)
       when is_integer(size) and size >= 0 do
-    constrain(type, :max_size, size, fn value ->
+    constrain(schema, :max_size, size, fn value ->
       if length(value) <= size do
         :ok
       else
@@ -144,9 +144,9 @@ defmodule Vx.List do
       ** (Vx.Error) must match [number, string]
       - element 1: must be a string
   """
-  @spec shape(t, [Vx.t()]) :: t
-  def shape(%__MODULE__{} = type \\ t(), shape) when is_list(shape) do
-    constrain(type, :shape, shape, fn value ->
+  @spec shape(t, [Vx.schema()]) :: t
+  def shape(%__MODULE__{} = schema \\ t(), shape) when is_list(shape) do
+    constrain(schema, :shape, shape, fn value ->
       value_size = length(value)
       shape_size = length(shape)
       max_size = max(value_size, shape_size)

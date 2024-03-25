@@ -7,7 +7,7 @@ defmodule Vx.Error do
   defexception [:schema, :value, :message]
 
   @type t :: %__MODULE__{
-          schema: Vx.t(),
+          schema: Vx.schema(),
           value: any,
           message: String.t()
         }

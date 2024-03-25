@@ -7,7 +7,7 @@ defmodule Vx.Union do
   @enforce_keys [:of]
   defstruct [:of]
 
-  @type t :: t(nonempty_list(Vx.t()))
+  @type t :: t(nonempty_list(Vx.schema()))
   @opaque t(of) :: %__MODULE__{of: of}
 
   @doc """
@@ -21,7 +21,7 @@ defmodule Vx.Union do
       iex> Vx.Union.t([Vx.Integer.t(), Vx.String.t()]) |> Vx.validate!(:foo)
       ** (Vx.Error) must be any of (integer | string)
   """
-  @spec t(of) :: t(of) when of: nonempty_list(Vx.t())
+  @spec t(of) :: t(of) when of: nonempty_list(Vx.schema())
   def t([_ | _] = of) do
     %__MODULE__{of: of}
   end

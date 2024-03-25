@@ -7,7 +7,7 @@ defmodule Vx.Intersect do
   @enforce_keys [:of]
   defstruct [:of]
 
-  @type t :: t(nonempty_list(Vx.t()))
+  @type t :: t(nonempty_list(Vx.schema()))
   @opaque t(of) :: %__MODULE__{of: of}
 
   @doc """
@@ -21,7 +21,7 @@ defmodule Vx.Intersect do
       iex> Vx.Intersect.t([Vx.Integer.t(), Vx.Number.t()]) |> Vx.validate!(12.3)
       ** (Vx.Error) must be all of (integer & number)
   """
-  @spec t(of) :: t(of) when of: nonempty_list(Vx.t())
+  @spec t(of) :: t(of) when of: nonempty_list(Vx.schema())
   def t([_ | _] = of) do
     %__MODULE__{of: of}
   end

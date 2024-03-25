@@ -41,7 +41,7 @@ defmodule Vx.Float do
       ** (Vx.Error) must be a float
   """
   @spec integer(t) :: t
-  def integer(%__MODULE__{} = type \\ t()) do
-    Vx.Number.integer(type)
+  def integer(%__MODULE__{} = schema \\ t()) do
+    Vx.Number.integer(schema)
   end
 end

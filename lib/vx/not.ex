@@ -6,7 +6,7 @@ defmodule Vx.Not do
   @enforce_keys [:of]
   defstruct [:of]
 
-  @type t :: t(Vx.t())
+  @type t :: t(Vx.schema())
   @opaque t(of) :: %__MODULE__{of: of}
 
   @doc """
@@ -20,7 +20,7 @@ defmodule Vx.Not do
       iex> Vx.Not.t(Vx.Integer.t()) |> Vx.validate!(123)
       ** (Vx.Error) must not be integer
   """
-  @spec t(of) :: t(of) when of: Vx.t()
+  @spec t(of) :: t(of) when of: Vx.schema()
   def t(of) do
     %__MODULE__{of: of}
   end

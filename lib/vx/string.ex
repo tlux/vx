@@ -43,8 +43,8 @@ defmodule Vx.String do
       ** (Vx.Error) must be present
   """
   @spec present(t) :: t
-  def present(%__MODULE__{} = type \\ t()) do
-    constrain(type, :present, fn value ->
+  def present(%__MODULE__{} = schema \\ t()) do
+    constrain(schema, :present, fn value ->
       if String.trim(value) != "" do
         :ok
       else
@@ -68,8 +68,8 @@ defmodule Vx.String do
       ** (Vx.Error) must not be empty
   """
   @spec non_empty(t) :: t
-  def non_empty(%__MODULE__{} = type \\ t()) do
-    constrain(type, :non_empty, fn value ->
+  def non_empty(%__MODULE__{} = schema \\ t()) do
+    constrain(schema, :non_empty, fn value ->
       if value != "" do
         :ok
       else
@@ -93,9 +93,9 @@ defmodule Vx.String do
       ** (Vx.Error) must be at least 3 characters
   """
   @spec min_length(t, non_neg_integer) :: t
-  def min_length(%__MODULE__{} = type \\ t(), length)
+  def min_length(%__MODULE__{} = schema \\ t(), length)
       when is_integer(length) and length >= 0 do
-    constrain(type, :min_length, length, fn value ->
+    constrain(schema, :min_length, length, fn value ->
       if String.length(value) >= length do
         :ok
       else
@@ -119,9 +119,9 @@ defmodule Vx.String do
       ** (Vx.Error) must be at most 3 characters
   """
   @spec max_length(t, non_neg_integer) :: t
-  def max_length(%__MODULE__{} = type \\ t(), length)
+  def max_length(%__MODULE__{} = schema \\ t(), length)
       when is_integer(length) and length >= 0 do
-    constrain(type, :max_length, length, fn value ->
+    constrain(schema, :max_length, length, fn value ->
       if String.length(value) <= length do
         :ok
       else
@@ -142,8 +142,8 @@ defmodule Vx.String do
       ** (Vx.Error) must match expected format
   """
   @spec format(t, Regex.t()) :: t
-  def format(%__MODULE__{} = type \\ t(), regex) do
-    constrain(type, :format, regex, fn value ->
+  def format(%__MODULE__{} = schema \\ t(), regex) do
+    constrain(schema, :format, regex, fn value ->
       if Regex.match?(regex, value) do
         :ok
       else

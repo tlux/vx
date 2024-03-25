@@ -31,13 +31,13 @@ defmodule Vx.TypeTest do
     end
 
     test "wrapped type", %{constrain_fun: constrain_fun} do
-      type = Vx.Integer.t()
+      schema = Vx.Integer.t()
 
       assert %Vx.Integer{
                __type__: %Vx.Type{
                  constraints: [%Vx.Constraint{name: :bar, fun: ^constrain_fun}]
                }
-             } = Vx.Type.constrain(type, :bar, constrain_fun)
+             } = Vx.Type.constrain(schema, :bar, constrain_fun)
     end
   end
 
@@ -69,12 +69,12 @@ defmodule Vx.TypeTest do
     end
 
     test "wrapped type", %{constraints: constraints} do
-      type =
+      schema =
         Map.update!(Vx.Integer.t(), :__type__, fn type ->
           %{type | constraints: constraints}
         end)
 
-      assert Vx.Type.constraints(type) == Enum.reverse(constraints)
+      assert Vx.Type.constraints(schema) == Enum.reverse(constraints)
     end
   end
 end
