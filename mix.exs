@@ -75,9 +75,11 @@ defmodule Vx.MixProject do
           Vx.Struct,
           Vx.Tuple
         ],
-        Modifiers: [
+        Combinations: [
           Vx.Intersect,
-          Vx.Union,
+          Vx.Union
+        ],
+        Modifiers: [
           Vx.Not,
           Vx.Nullable,
           Vx.Optional
@@ -90,7 +92,7 @@ defmodule Vx.MixProject do
           Vx.Validatable,
           Vx.Inspectable
         ],
-        "Low-Level": [
+        "Low-Level API": [
           Vx.Type,
           Vx.Constraint
         ]
