@@ -17,7 +17,7 @@ The package can be installed by adding `vx` to your list of dependencies in
 ```elixir
 def deps do
   [
-    {:vx, "~> 0.3.0"}
+    {:vx, "~> 0.4.0"}
   ]
 end
 ```

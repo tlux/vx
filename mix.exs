@@ -2,7 +2,7 @@ defmodule Vx.MixProject do
   use Mix.Project
 
   @github_url "https://github.com/tlux/vx"
-  @version "0.3.0"
+  @version "0.4.0"
 
   def project do
     [
