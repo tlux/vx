@@ -68,6 +68,7 @@ defmodule Vx.Number do
   @doc """
   Requires the number to be positive.
   """
+  @doc since: "0.3.0"
   @spec positive(type) :: type when type: numeric
   def positive(type \\ t()) do
     constrain_num(type, :positive, fn value ->
@@ -82,6 +83,7 @@ defmodule Vx.Number do
   @doc """
   Requires the number to be negative.
   """
+  @doc since: "0.3.0"
   @spec negative(type) :: type when type: numeric
   def negative(type \\ t()) do
     constrain_num(type, :negative, fn value ->
