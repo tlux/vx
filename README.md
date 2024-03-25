@@ -27,7 +27,7 @@ end
 With Vx, you have the capability to define schemata for validating complex data
 effortlessly.
 
-You first need to define your schema.
+First, you need to define your schema.
 
 ```elixir
 schema = Vx.String.t()
