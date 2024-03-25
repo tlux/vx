@@ -67,6 +67,17 @@ defmodule Vx.List do
 
   defp check_inner_type(_type, _values), do: {:error, "must be a list"}
 
+  @doc """
+  Requires the list to be non-empty.
+
+  ## Examples
+
+      iex> Vx.List.non_empty() |> Vx.validate!([1, 2, 3])
+      :ok
+
+      iex> Vx.List.non_empty() |> Vx.validate!([])
+      ** (Vx.Error) must not be empty
+  """
   @spec non_empty(t) :: t
   def non_empty(%__MODULE__{} = type \\ t()) do
     constrain(type, :non_empty, fn
@@ -87,6 +98,9 @@ defmodule Vx.List do
     end)
   end
 
+  @doc """
+  Requires the list to have a minimum size.
+  """
   @spec min_size(t, non_neg_integer) :: t
   def min_size(%__MODULE__{} = type \\ t(), size)
       when is_integer(size) and size >= 0 do
@@ -99,6 +113,9 @@ defmodule Vx.List do
     end)
   end
 
+  @doc """
+  Requires the list to have a maximum size.
+  """
   @spec max_size(t, non_neg_integer) :: t
   def max_size(%__MODULE__{} = type \\ t(), size)
       when is_integer(size) and size >= 0 do
@@ -111,6 +128,22 @@ defmodule Vx.List do
     end)
   end
 
+  @doc """
+  Requires the list to match the given shape.
+
+  ## Examples
+
+      iex> Vx.List.shape([Vx.Number.t(), Vx.String.t()]) |> Vx.validate!([123, "foo"])
+      :ok
+
+      iex> Vx.List.shape([Vx.Number.t(), Vx.String.t()]) |> Vx.validate!([123])
+      ** (Vx.Error) must match [number, string]
+      - element 1 is missing
+
+      iex> Vx.List.shape([Vx.Number.t(), Vx.String.t()]) |> Vx.validate!([123, :foo])
+      ** (Vx.Error) must match [number, string]
+      - element 1: must be a string
+  """
   @spec shape(t, [Vx.t()]) :: t
   def shape(%__MODULE__{} = type \\ t(), shape) when is_list(shape) do
     constrain(type, :shape, shape, fn value ->
