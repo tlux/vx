@@ -118,7 +118,7 @@ defmodule Vx.NumberTest do
 
     test "no match" do
       assert {:error, error} = Vx.validate(Vx.Number.integer(), 1.1)
-      assert Exception.message(error) == "must be an integer"
+      assert Exception.message(error) == "must have no decimal places"
     end
   end
 
@@ -132,7 +132,7 @@ defmodule Vx.NumberTest do
       assert {:error, error} =
                Vx.validate(Vx.Float.t() |> Vx.Number.integer(), 1.1)
 
-      assert Exception.message(error) == "must be an integer"
+      assert Exception.message(error) == "must have no decimal places"
     end
   end
 

@@ -11,7 +11,7 @@ defmodule Vx.IntegerTest do
     test "no match" do
       Enum.each([123.0, 123.4, "foo", :foo, true, false], fn value ->
         assert {:error, error} = Vx.validate(Vx.Integer.t(), value)
-        assert Exception.message(error) =~ "must be an integer"
+        assert Exception.message(error) == "must be an integer"
       end)
     end
   end

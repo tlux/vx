@@ -41,11 +41,10 @@ defmodule Vx.Number do
       :ok
 
       iex> Vx.Number.integer() |> Vx.validate!(123.4)
-      ** (Vx.Error) must be an integer
+      ** (Vx.Error) must have no decimal places
 
       iex> Vx.Number.integer() |> Vx.validate!("foo")
       ** (Vx.Error) must be a number
-
   """
   @spec integer(type) :: type when type: numeric
   def integer(type \\ t())
@@ -61,7 +60,7 @@ defmodule Vx.Number do
         if value == trunc(value) do
           :ok
         else
-          {:error, "must be an integer"}
+          {:error, "must have no decimal places"}
         end
     end)
   end

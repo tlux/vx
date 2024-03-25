@@ -27,6 +27,19 @@ defmodule Vx.Float do
     end)
   end
 
+  @doc """
+  Requires the float to have no decimal places.
+
+  ## Examples
+      iex> Vx.Float.integer() |> Vx.validate!(123.0)
+      :ok
+
+      iex> Vx.Float.integer() |> Vx.validate!(123.4)
+      ** (Vx.Error) must have no decimal places
+
+      iex> Vx.Float.integer() |> Vx.validate!("foo")
+      ** (Vx.Error) must be a float
+  """
   @spec integer(t) :: t
   def integer(%__MODULE__{} = type \\ t()) do
     Vx.Number.integer(type)
