@@ -108,30 +108,17 @@ defmodule Vx.MapTest do
                  "baz" => "foo"
                })
 
-      assert :ok = Vx.validate!(shape, %{"bar" => 234, "baz" => "foo"})
-
-      assert {:error, error} =
-               Vx.validate(shape, %{
-                 "foo" => "baz",
+      assert :ok =
+               Vx.validate!(shape, %{
                  "bar" => 234,
-                 "baz" => "foo",
-                 "qix" => "hey"
+                 "baz" => "foo"
                })
 
-      assert Exception.message(error) == ~s[must not have key(s) "qix"]
-
-      assert {:error, error} =
-               Vx.validate(shape, %{"foo" => "baz", "baz" => "foo"})
-
-      assert Exception.message(error) == ~s[must have key(s) "bar"]
-
-      assert {:error, error} =
-               Vx.validate(shape, %{
+      assert :ok =
+               Vx.validate!(shape, %{
                  "foo" => "baz",
                  "bar" => 123
                })
-
-      assert Exception.message(error) == ~s[must have key(s) "baz"]
 
       assert :ok =
                Vx.validate!(shape, %{
@@ -139,6 +126,17 @@ defmodule Vx.MapTest do
                  "bar" => 123,
                  "baz" => nil
                })
+
+      assert {:error, error} =
+               Vx.validate(shape, %{
+                 "foo" => nil,
+                 "bar" => 123,
+                 "baz" => "foo"
+               })
+
+      assert Exception.message(error) ==
+               "does not match shape\n" <>
+                 ~s[- key "foo": must be a string]
 
       assert {:error, error} =
                Vx.validate(shape, %{

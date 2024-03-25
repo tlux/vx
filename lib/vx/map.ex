@@ -140,6 +140,13 @@ defmodule Vx.Map do
       :ok
 
       iex> schema = Vx.Map.shape(%{
+      ...>   a: Vx.String.t(),
+      ...>   b: Vx.Optional.t(Vx.Number.t())
+      ...> })
+      ...> Vx.validate!(schema, %{a: "foo"})
+      :ok
+
+      iex> schema = Vx.Map.shape(%{
       ...>   :a => Vx.String.t(),
       ...>   Vx.Optional.t(:b) => Vx.Number.t()
       ...> })
@@ -177,7 +184,7 @@ defmodule Vx.Map do
       true ->
         errors =
           Enum.flat_map(shape, fn {key, value_t} ->
-            with {:ok, value} <- fetch_value(map, key),
+            with {:ok, value} <- fetch_value(map, key, value_t),
                  :ok <- Vx.Validatable.validate(value_t, value) do
               []
             else
@@ -197,21 +204,32 @@ defmodule Vx.Map do
     end
   end
 
-  defp fetch_value(map, %Vx.Optional{of: key}) do
+  defp fetch_value(map, %Vx.Optional{of: key}, _value_t) do
     case Map.fetch(map, key) do
       {:ok, value} -> {:ok, value}
       :error -> :omit
     end
   end
 
-  defp fetch_value(map, key) do
-    # should never raise as missing keys are already validated at this point
+  defp fetch_value(map, key, %Vx.Optional{}) do
+    case Map.fetch(map, key) do
+      {:ok, nil} -> :omit
+      {:ok, value} -> {:ok, value}
+      :error -> :omit
+    end
+  end
+
+  defp fetch_value(map, key, _value_t) do
+    # should never raise as key existence is already validated at this point
     {:ok, Map.fetch!(map, key)}
   end
 
-  defp extract_keys(map) do
-    Enum.reduce(map, {MapSet.new(), MapSet.new()}, fn
+  defp extract_keys(shape) do
+    Enum.reduce(shape, {MapSet.new(), MapSet.new()}, fn
       {%Vx.Optional{of: key}, _}, {required, optional} ->
+        {required, MapSet.put(optional, key)}
+
+      {key, %Vx.Optional{}}, {required, optional} ->
         {required, MapSet.put(optional, key)}
 
       {key, _}, {required, optional} ->
