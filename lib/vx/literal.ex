@@ -36,12 +36,10 @@ defmodule Vx.Literal do
   end
 
   defimpl Vx.Validatable do
-    def validate(%{value: value}, actual_value) do
-      if value == actual_value do
-        :ok
-      else
-        {:error, "must be #{Kernel.inspect(value)}"}
-      end
+    def validate(%{value: value}, value), do: :ok
+
+    def validate(%{value: value}, _value) do
+      {:error, "must be #{Kernel.inspect(value)}"}
     end
   end
 

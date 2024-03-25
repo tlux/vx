@@ -15,6 +15,8 @@ defmodule Vx.LiteralTest do
         assert {:error, error} = Vx.validate(Vx.Literal.t(value), "bar")
         assert Exception.message(error) == "must be #{inspect(value)}"
       end)
+
+      assert {:error, _} = Vx.validate(Vx.Literal.t(123.0), 123)
     end
   end
 end
