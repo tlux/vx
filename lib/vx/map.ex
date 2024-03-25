@@ -23,12 +23,9 @@ defmodule Vx.Map do
   """
   @spec t() :: t
   def t do
-    new(fn value ->
-      if is_map(value) do
-        :ok
-      else
-        {:error, "must be a map"}
-      end
+    new(fn
+      value when is_map(value) -> :ok
+      _ -> {:error, "must be a map"}
     end)
   end
 
