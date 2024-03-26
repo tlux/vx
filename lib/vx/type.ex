@@ -81,8 +81,10 @@ defmodule Vx.Type do
         when type: t(atom) | custom(module, atom)
   def constraints(type, name) do
     type
-    |> constraints()
+    |> resolve()
+    |> Map.fetch!(:constraints)
     |> Enum.filter(&match?(%Constraint{name: ^name}, &1))
+    |> Enum.reverse()
   end
 
   defp resolve(%{__type__: %__MODULE__{} = type}), do: type

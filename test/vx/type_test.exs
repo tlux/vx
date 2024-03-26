@@ -78,6 +78,43 @@ defmodule Vx.TypeTest do
     end
   end
 
+  describe "constraints/2" do
+    setup do
+      {:ok,
+       constraints: [
+         %Vx.Constraint{name: :foo, value: "foo", fun: fn _ -> :ok end},
+         %Vx.Constraint{name: :bar, value: "foo", fun: fn _ -> :ok end},
+         %Vx.Constraint{name: :foo, value: "bar", fun: fn _ -> :ok end}
+       ]}
+    end
+
+    test "plain type", %{constraints: constraints} do
+      type = %{
+        Vx.Type.new(:foo, fn _ -> :ok end)
+        | constraints: Enum.reverse(constraints)
+      }
+
+      assert [
+               %Vx.Constraint{name: :foo, value: "foo"},
+               %Vx.Constraint{name: :foo, value: "bar"}
+             ] = Vx.Type.constraints(type, :foo)
+
+      assert [] = Vx.Type.constraints(type, :baz)
+    end
+
+    test "wrapped type", %{constraints: constraints} do
+      schema =
+        Map.update!(Vx.Integer.t(), :__type__, fn type ->
+          %{type | constraints: Enum.reverse(constraints)}
+        end)
+
+      assert [
+               %Vx.Constraint{name: :foo, value: "foo"},
+               %Vx.Constraint{name: :foo, value: "bar"}
+             ] = Vx.Type.constraints(schema, :foo)
+    end
+  end
+
   describe "of/1" do
     test "plain type" do
       of = [Vx.String.t(), Vx.Integer.t()]
