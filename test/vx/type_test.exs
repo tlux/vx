@@ -77,4 +77,19 @@ defmodule Vx.TypeTest do
       assert Vx.Type.constraints(schema) == Enum.reverse(constraints)
     end
   end
+
+  describe "of/1" do
+    test "plain type" do
+      of = [Vx.String.t(), Vx.Integer.t()]
+      type = Vx.Type.new(:foo, of, fn _ -> :ok end)
+
+      assert Vx.Type.of(type) == of
+    end
+
+    test "wrapped type" do
+      type = Vx.List.t(Vx.String.t())
+
+      assert Vx.Type.of(type) == [Vx.String.t()]
+    end
+  end
 end
