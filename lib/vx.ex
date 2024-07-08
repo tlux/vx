@@ -3,12 +3,10 @@ defmodule Vx do
   Vx is a schema validation library.
   """
 
-  alias Vx.{Error, Validatable}
-
   @typedoc """
   A Vx schema is anything that implements the `Vx.Validatable` protocol.
   """
-  @type schema :: Validatable.t()
+  @type t :: Vx.Validatable.t()
 
   @doc """
   Validates a value against a given schema.
@@ -19,16 +17,13 @@ defmodule Vx do
       :ok
 
       iex> Vx.validate(Vx.String.t(), 123)
-      {:error, %Vx.Error{message: "must be a string", schema: Vx.String.t(), value: 123}}
+      {:error, VxError.new(Vx.String.t(), 123, "must be a string")}
   """
-  @spec validate(schema, any) :: :ok | {:error, Error.t()}
+  @spec validate(t, any) :: :ok | {:error, [Vx.Error.t()]}
   def validate(schema, value) do
-    case Validatable.validate(schema, value) do
-      :ok ->
-        :ok
-
-      {:error, message} ->
-        {:error, %Error{schema: schema, value: value, message: message}}
+    case Vx.Validatable.validate(schema, value) do
+      [] -> :ok
+      errors -> {:error, Enum.sort_by(errors, & &1.path)}
     end
   end
 
@@ -41,12 +36,12 @@ defmodule Vx do
       :ok
 
       iex> Vx.validate!(Vx.String.t(), 123)
-      ** (Vx.Error) must be a string
+      ** (Vx.ValidationFailedError) Validation failed
   """
-  @spec validate!(schema, any) :: :ok | no_return
+  @spec validate!(t, any) :: :ok | no_return
   def validate!(schema, value) do
-    with {:error, error} <- validate(schema, value) do
-      raise error
+    with {:error, errors} <- validate(schema, value) do
+      raise Vx.ValidationFailedError.new(errors)
     end
   end
 
@@ -62,7 +57,7 @@ defmodule Vx do
       false
   """
   @doc since: "0.4.0"
-  @spec valid?(schema, any) :: boolean
+  @spec valid?(t, any) :: boolean
   def valid?(schema, value) do
     validate(schema, value) == :ok
   end

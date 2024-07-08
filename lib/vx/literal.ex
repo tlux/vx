@@ -6,9 +6,6 @@ defmodule Vx.Literal do
   @enforce_keys [:value]
   defstruct [:value]
 
-  @type t :: t(any)
-  @opaque t(value) :: %__MODULE__{value: value}
-
   @doc """
   Builds a new Literal type from a value.
 
@@ -30,20 +27,14 @@ defmodule Vx.Literal do
       iex> :foo |> Vx.validate!(:bar)
       ** (Vx.Error) must be :foo
   """
-  @spec t(value) :: t(value) when value: var
-  def t(value) do
-    %__MODULE__{value: value}
-  end
+  @spec t(any) :: Vx.t()
+  def t(value), do: %__MODULE__{value: value}
 
   defimpl Vx.Validatable do
-    def validate(%{value: value}, value), do: :ok
+    def validate(%{value: value}, value), do: []
 
-    def validate(%{value: value}, _value) do
-      {:error, "must be #{Kernel.inspect(value)}"}
+    def validate(%{value: value} = schema, actual_value) do
+      [Vx.Error.new(schema, actual_value, "is not #{inspect(value)}")]
     end
-  end
-
-  defimpl Vx.Inspectable do
-    def inspect(%{value: value}), do: Kernel.inspect(value)
   end
 end

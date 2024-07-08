@@ -7,9 +7,6 @@ defmodule Vx.Optional do
   @enforce_keys [:of]
   defstruct [:of]
 
-  @type t :: t(any)
-  @opaque t(of) :: %__MODULE__{of: of}
-
   @doc """
   Builds a new type that makes the passed type optional.
 
@@ -43,28 +40,14 @@ defmodule Vx.Optional do
       ** (Vx.Error) does not match shape
       - key :b: must be a number
   """
-  @spec t(of) :: t(of) when of: any
-  def t(of) do
-    %__MODULE__{of: of}
-  end
+  @spec t(Vx.t()) :: Vx.t()
+  def t(of), do: %__MODULE__{of: of}
 
   defimpl Vx.Validatable do
-    def validate(_, nil), do: :ok
+    def validate(_, nil), do: []
 
     def validate(%{of: of}, value) do
-      case Vx.Validatable.validate(of, value) do
-        :ok ->
-          :ok
-
-        {:error, _} ->
-          {:error, "must be #{Vx.Inspectable.inspect(Vx.Optional.t(of))}"}
-      end
-    end
-  end
-
-  defimpl Vx.Inspectable do
-    def inspect(%{of: of}) do
-      Vx.Inspectable.inspect(of) <> "?"
+      Vx.Validatable.validate(of, value)
     end
   end
 end

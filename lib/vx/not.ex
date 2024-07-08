@@ -6,9 +6,6 @@ defmodule Vx.Not do
   @enforce_keys [:of]
   defstruct [:of]
 
-  @type t :: t(Vx.schema())
-  @opaque t(of) :: %__MODULE__{of: of}
-
   @doc """
   Builds a new type negating the passed one.
 
@@ -20,23 +17,19 @@ defmodule Vx.Not do
       iex> Vx.Not.t(Vx.Integer.t()) |> Vx.validate!(123)
       ** (Vx.Error) must not be integer
   """
-  @spec t(of) :: t(of) when of: Vx.schema()
-  def t(of) do
-    %__MODULE__{of: of}
-  end
+  @spec t(Vx.t()) :: Vx.t()
+  def t(of), do: %__MODULE__{of: of}
 
   defimpl Vx.Validatable do
-    def validate(%{of: of}, value) do
+    def validate(%{of: of} = schema, value) do
       case Vx.Validatable.validate(of, value) do
-        :ok -> {:error, "must not be #{Vx.Inspectable.inspect(of)}"}
-        {:error, _} -> :ok
-      end
-    end
-  end
+        [] ->
+          # TODO: improve message
+          [Vx.Error.new(schema, value, "must not be #{inspect(of)}")]
 
-  defimpl Vx.Inspectable do
-    def inspect(%{of: of}) do
-      "!" <> Vx.Inspectable.inspect(of)
+        _ ->
+          []
+      end
     end
   end
 end

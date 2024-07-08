@@ -3,7 +3,16 @@ defmodule Vx.String do
   The String type.
   """
 
-  use Vx.Type, :string
+  use Vx.ConstrainContextual
+
+  alias __MODULE__.{
+    Format,
+    Length,
+    NonEmpty,
+    Present
+  }
+
+  defstruct []
 
   @doc """
   Builds a new String type.
@@ -16,15 +25,32 @@ defmodule Vx.String do
       iex> Vx.String.t() |> Vx.validate!(123)
       ** (Vx.Error) must be a string
   """
-  @spec t() :: t
-  def t do
-    new(fn value ->
-      if is_binary(value) && String.valid?(value) do
-        :ok
-      else
-        {:error, "must be a string"}
-      end
-    end)
+  @spec t() :: Vx.t()
+  def t, do: %__MODULE__{}
+
+  @doc """
+  Requires a string to match the given regex.
+
+  ## Examples
+
+      iex> Vx.String.t() |> Vx.String.format(~r/\\d+/) |> Vx.validate!("123")
+      :ok
+
+      iex> Vx.String.t() |> Vx.String.format(~r/\\d+/) |> Vx.validate!("foo")
+      ** (Vx.Error) must match expected format
+  """
+  @spec format(Vx.t(), Regex.t()) :: Vx.t()
+  def format(schema \\ t(), regex) do
+    constrain(schema, %Format{regex: regex})
+  end
+
+  @doc """
+  Requires a string to have a specific size.
+  """
+  @doc since: "1.0.0"
+  @spec length(Vx.t(), Keyword.t()) :: Vx.t()
+  def length(schema \\ t(), opts) do
+    constrain(schema, Length.new(opts))
   end
 
   @doc """
@@ -42,15 +68,9 @@ defmodule Vx.String do
       iex> Vx.String.t() |> Vx.String.present() |> Vx.validate!("   ")
       ** (Vx.Error) must be present
   """
-  @spec present(t) :: t
-  def present(%__MODULE__{} = schema \\ t()) do
-    constrain(schema, :present, fn value ->
-      if String.trim(value) != "" do
-        :ok
-      else
-        {:error, "must be present"}
-      end
-    end)
+  @spec present(Vx.t()) :: Vx.t()
+  def present(schema \\ t()) do
+    constrain(schema, %Present{})
   end
 
   @doc """
@@ -67,88 +87,18 @@ defmodule Vx.String do
       iex> Vx.String.t() |> Vx.String.non_empty() |> Vx.validate!("")
       ** (Vx.Error) must not be empty
   """
-  @spec non_empty(t) :: t
-  def non_empty(%__MODULE__{} = schema \\ t()) do
-    constrain(schema, :non_empty, fn value ->
-      if value != "" do
-        :ok
-      else
-        {:error, "must not be empty"}
-      end
-    end)
+  @spec non_empty(Vx.t()) :: Vx.t()
+  def non_empty(schema \\ t()) do
+    constrain(schema, %NonEmpty{})
   end
 
-  @doc """
-  Requires a string to be at least `length` characters long.
-
-  ## Examples
-
-      iex> Vx.String.t() |> Vx.String.min_length(3) |> Vx.validate!("foo")
-      :ok
-
-      iex> Vx.String.t() |> Vx.String.min_length(3) |> Vx.validate!("foob")
-      :ok
-
-      iex> Vx.String.t() |> Vx.String.min_length(3) |> Vx.validate!("fo")
-      ** (Vx.Error) must be at least 3 characters
-  """
-  @spec min_length(t, non_neg_integer) :: t
-  def min_length(%__MODULE__{} = schema \\ t(), length)
-      when is_integer(length) and length >= 0 do
-    constrain(schema, :min_length, length, fn value ->
-      if String.length(value) >= length do
-        :ok
+  defimpl Vx.Validatable do
+    def validate(schema, value) do
+      if is_binary(value) && String.valid?(value) do
+        []
       else
-        {:error, "must be at least #{length} characters"}
+        [Vx.Error.new(schema, value, "is not a string")]
       end
-    end)
-  end
-
-  @doc """
-  Requires a string to be at most `length` characters long.
-
-  ## Examples
-
-      iex> Vx.String.t() |> Vx.String.max_length(3) |> Vx.validate!("foo")
-      :ok
-
-      iex> Vx.String.t() |> Vx.String.max_length(3) |> Vx.validate!("fo")
-      :ok
-
-      iex> Vx.String.t() |> Vx.String.max_length(3) |> Vx.validate!("fooo")
-      ** (Vx.Error) must be at most 3 characters
-  """
-  @spec max_length(t, non_neg_integer) :: t
-  def max_length(%__MODULE__{} = schema \\ t(), length)
-      when is_integer(length) and length >= 0 do
-    constrain(schema, :max_length, length, fn value ->
-      if String.length(value) <= length do
-        :ok
-      else
-        {:error, "must be at most #{length} characters"}
-      end
-    end)
-  end
-
-  @doc """
-  Requires a string to match the given regex.
-
-  ## Examples
-
-      iex> Vx.String.t() |> Vx.String.format(~r/\\d+/) |> Vx.validate!("123")
-      :ok
-
-      iex> Vx.String.t() |> Vx.String.format(~r/\\d+/) |> Vx.validate!("foo")
-      ** (Vx.Error) must match expected format
-  """
-  @spec format(t, Regex.t()) :: t
-  def format(%__MODULE__{} = schema \\ t(), regex) do
-    constrain(schema, :format, regex, fn value ->
-      if Regex.match?(regex, value) do
-        :ok
-      else
-        {:error, "must match expected format"}
-      end
-    end)
+    end
   end
 end

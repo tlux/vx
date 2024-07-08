@@ -3,7 +3,9 @@ defmodule Vx.Integer do
   The Integer type.
   """
 
-  use Vx.Type, :integer
+  defstruct []
+
+  @type t :: %__MODULE__{}
 
   @doc """
   Builds a new Integer type.
@@ -20,10 +22,13 @@ defmodule Vx.Integer do
       ** (Vx.Error) must be an integer
   """
   @spec t() :: t
-  def t do
-    new(fn
-      value when is_integer(value) -> :ok
-      _ -> {:error, "must be an integer"}
-    end)
+  def t, do: %__MODULE__{}
+
+  defimpl Vx.Validatable do
+    def validate(_, value) when is_integer(value), do: []
+
+    def validate(schema, value) do
+      [Vx.Error.new(schema, value, "is not an integer")]
+    end
   end
 end

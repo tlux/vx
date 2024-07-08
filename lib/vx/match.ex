@@ -4,6 +4,9 @@ defmodule Vx.Match do
   macros, you need to `require Vx.Match` before using it.
   """
 
+  @enforce_keys [:matcher, :pattern]
+  defstruct [:matcher, :pattern]
+
   @doc """
   Creates a new type that matches a pattern.
 
@@ -24,13 +27,20 @@ defmodule Vx.Match do
     pattern_as_str = Macro.to_string(pattern)
 
     quote do
-      Vx.Type.new(:match, fn value ->
-        if match?(unquote(pattern), value) do
-          :ok
-        else
-          {:error, "must match #{unquote(pattern_as_str)}"}
-        end
-      end)
+      %unquote(__MODULE__){
+        matcher: &match?(unquote(pattern), &1),
+        pattern: unquote(pattern_as_str)
+      }
+    end
+  end
+
+  defimpl Vx.Validatable do
+    def validate(schema, value) do
+      if schema.matcher.(value) do
+        []
+      else
+        [Vx.Error.new(schema, value, "does not match #{schema.pattern}")]
+      end
     end
   end
 end

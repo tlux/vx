@@ -14,7 +14,7 @@ defmodule VxTest do
   setup do
     {:ok,
      schema:
-       Vx.Map.shape(%{
+       Vx.Map.t(%{
          "name" => Vx.String.t(),
          "age" => Vx.Number.t(),
          "hobbies" =>

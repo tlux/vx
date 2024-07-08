@@ -3,7 +3,9 @@ defmodule Vx.Float do
   The Float type.
   """
 
-  use Vx.Type, :float
+  use Vx.ConstrainContextual
+
+  defstruct []
 
   @doc """
   Builds a new Float type.
@@ -19,29 +21,14 @@ defmodule Vx.Float do
       iex> Vx.Float.t() |> Vx.validate!("foo")
       ** (Vx.Error) must be a float
   """
-  @spec t() :: t
-  def t do
-    new(fn
-      value when is_float(value) -> :ok
-      _ -> {:error, "must be a float"}
-    end)
-  end
+  @spec t() :: Vx.t()
+  def t, do: %__MODULE__{}
 
-  @doc """
-  Requires the float to have no decimal places.
+  defimpl Vx.Validatable do
+    def validate(_, value) when is_float(value), do: []
 
-  ## Examples
-      iex> Vx.Float.integer() |> Vx.validate!(123.0)
-      :ok
-
-      iex> Vx.Float.integer() |> Vx.validate!(123.4)
-      ** (Vx.Error) must have no decimal places
-
-      iex> Vx.Float.integer() |> Vx.validate!("foo")
-      ** (Vx.Error) must be a float
-  """
-  @spec integer(t) :: t
-  def integer(%__MODULE__{} = schema \\ t()) do
-    Vx.Number.integer(schema)
+    def validate(schema, value) do
+      [Vx.Error.new(schema, value, "is not a float")]
+    end
   end
 end

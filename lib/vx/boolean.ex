@@ -3,7 +3,7 @@ defmodule Vx.Boolean do
   The Boolean type.
   """
 
-  use Vx.Type, :boolean
+  defstruct []
 
   @doc """
   Builds a new Boolean type.
@@ -19,11 +19,14 @@ defmodule Vx.Boolean do
       iex> Vx.Boolean.t() |> Vx.validate!("foo")
       ** (Vx.Error) must be a boolean
   """
-  @spec t() :: t
-  def t do
-    new(fn
-      value when is_boolean(value) -> :ok
-      _ -> {:error, "must be a boolean"}
-    end)
+  @spec t() :: Vx.t()
+  def t, do: %__MODULE__{}
+
+  defimpl Vx.Validatable do
+    def validate(_, value) when is_boolean(value), do: []
+
+    def validate(schema, value) do
+      [Vx.Error.new(schema, value, "is not a boolean")]
+    end
   end
 end

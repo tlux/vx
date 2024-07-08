@@ -7,9 +7,6 @@ defmodule Vx.Intersect do
   @enforce_keys [:of]
   defstruct [:of]
 
-  @type t :: t(nonempty_list(Vx.schema()))
-  @opaque t(of) :: %__MODULE__{of: of}
-
   @doc """
   Builds a new Intersect type.
 
@@ -21,10 +18,8 @@ defmodule Vx.Intersect do
       iex> Vx.Intersect.t([Vx.Integer.t(), Vx.Number.t()]) |> Vx.validate!(12.3)
       ** (Vx.Error) must be all of (integer & number)
   """
-  @spec t(of) :: t(of) when of: nonempty_list(Vx.schema())
-  def t([_ | _] = of) do
-    %__MODULE__{of: of}
-  end
+  @spec t(nonempty_list(Vx.t())) :: Vx.t()
+  def t([_ | _] = of), do: %__MODULE__{of: of}
 
   defimpl Vx.Validatable do
     def validate(%{of: [of]}, value) do
@@ -32,25 +27,7 @@ defmodule Vx.Intersect do
     end
 
     def validate(%{of: of}, value) do
-      errors =
-        Enum.flat_map(of, fn type ->
-          case Vx.Validatable.validate(type, value) do
-            :ok -> []
-            {:error, message} -> ["- #{message}"]
-          end
-        end)
-
-      if errors == [] do
-        :ok
-      else
-        {:error, "must be all of #{Vx.Inspectable.inspect(Vx.Intersect.t(of))}"}
-      end
-    end
-  end
-
-  defimpl Vx.Inspectable do
-    def inspect(%{of: of}) do
-      "(" <> Enum.map_join(of, " & ", &Vx.Inspectable.inspect/1) <> ")"
+      Enum.flat_map(of, &Vx.Validatable.validate(&1, value))
     end
   end
 end

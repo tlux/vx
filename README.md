@@ -82,3 +82,7 @@ Vx.Map.shape(%{
 
 Take a look at the [documentation](https://hexdocs.pm/vx) to find out available
 types and options.
+
+# TODOs
+
+- Support `Decimal`

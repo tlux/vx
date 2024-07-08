@@ -7,9 +7,6 @@ defmodule Vx.Union do
   @enforce_keys [:of]
   defstruct [:of]
 
-  @type t :: t(nonempty_list(Vx.schema()))
-  @opaque t(of) :: %__MODULE__{of: of}
-
   @doc """
   Builds a new Union type.
 
@@ -21,36 +18,36 @@ defmodule Vx.Union do
       iex> Vx.Union.t([Vx.Integer.t(), Vx.String.t()]) |> Vx.validate!(:foo)
       ** (Vx.Error) must be any of (integer | string)
   """
-  @spec t(of) :: t(of) when of: nonempty_list(Vx.schema())
-  def t([_ | _] = of) do
-    %__MODULE__{of: of}
-  end
+  @spec t(nonempty_list(Vx.t())) :: Vx.t()
+  def t([_ | _] = of), do: %__MODULE__{of: of}
 
   defimpl Vx.Validatable do
     def validate(%{of: [of]}, value) do
       Vx.Validatable.validate(of, value)
     end
 
-    def validate(%{of: of}, value) do
-      errors =
-        Enum.flat_map(of, fn type ->
-          case Vx.Validatable.validate(type, value) do
-            :ok -> []
-            {:error, message} -> ["- #{message}"]
-          end
-        end)
+    def validate(%{of: of} = schema, value) do
+      of
+      |> Enum.reduce_while([], fn schema, acc ->
+        case Vx.Validatable.validate(schema, value) do
+          [] -> {:halt, []}
+          errors -> {:cont, acc ++ errors}
+        end
+      end)
+      |> then(fn
+        [] ->
+          []
 
-      if length(errors) == length(of) do
-        {:error, "must be any of #{Vx.Inspectable.inspect(Vx.Union.t(of))}"}
-      else
-        :ok
-      end
-    end
-  end
-
-  defimpl Vx.Inspectable do
-    def inspect(%{of: of}) do
-      "(" <> Enum.map_join(of, " | ", &Vx.Inspectable.inspect/1) <> ")"
+        errors ->
+          [
+            Vx.Error.new(
+              schema,
+              value,
+              "does not match any\n" <>
+                Enum.map_join(errors, "\n", &"- #{&1.message}")
+            )
+          ]
+      end)
     end
   end
 end

@@ -3,7 +3,7 @@ defmodule Vx.Atom do
   The Atom type.
   """
 
-  use Vx.Type, :atom
+  defstruct []
 
   @doc """
   Builds a new Atom type.
@@ -14,7 +14,8 @@ defmodule Vx.Atom do
       :ok
 
       iex> Vx.Atom.t() |> Vx.validate!("foo")
-      ** (Vx.Error) must be an atom
+      ** (Vx.ValidationFailedError) Validation failed:
+      - is not an atom
 
   As `nil`, booleans and module names are also atoms, all of these are totally
   valid as well:
@@ -28,11 +29,22 @@ defmodule Vx.Atom do
       iex> Vx.Atom.t() |> Vx.validate!(Address)
       :ok
   """
-  @spec t() :: t
-  def t do
-    new(fn
-      value when is_atom(value) -> :ok
-      _ -> {:error, "must be an atom"}
-    end)
+  @spec t() :: Vx.t()
+  def t, do: %__MODULE__{}
+
+  @doc """
+  Builds a new Atom type that matches any user-defined atom.
+  """
+  @spec custom() :: Vx.t()
+  def custom do
+    Vx.Except.t([t(), Vx.Boolean.t(), Vx.Literal.t(nil)])
+  end
+
+  defimpl Vx.Validatable do
+    def validate(_, value) when is_atom(value), do: []
+
+    def validate(schema, value) do
+      [Vx.Error.new(schema, value, "is not an atom")]
+    end
   end
 end

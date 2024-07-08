@@ -3,7 +3,7 @@ defmodule Vx.Any do
   The Any type.
   """
 
-  use Vx.Type, :any
+  defstruct []
 
   @doc """
   Builds a new type that matches anything.
@@ -13,6 +13,10 @@ defmodule Vx.Any do
       iex> Vx.Any.t() |> Vx.validate!("foo")
       :ok
   """
-  @spec t() :: t
-  def t, do: new(fn _ -> :ok end)
+  @spec t() :: Vx.t()
+  def t, do: %__MODULE__{}
+
+  defimpl Vx.Validatable do
+    def validate(_, _), do: []
+  end
 end
