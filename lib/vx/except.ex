@@ -7,7 +7,7 @@ defmodule Vx.Except do
     %__MODULE__{min: min, sub: sub}
   end
 
-  @spec t([Vx.t()]) :: Vx.t()
+  @spec t(Vx.t() | [Vx.t()]) :: Vx.t()
   def t([_ | _] = list) when is_list(list) do
     Enum.reduce(list, fn item, acc ->
       t(acc, item)

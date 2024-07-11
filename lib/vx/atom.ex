@@ -35,9 +35,9 @@ defmodule Vx.Atom do
   @doc """
   Builds a new Atom type that matches any user-defined atom.
   """
-  @spec custom() :: Vx.t()
-  def custom do
-    Vx.Except.t([t(), Vx.Boolean.t(), Vx.Literal.t(nil)])
+  @spec custom(Vx.t()) :: Vx.t()
+  def custom(schema \\ t()) do
+    Vx.Except.t([schema, Vx.Boolean.t(), Vx.Literal.t(nil)])
   end
 
   defimpl Vx.Validatable do
