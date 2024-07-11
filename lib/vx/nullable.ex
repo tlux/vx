@@ -3,10 +3,10 @@ defmodule Vx.Nullable do
   The Nullable type modifies a type or value to allow `nil` as a valid value.
   """
 
-  @enforce_keys [:of]
-  defstruct [:of]
+  @enforce_keys [:schema]
+  defstruct [:schema]
 
-  @type t(of) :: %__MODULE__{of: of}
+  @type t(schema) :: %__MODULE__{schema: schema}
   @type t :: t(Vx.t())
 
   @doc """
@@ -24,13 +24,13 @@ defmodule Vx.Nullable do
       ** (Vx.Error) must be (string | nil)
   """
   @spec t(Vx.t()) :: Vx.t()
-  def t(of), do: %__MODULE__{of: of}
+  def t(schema), do: %__MODULE__{schema: schema}
 
   defimpl Vx.Validatable do
     def validate(_, nil), do: []
 
-    def validate(%{of: of}, value) do
-      Vx.Validatable.validate(of, value)
+    def validate(%{schema: schema}, value) do
+      Vx.Validatable.validate(schema, value)
     end
   end
 end

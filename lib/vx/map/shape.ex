@@ -69,7 +69,7 @@ defmodule Vx.Map.Shape do
 
     defp extract_keys(shape) do
       Enum.reduce(shape, {MapSet.new(), MapSet.new()}, fn
-        {%Vx.Optional{of: key}, _}, {required, optional} ->
+        {%Vx.Optional{schema: key}, _}, {required, optional} ->
           {required, MapSet.put(optional, key)}
 
         {key, %Vx.Optional{}}, {required, optional} ->
@@ -80,7 +80,7 @@ defmodule Vx.Map.Shape do
       end)
     end
 
-    defp fetch_value(map, %Vx.Optional{of: key}, _value_t) do
+    defp fetch_value(map, %Vx.Optional{schema: key}, _value_t) do
       case Map.fetch(map, key) do
         {:ok, value} -> {:ok, value}
         :error -> :omit
@@ -100,7 +100,7 @@ defmodule Vx.Map.Shape do
       {:ok, Map.fetch!(map, key)}
     end
 
-    defp resolve_key(%Vx.Optional{of: key}), do: key
+    defp resolve_key(%Vx.Optional{schema: key}), do: key
     defp resolve_key(key), do: key
   end
 end

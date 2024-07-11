@@ -4,10 +4,10 @@ defmodule Vx.Optional do
   other places, it behaves like `Vx.Nullable`.
   """
 
-  @enforce_keys [:of]
-  defstruct [:of]
+  @enforce_keys [:schema]
+  defstruct [:schema]
 
-  @type t(of) :: %__MODULE__{of: of}
+  @type t(schema) :: %__MODULE__{schema: schema}
   @type t :: t(Vx.t())
 
   @doc """
@@ -44,13 +44,13 @@ defmodule Vx.Optional do
       - key :b: must be a number
   """
   @spec t(Vx.t()) :: Vx.t()
-  def t(of), do: %__MODULE__{of: of}
+  def t(schema), do: %__MODULE__{schema: schema}
 
   defimpl Vx.Validatable do
     def validate(_, nil), do: []
 
-    def validate(%{of: of}, value) do
-      Vx.Validatable.validate(of, value)
+    def validate(%{schema: schema}, value) do
+      Vx.Validatable.validate(schema, value)
     end
   end
 end
