@@ -56,17 +56,16 @@ defmodule Vx.Error do
   end
 
   @impl true
-  def message(%{path: [], message: nil}), do: "invalid"
-
   def message(%{path: path, message: nil}) do
-    "value at #{inspect(path)} invalid"
+    message_with_path(path, "invalid")
   end
-
-  def message(%{path: [], message: message}), do: message
 
   def message(%{path: path, message: message}) do
-    "value at #{inspect(path)} #{message}"
+    message_with_path(path, message)
   end
+
+  defp message_with_path([], text), do: text
+  defp message_with_path(path, text), do: "value at #{inspect(path)} #{text}"
 
   @doc """
   Prepends a message to the error message.

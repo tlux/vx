@@ -11,11 +11,11 @@ defmodule Vx.Enum do
 
   ## Examples
 
-      iex> Vx.Enum.t([:foo, :bar]) |> Vx.validate!(:foo)
-      :ok
+      iex> Vx.Enum.t([:foo, :bar]) |> Vx.valid?(:foo)
+      true
 
-      iex> Vx.Enum.t([:foo, :bar]) |> Vx.validate!(:baz)
-      ** (Vx.Error) must be one of :foo, :bar
+      iex> Vx.Enum.t([:foo, :bar]) |> Vx.valid?(:baz)
+      false
   """
   @spec t(nonempty_list) :: Vx.t()
   def t([_ | _] = values) when is_list(values) do
