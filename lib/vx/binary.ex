@@ -10,8 +10,11 @@ defmodule Vx.Binary do
 
   ## Examples
 
-      iex> Vx.Binary.t() |> Vx.validate!("foo")
-      :ok
+      iex> Vx.Binary.t() |> Vx.valid?("foo")
+      true
+
+      iex> Vx.Binary.t() |> Vx.valid?(123)
+      false
   """
   @spec t() :: Vx.t()
   def t, do: %__MODULE__{}

@@ -10,14 +10,14 @@ defmodule Vx.Boolean do
 
   ## Examples
 
-      iex> Vx.Boolean.t() |> Vx.validate!(true)
-      :ok
+      iex> Vx.Boolean.t() |> Vx.valid?(true)
+      true
 
-      iex> Vx.Boolean.t() |> Vx.validate!(false)
-      :ok
+      iex> Vx.Boolean.t() |> Vx.valid?(false)
+      true
 
-      iex> Vx.Boolean.t() |> Vx.validate!("foo")
-      ** (Vx.Error) must be a boolean
+      iex> Vx.Boolean.t() |> Vx.valid?("foo")
+      false
   """
   @spec t() :: Vx.t()
   def t, do: %__MODULE__{}

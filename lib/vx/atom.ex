@@ -10,24 +10,23 @@ defmodule Vx.Atom do
 
   ## Examples
 
-      iex> Vx.Atom.t() |> Vx.validate!(:foo)
-      :ok
+      iex> Vx.Atom.t() |> Vx.valid?(:foo)
+      true
 
-      iex> Vx.Atom.t() |> Vx.validate!("foo")
-      ** (Vx.ValidationFailedError) Validation failed:
-      - is not an atom
+      iex> Vx.Atom.t() |> Vx.valid?("foo")
+      false
 
   As `nil`, booleans and module names are also atoms, all of these are totally
   valid as well:
 
-      iex> Vx.Atom.t() |> Vx.validate!(nil)
-      :ok
+      iex> Vx.Atom.t() |> Vx.valid?(nil)
+      true
 
-      iex> Vx.Atom.t() |> Vx.validate!(true)
-      :ok
+      iex> Vx.Atom.t() |> Vx.valid?(true)
+      true
 
-      iex> Vx.Atom.t() |> Vx.validate!(Address)
-      :ok
+      iex> Vx.Atom.t() |> Vx.valid?(Address)
+      true
   """
   @spec t() :: Vx.t()
   def t, do: %__MODULE__{}
