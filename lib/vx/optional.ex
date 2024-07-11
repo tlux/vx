@@ -7,6 +7,9 @@ defmodule Vx.Optional do
   @enforce_keys [:of]
   defstruct [:of]
 
+  @type t(of) :: %__MODULE__{of: of}
+  @type t :: t(Vx.t())
+
   @doc """
   Builds a new type that makes the passed type optional.
 
