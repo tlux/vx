@@ -24,7 +24,7 @@ defmodule Vx.Intersect do
   end
 
   @spec t(nonempty_list(Vx.t())) :: Vx.t()
-  def t([_ | _] = list) when is_list(list) do
+  def t([_, _ | _] = list) when is_list(list) do
     Enum.reduce(list, fn item, acc ->
       t(acc, item)
     end)
