@@ -1,13 +1,20 @@
 defmodule Vx.Except do
+  @moduledoc """
+  The Except type subtracts one type from another.
+  """
+
   @enforce_keys [:min, :sub]
   defstruct [:min, :sub]
 
+  @doc """
+  Builds a new Except type.
+  """
   @spec t(Vx.t(), Vx.t()) :: Vx.t()
   def t(min, sub) do
     %__MODULE__{min: min, sub: sub}
   end
 
-  @spec t(Vx.t() | [Vx.t()]) :: Vx.t()
+  @spec t(nonempty_list(Vx.t())) :: Vx.t()
   def t([_ | _] = list) when is_list(list) do
     Enum.reduce(list, fn item, acc ->
       t(acc, item)

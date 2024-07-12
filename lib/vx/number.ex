@@ -137,7 +137,7 @@ defmodule Vx.Number do
     def validate(_, value) when is_number(value), do: []
 
     def validate(schema, value) do
-      Vx.Error.new(schema, value, "is not a number")
+      [Vx.Error.new(schema, value, "is not a number")]
     end
   end
 end

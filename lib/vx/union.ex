@@ -4,50 +4,47 @@ defmodule Vx.Union do
   whether any of them is valid.
   """
 
-  @enforce_keys [:of]
-  defstruct [:of]
+  @enforce_keys [:aug, :add]
+  defstruct [:aug, :add]
 
   @doc """
   Builds a new Union type.
 
   # Examples
 
-      iex> Vx.Union.t([Vx.Integer.t(), Vx.String.t()]) |> Vx.validate!(123)
-      :ok
+      iex> Vx.Union.t(Vx.Integer.t(), Vx.String.t()) |> Vx.valid?(123)
+      true
 
-      iex> Vx.Union.t([Vx.Integer.t(), Vx.String.t()]) |> Vx.validate!(:foo)
-      ** (Vx.Error) must be any of (integer | string)
+      iex> Vx.Union.t(Vx.Integer.t(), Vx.String.t()) |> Vx.valid?(:foo)
+      false
   """
+  @spec t(Vx.t(), Vx.t()) :: Vx.t()
+  def t(aug, add) do
+    %__MODULE__{aug: aug, add: add}
+  end
+
   @spec t(nonempty_list(Vx.t())) :: Vx.t()
-  def t([_ | _] = of), do: %__MODULE__{of: of}
+  def t([_ | _] = list) when is_list(list) do
+    Enum.reduce(list, fn item, acc ->
+      t(acc, item)
+    end)
+  end
 
   defimpl Vx.Validatable do
-    def validate(%{of: [of]}, value) do
-      Vx.Validatable.validate(of, value)
-    end
-
-    def validate(%{of: of} = schema, value) do
-      of
-      |> Enum.reduce_while([], fn schema, acc ->
-        case Vx.Validatable.validate(schema, value) do
-          [] -> {:halt, []}
-          errors -> {:cont, acc ++ errors}
-        end
-      end)
-      |> then(fn
-        [] ->
-          []
-
-        errors ->
+    def validate(%{aug: aug, add: add} = schema, value) do
+      with {:aug, []} <- {:aug, Vx.Validatable.validate(aug, value)},
+           {:add, []} <- {:add, Vx.Validatable.validate(add, value)} do
+        []
+      else
+        _ ->
           [
             Vx.Error.new(
               schema,
               value,
-              "does not match any\n" <>
-                Enum.map_join(errors, "\n", &"- #{&1.message}")
+              "must be #{inspect(aug)} or #{inspect(add)}"
             )
           ]
-      end)
+      end
     end
   end
 end
