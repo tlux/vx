@@ -64,6 +64,32 @@ defmodule Vx.ListTest do
     end
   end
 
+  describe "length/1 with min length" do
+    test "match" do
+      assert :ok = Vx.validate(Vx.List.length(min: 0), [])
+      assert :ok = Vx.validate(Vx.List.length(min: 3), ["foo", 123.4, true])
+    end
+
+    test "no match" do
+      assert {:error, [error]} = Vx.validate(Vx.List.length(min: 2), ["foo"])
+      assert Exception.message(error) == "must have at least 2 elements"
+    end
+  end
+
+  describe "length/1 with max length" do
+    test "match" do
+      assert :ok = Vx.validate(Vx.List.length(max: 0), [])
+      assert :ok = Vx.validate(Vx.List.length(max: 3), ["foo", 123.4, true])
+    end
+
+    test "no match" do
+      assert {:error, [error]} =
+               Vx.validate(Vx.List.length(max: 2), ["foo", "bar", "baz"])
+
+      assert Exception.message(error) == "must have at most 2 elements"
+    end
+  end
+
   describe "length/1 with exact length" do
     test "match" do
       assert :ok = Vx.validate(Vx.List.length(is: 0), [])

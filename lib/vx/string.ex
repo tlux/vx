@@ -19,11 +19,11 @@ defmodule Vx.String do
 
   ## Examples
 
-      iex> Vx.String.t() |> Vx.validate!("foo")
-      :ok
+      iex> Vx.String.t() |> Vx.valid?("foo")
+      true
 
-      iex> Vx.String.t() |> Vx.validate!(123)
-      ** (Vx.Error) must be a string
+      iex> Vx.String.t() |> Vx.valid?(123)
+      false
   """
   @spec t() :: Vx.t()
   def t, do: %__MODULE__{}
@@ -33,11 +33,11 @@ defmodule Vx.String do
 
   ## Examples
 
-      iex> Vx.String.t() |> Vx.String.format(~r/\\d+/) |> Vx.validate!("123")
-      :ok
+      iex> Vx.String.t() |> Vx.String.format(~r/\\d+/) |> Vx.valid?("123")
+      true
 
-      iex> Vx.String.t() |> Vx.String.format(~r/\\d+/) |> Vx.validate!("foo")
-      ** (Vx.Error) must match expected format
+      iex> Vx.String.t() |> Vx.String.format(~r/\\d+/) |> Vx.valid?("foo")
+      false
   """
   @spec format(Vx.t(), Regex.t()) :: Vx.t()
   def format(schema \\ t(), regex) do
@@ -59,14 +59,14 @@ defmodule Vx.String do
 
   ## Examples
 
-      iex> Vx.String.t() |> Vx.String.present() |> Vx.validate!("foo")
-      :ok
+      iex> Vx.String.t() |> Vx.String.present() |> Vx.valid?("foo")
+      true
 
-      iex> Vx.String.t() |> Vx.String.present() |> Vx.validate!("")
-      ** (Vx.Error) must be present
+      iex> Vx.String.t() |> Vx.String.present() |> Vx.valid?("")
+      false
 
-      iex> Vx.String.t() |> Vx.String.present() |> Vx.validate!("   ")
-      ** (Vx.Error) must be present
+      iex> Vx.String.t() |> Vx.String.present() |> Vx.valid?("   ")
+      false
   """
   @spec present(Vx.t()) :: Vx.t()
   def present(schema \\ t()) do
@@ -78,14 +78,14 @@ defmodule Vx.String do
 
   ## Examples
 
-      iex> Vx.String.t() |> Vx.String.non_empty() |> Vx.validate!("foo")
-      :ok
+      iex> Vx.String.t() |> Vx.String.non_empty() |> Vx.valid?("foo")
+      true
 
-      iex> Vx.String.t() |> Vx.String.non_empty() |> Vx.validate!("   ")
-      :ok
+      iex> Vx.String.t() |> Vx.String.non_empty() |> Vx.valid?("   ")
+      true
 
-      iex> Vx.String.t() |> Vx.String.non_empty() |> Vx.validate!("")
-      ** (Vx.Error) must not be empty
+      iex> Vx.String.t() |> Vx.String.non_empty() |> Vx.valid?("")
+      false
   """
   @spec non_empty(Vx.t()) :: Vx.t()
   def non_empty(schema \\ t()) do

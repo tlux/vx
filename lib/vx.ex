@@ -4,7 +4,7 @@ defmodule Vx do
   """
 
   @typedoc """
-  A Vx schema is anything that implements the `Vx.Validatable` protocol.
+  A `Vx` schema is anything that implements the `Vx.Validatable` protocol.
   """
   @type t :: Vx.Validatable.t()
 
@@ -17,7 +17,7 @@ defmodule Vx do
       :ok
 
       iex> Vx.validate(Vx.String.t(), 123)
-      {:error, VxError.new(Vx.String.t(), 123, "must be a string")}
+      {:error, [Vx.Error.new(Vx.String.t(), 123)]}
   """
   @spec validate(t, any) :: :ok | {:error, [Vx.Error.t()]}
   def validate(schema, value) do
@@ -79,7 +79,7 @@ defmodule Vx do
       :ok
 
       iex> Vx.validate!(Vx.String.t(), 123)
-      ** (Vx.ValidationFailedError) Validation failed
+      ** (Vx.ValidationFailedError) Validation failed: expected string
   """
   @spec validate!(t, any) :: :ok | no_return
   def validate!(schema, value) do

@@ -8,6 +8,14 @@ defmodule Vx.Except do
 
   @doc """
   Builds a new Except type.
+
+  # Examples
+
+    iex> Vx.Except.t(Vx.Number.t(), Vx.Integer.t()) |> Vx.valid?(123.4)
+    true
+
+    iex> Vx.Except.t(Vx.Number.t(), Vx.Integer.t()) |> Vx.valid?(123)
+    false
   """
   @spec t(Vx.t(), Vx.t()) :: Vx.t()
   def t(a, b), do: %__MODULE__{a: a, b: b}

@@ -12,8 +12,8 @@ defmodule Vx.TupleTest do
 
     test "no match" do
       Enum.each([nil, "foo", :foo, true, false], fn value ->
-        assert  {:error, [error]} = Vx.validate(Vx.Tuple.t(), value)
-        assert Exception.message(error) == "must be a tuple"
+        assert {:error, [error]} = Vx.validate(Vx.Tuple.t(), value)
+        assert Exception.message(error) == "expected tuple"
       end)
     end
   end
@@ -31,35 +31,56 @@ defmodule Vx.TupleTest do
     end
 
     test "no match" do
-      assert  {:error, [error]} = Vx.validate(Vx.Tuple.shape({1, 2, 3}), {1, 2})
-
-      assert Exception.message(error) ==
-               "must match {1, 2, 3}\n" <>
-                 "- element 2 is missing"
+      assert {:error, [error]} = Vx.validate(Vx.Tuple.shape({1, 2, 3}), {1, 2})
+      assert Exception.message(error) == "element at index 2 is missing"
 
       assert {:error, _} = Vx.validate(Vx.Tuple.shape({1, 2, 3}), {1, 2, 3, 4})
 
-      assert {:error, error} =
+      assert {:error, [error]} =
                Vx.validate(Vx.Tuple.shape({1, Vx.String.t(), 3}), {1, 2, 3})
 
-      assert Exception.message(error) ==
-               "must match {1, string, 3}\n" <>
-                 "- element 1: must be a string"
+      assert Exception.message(error) == "expected string at [1]"
     end
   end
 
-  describe "size/1" do
+  describe "size/1 with exact size" do
     test "match" do
-      assert :ok = Vx.validate(Vx.Tuple.size(1), {1})
-      assert :ok = Vx.validate(Vx.Tuple.size(2), {1, 2})
-      assert :ok = Vx.validate(Vx.Tuple.size(3), {1, 2, 3})
+      assert :ok = Vx.validate(Vx.Tuple.size(is: 1), {1})
+      assert :ok = Vx.validate(Vx.Tuple.size(is: 2), {1, 2})
+      assert :ok = Vx.validate(Vx.Tuple.size(is: 3), {1, 2, 3})
     end
 
     test "no match" do
-      assert  {:error, [error]} = Vx.validate(Vx.Tuple.size(2), {1})
-      assert Exception.message(error) == "must have a size of 2"
+      assert {:error, [error]} = Vx.validate(Vx.Tuple.size(is: 2), {1})
+      assert Exception.message(error) == "does not have a size of 2"
 
-      assert {:error, _} = Vx.validate(Vx.Tuple.size(2), {1, 2, 3})
+      assert {:error, _} = Vx.validate(Vx.Tuple.size(is: 2), {1, 2, 3})
+    end
+  end
+
+  describe "size/1 with min size" do
+    test "match" do
+      assert :ok = Vx.validate(Vx.Tuple.size(min: 0), {})
+      assert :ok = Vx.validate(Vx.Tuple.size(min: 3), {"foo", 123.4, true})
+    end
+
+    test "no match" do
+      assert {:error, [error]} = Vx.validate(Vx.Tuple.size(min: 2), {"foo"})
+      assert Exception.message(error) == "does not have a minimal size of 2"
+    end
+  end
+
+  describe "size/1 with max size" do
+    test "match" do
+      assert :ok = Vx.validate(Vx.Tuple.size(max: 0), {})
+      assert :ok = Vx.validate(Vx.Tuple.size(max: 3), {"foo", 123.4, true})
+    end
+
+    test "no match" do
+      assert {:error, [error]} =
+               Vx.validate(Vx.Tuple.size(max: 2), {"foo", "bar", "baz"})
+
+      assert Exception.message(error) == "exceeds the maximal size of 2"
     end
   end
 end

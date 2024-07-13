@@ -46,4 +46,8 @@ defmodule Vx.Struct do
     def validate(_, %_{}), do: true
     def validate(_, _), do: false
   end
+
+  defimpl Vx.Humanizable do
+    def humanize(_), do: "struct"
+  end
 end

@@ -3,6 +3,23 @@ defmodule Vx.IntersectTest do
 
   doctest Vx.Intersect
 
+  describe "t/1" do
+    test "chain" do
+      assert Vx.Intersect.t([
+               Vx.Number.gt(2),
+               Vx.Number.lt(10),
+               Vx.Float.t()
+             ]) ==
+               Vx.Intersect.t(
+                 Vx.Intersect.t(
+                   Vx.Number.gt(2),
+                   Vx.Number.lt(10)
+                 ),
+                 Vx.Float.t()
+               )
+    end
+  end
+
   describe "t/2" do
     test "match" do
       assert :ok = Vx.validate(Vx.Intersect.t(Vx.String.t(), "foo"), "foo")

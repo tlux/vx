@@ -13,7 +13,7 @@ defmodule Vx.MapTest do
 
     test "no match" do
       Enum.each(@invalid, fn value ->
-        assert  {:error, [error]} = Vx.validate(Vx.Map.t(), value)
+        assert {:error, [error]} = Vx.validate(Vx.Map.t(), value)
         assert Exception.message(error) == "must be a map"
       end)
     end
@@ -44,7 +44,7 @@ defmodule Vx.MapTest do
                "must be a map<string, number>\n" <>
                  "- element :foo: must be a string"
 
-      assert  {:error, [error]} = Vx.validate(schema, %{"foo" => "bar"})
+      assert {:error, [error]} = Vx.validate(schema, %{"foo" => "bar"})
 
       assert Exception.message(error) ==
                "must be a map<string, number>\n" <>
@@ -52,7 +52,7 @@ defmodule Vx.MapTest do
 
       assert {:error, _} = Vx.validate(schema, %{"foo" => 123, "bar" => "bar"})
 
-      assert  {:error, [error]} = Vx.validate(schema, "foo")
+      assert {:error, [error]} = Vx.validate(schema, "foo")
       assert Exception.message(error) == "must be a map<string, number>"
     end
   end

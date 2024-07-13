@@ -69,14 +69,6 @@ defmodule Vx.Error do
   defp get_message(%{message: message}), do: message
 
   @doc """
-  Prepends a message to the error message.
-  """
-  @spec prepend_message(t, String.t()) :: t
-  def prepend_message(%__MODULE__{} = error, message) do
-    %{error | message: "#{message}: #{error.message}"}
-  end
-
-  @doc """
   Prepends a path to the error path.
   """
   @spec prepend_path(t, path | path_segment) :: t

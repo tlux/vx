@@ -32,32 +32,27 @@ defmodule VxTest do
     end
 
     test "invalid", %{schema: schema} do
-      assert {:error, error} =
+      assert {:error, [error]} =
                Vx.validate(schema, %{@valid_values | "type" => "guest"})
 
       assert Exception.message(error) ==
-               "does not match shape\n" <>
-                 ~s[- key "type": must be one of "user", "admin"]
+               ~s/expected enum("user", "admin") at ["type"]/
 
-      assert {:error, error} =
+      assert {:error, [error]} =
                Vx.validate(schema, %{@valid_values | "hobbies" => []})
 
       assert Exception.message(error) ==
-               "does not match shape\n" <>
-                 ~s[- key "hobbies": must not be empty]
+               ~s(must have at least 1 element at ["hobbies"])
 
-      assert {:error, error} =
+      assert {:error, [error]} =
                Vx.validate(schema, %{
                  @valid_values
                  | "hobbies" => ["foo", "  "]
                })
 
-      assert Exception.message(error) ==
-               "does not match shape\n" <>
-                 ~s[- key "hobbies": must be a list<string(present)>\n] <>
-                 "- element 1: must be present"
+      assert Exception.message(error) == ~s(must be present at ["hobbies", 1])
 
-      assert {:error, error} =
+      assert {:error, [error]} =
                Vx.validate(schema, %{
                  @valid_values
                  | "addresses" =>
@@ -65,9 +60,7 @@ defmodule VxTest do
                })
 
       assert Exception.message(error) ==
-               "does not match shape\n" <>
-                 ~s[- key "addresses": must be a list<struct<Address>>\n] <>
-                 "- element 1: must be a struct of type Address"
+               ~s(not a struct of type Address at ["addresses", 1])
     end
   end
 
@@ -77,9 +70,8 @@ defmodule VxTest do
     end
 
     test "invalid", %{schema: schema} do
-      assert_raise Vx.Error,
-                   "does not match shape\n" <>
-                     ~s[- key "type": must be one of "user", "admin"],
+      assert_raise Vx.ValidationFailedError,
+                   ~s/Validation failed: expected enum("user", "admin") at ["type"]/,
                    fn ->
                      Vx.validate!(schema, %{@valid_values | "type" => "guest"})
                    end

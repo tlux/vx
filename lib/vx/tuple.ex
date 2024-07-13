@@ -14,11 +14,11 @@ defmodule Vx.Tuple do
 
   ## Examples
 
-      iex> Vx.Tuple.t() |> Vx.validate!({:foo, :bar})
-      :ok
+      iex> Vx.Tuple.t() |> Vx.valid?({:foo, :bar})
+      true
 
-      iex> Vx.Tuple.t() |> Vx.validate!(123)
-      ** (Vx.Error) must be a tuple
+      iex> Vx.Tuple.t() |> Vx.valid?(123)
+      false
   """
   @spec t() :: Vx.t()
   def t, do: %__MODULE__{}
@@ -37,11 +37,11 @@ defmodule Vx.Tuple do
 
   ## Examples
 
-      iex> Vx.Tuple.t() |> Vx.Tuple.size(is: 2) |> Vx.validate!({:foo, :bar})
-      :ok
+      iex> Vx.Tuple.t() |> Vx.Tuple.size(is: 2) |> Vx.valid?({:foo, :bar})
+      true
 
-      iex> Vx.Tuple.t() |> Vx.Tuple.size(is: 2) |> Vx.validate!({:foo})
-      ** (Vx.Error) must have a size of 2
+      iex> Vx.Tuple.t() |> Vx.Tuple.size(is: 2) |> Vx.valid?({:foo})
+      false
   """
   @spec size(Vx.t(), Keyword.t()) :: Vx.t()
   def size(schema \\ t(), opts) when is_list(opts) do
@@ -53,15 +53,14 @@ defmodule Vx.Tuple do
 
   ## Examples
 
-      iex> Vx.Tuple.shape({:foo, :bar}) |> Vx.validate!({:foo, :bar})
-      :ok
+      iex> Vx.Tuple.shape({:foo, :bar}) |> Vx.valid?({:foo, :bar})
+      true
 
-      iex> Vx.Tuple.shape({Vx.Atom.t(), Vx.String.t()}) |> Vx.validate!({:ok, "result"})
-      :ok
+      iex> Vx.Tuple.shape({Vx.Atom.t(), Vx.String.t()}) |> Vx.valid?({:ok, "result"})
+      true
 
-      iex> Vx.Tuple.shape({Vx.Atom.t(), Vx.String.t()}) |> Vx.validate!({:ok, 123})
-      ** (Vx.Error) must match {atom, string}
-      - element 1: must be a string
+      iex> Vx.Tuple.shape({Vx.Atom.t(), Vx.String.t()}) |> Vx.valid?({:ok, 123})
+      false
   """
   @spec shape(Vx.t(), tuple) :: Vx.t()
   def shape(schema \\ t(), shape) when is_tuple(shape) do
@@ -70,5 +69,9 @@ defmodule Vx.Tuple do
 
   defimpl Vx.Validatable do
     def validate(_, value), do: is_tuple(value)
+  end
+
+  defimpl Vx.Humanizable do
+    def humanize(_), do: "tuple"
   end
 end
