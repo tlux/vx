@@ -12,8 +12,8 @@ defmodule Vx.NumberTest do
 
     test "no match" do
       Enum.each([nil, "foo", :foo, true, false], fn value ->
-        assert {:error, error} = Vx.validate(Vx.Number.t(), value)
-        assert Exception.message(error) == "must be a number"
+        assert {:error, [error]} = Vx.validate(Vx.Number.t(), value)
+        assert Exception.message(error) == "expected number"
       end)
     end
   end
@@ -24,7 +24,7 @@ defmodule Vx.NumberTest do
     end
 
     test "no match" do
-      assert {:error, error} = Vx.validate(Vx.Number.lt(100), 100)
+      assert {:error, [error]} = Vx.validate(Vx.Number.lt(100), 100)
       assert Exception.message(error) == "must be less than 100"
 
       assert {:error, _} = Vx.validate(Vx.Number.lt(100), 101)
@@ -38,7 +38,7 @@ defmodule Vx.NumberTest do
     end
 
     test "no match" do
-      assert {:error, error} = Vx.validate(Vx.Number.lteq(100), 101)
+      assert {:error, [error]} = Vx.validate(Vx.Number.lteq(100), 101)
       assert Exception.message(error) == "must be less than or equal to 100"
     end
   end
@@ -68,24 +68,6 @@ defmodule Vx.NumberTest do
     end
   end
 
-  describe "range/1" do
-    test "match" do
-      assert :ok = Vx.validate!(Vx.Number.range(1..10), 1)
-      assert :ok = Vx.validate!(Vx.Number.range(1..10), 5)
-      assert :ok = Vx.validate!(Vx.Number.range(1..10), 10)
-      assert :ok = Vx.validate!(Vx.Number.range(1..10//2), 3)
-    end
-
-    test "no match" do
-      assert {:error, [error]} = Vx.validate(Vx.Number.range(1..10), 11)
-      assert Exception.message(error) == "must be in 1..10"
-
-      assert {:error, _} = Vx.validate(Vx.Number.range(1..10), 0)
-      assert {:error, [error]} = Vx.validate(Vx.Number.range(1..10//2), 4)
-      assert Exception.message(error) == "must be in 1..10//2"
-    end
-  end
-
   describe "between/2" do
     test "match" do
       assert :ok = Vx.validate!(Vx.Number.between(1, 10), 1)
@@ -99,40 +81,49 @@ defmodule Vx.NumberTest do
 
     test "no match" do
       assert {:error, [error]} = Vx.validate(Vx.Number.between(1, 10), 0)
-      assert Exception.message(error) == "must be in 1..10"
+      assert Exception.message(error) == "must be between 1 and 10"
 
       assert {:error, _} = Vx.validate(Vx.Number.between(1, 10), 11)
 
-      assert {:error, [error]} = Vx.validate(Vx.Number.between(10, 1), 0)
-      assert Exception.message(error) == "must be in 1..10"
+      assert {:error, [error]} = Vx.validate(Vx.Number.between(12, 2), 0)
+      assert Exception.message(error) == "must be between 2 and 12"
 
       assert {:error, _} = Vx.validate(Vx.Number.between(10, 1), 11)
     end
   end
 
-  describe "integer/0" do
+  describe "non_fractional/0" do
     test "match" do
-      assert :ok = Vx.validate!(Vx.Number.integer(), 1)
-      assert :ok = Vx.validate!(Vx.Number.integer(), 1.0)
+      assert :ok = Vx.validate!(Vx.Number.non_fractional(), 1)
+      assert :ok = Vx.validate!(Vx.Number.non_fractional(), 1.0)
     end
 
     test "no match" do
-      assert {:error, [error]} = Vx.validate(Vx.Number.integer(), 1.1)
-      assert Exception.message(error) == "must have no decimal places"
+      assert {:error, [error]} = Vx.validate(Vx.Number.non_fractional(), 1.1)
+      assert Exception.message(error) == "must not be a fractional number"
     end
   end
 
-  describe "integer/1" do
+  describe "non_fractional/1" do
     test "match" do
-      assert :ok = Vx.validate!(Vx.Integer.t() |> Vx.Number.integer(), 1)
-      assert :ok = Vx.validate!(Vx.Float.t() |> Vx.Number.integer(), 1.0)
+      assert :ok =
+               Vx.Integer.t()
+               |> Vx.Number.non_fractional()
+               |> Vx.validate!(1)
+
+      assert :ok =
+               Vx.Float.t()
+               |> Vx.Number.non_fractional()
+               |> Vx.validate!(1.0)
     end
 
     test "no match" do
       assert {:error, [error]} =
-               Vx.validate(Vx.Float.t() |> Vx.Number.integer(), 1.1)
+               Vx.Float.t()
+               |> Vx.Number.non_fractional()
+               |> Vx.validate(1.1)
 
-      assert Exception.message(error) == "must have no decimal places"
+      assert Exception.message(error) == "must not be a fractional number"
     end
   end
 
@@ -144,10 +135,26 @@ defmodule Vx.NumberTest do
 
     test "no match" do
       assert {:error, [error]} = Vx.validate(Vx.Number.positive(), 0)
-      assert Exception.message(error) == "must be positive"
+      assert Exception.message(error) == "must be greater than 0"
 
       assert {:error, _} = Vx.validate(Vx.Number.positive(), -1)
       assert {:error, _} = Vx.validate(Vx.Number.positive(), -0.1)
+    end
+  end
+
+  describe "non_negative/1" do
+    test "match" do
+      assert :ok = Vx.validate!(Vx.Number.non_negative(), 0)
+      assert :ok = Vx.validate!(Vx.Number.non_negative(), 0.1)
+      assert :ok = Vx.validate!(Vx.Number.non_negative(), 1)
+    end
+
+    test "no match" do
+      assert {:error, [error]} = Vx.validate(Vx.Number.non_negative(), -0.1)
+      assert Exception.message(error) == "must be greater than or equal to 0"
+
+      assert {:error, _} = Vx.validate(Vx.Number.non_negative(), -1)
+      assert {:error, _} = Vx.validate(Vx.Number.non_negative(), -0.1)
     end
   end
 
@@ -159,7 +166,7 @@ defmodule Vx.NumberTest do
 
     test "no match" do
       assert {:error, [error]} = Vx.validate(Vx.Number.negative(), 0)
-      assert Exception.message(error) == "must be negative"
+      assert Exception.message(error) == "must be less than 0"
 
       assert {:error, _} = Vx.validate(Vx.Number.negative(), 1)
       assert {:error, _} = Vx.validate(Vx.Number.negative(), 0.1)

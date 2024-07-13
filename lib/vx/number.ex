@@ -21,14 +21,14 @@ defmodule Vx.Number do
 
   ## Examples
 
-      iex> Vx.Number.t() |> Vx.validate!(123)
-      :ok
+      iex> Vx.Number.t() |> Vx.valid?(123)
+      true
 
-      iex> Vx.Number.t() |> Vx.validate!(123.4)
-      :ok
+      iex> Vx.Number.t() |> Vx.valid?(123.4)
+      true
 
-      iex> Vx.Number.t() |> Vx.validate!("foo")
-      ** (Vx.Error) must be a number
+      iex> Vx.Number.t() |> Vx.valid?("foo")
+      false
   """
   @spec t() :: Vx.t()
   def t, do: %__MODULE__{}
@@ -38,17 +38,17 @@ defmodule Vx.Number do
 
   ## Examples
 
-      iex> Vx.Number.non_fractional() |> Vx.validate!(123)
-      :ok
+      iex> Vx.Number.non_fractional() |> Vx.valid?(123)
+      true
 
-      iex> Vx.Number.non_fractional() |> Vx.validate!(123.0)
-      :ok
+      iex> Vx.Number.non_fractional() |> Vx.valid?(123.0)
+      true
 
-      iex> Vx.Number.non_fractional() |> Vx.validate!(123.4)
-      ** (Vx.Error) must have no decimal places
+      iex> Vx.Number.non_fractional() |> Vx.valid?(123.4)
+      false
 
-      iex> Vx.Number.non_fractional() |> Vx.validate!("foo")
-      ** (Vx.Error) must be a number
+      iex> Vx.Number.non_fractional() |> Vx.valid?("foo")
+      false
   """
   @doc since: "1.0.0"
   @spec non_fractional(Vx.t()) :: Vx.t()
@@ -62,6 +62,13 @@ defmodule Vx.Number do
   @doc since: "0.3.0"
   @spec positive(Vx.t()) :: Vx.t()
   def positive(schema \\ t()), do: gt(schema, 0)
+
+  @doc """
+  Requires the number to be non-negative.
+  """
+  @doc since: "1.0.0"
+  @spec non_negative(Vx.t()) :: Vx.t()
+  def non_negative(schema \\ t()), do: gteq(schema, 0)
 
   @doc """
   Requires the number to be negative.
@@ -108,8 +115,8 @@ defmodule Vx.Number do
   @spec between(Vx.t(), number, number) :: Vx.t()
   def between(schema \\ t(), first, last)
 
-  def between(schema, last, first)
-      when is_number(first) and is_number(last) and last > first do
+  def between(schema, first, last)
+      when is_number(first) and is_number(last) and first > last do
     between(schema, last, first)
   end
 
