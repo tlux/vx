@@ -12,17 +12,17 @@ defmodule Vx.ValidatorTest do
     end
 
     test "no match" do
-      assert {:error, error} =
+      assert {:error, [error]} =
                Vx.validate(Vx.Validator.t(fn @value -> false end), @value)
 
       assert Exception.message(error) == "is invalid"
 
-      assert {:error, error} =
+      assert {:error, [error]} =
                Vx.validate(Vx.Validator.t(fn @value -> :error end), @value)
 
       assert Exception.message(error) == "is invalid"
 
-      assert {:error, error} =
+      assert {:error, [error]} =
                Vx.validate(
                  Vx.Validator.t(fn @value -> {:error, "does not match"} end),
                  @value

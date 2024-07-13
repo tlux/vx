@@ -12,13 +12,13 @@ defmodule Vx.MatchTest do
     end
 
     test "no match" do
-      assert {:error, error} = Vx.validate(Vx.Match.t("foo"), "bar")
-      assert Exception.message(error) == ~s[must match "foo"]
+      assert {:error, [error]} = Vx.validate(Vx.Match.t("foo"), "bar")
+      assert Exception.message(error) == ~s[expected match "foo"]
 
-      assert {:error, error} =
+      assert {:error, [error]} =
                Vx.validate(Vx.Match.t({:error, _}), {:ok, "foo"})
 
-      assert Exception.message(error) == ~s[must match {:error, _}]
+      assert Exception.message(error) == ~s[expected match {:error, _}]
     end
   end
 end

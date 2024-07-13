@@ -14,13 +14,13 @@ defmodule Vx.Match do
 
       iex> require Vx.Match
       ...> schema = Vx.Match.t(%{a: _, b: _})
-      ...> Vx.validate!(schema, %{a: 1, b: 2})
-      :ok
+      ...> Vx.valid?(schema, %{a: 1, b: 2})
+      true
 
       iex> require Vx.Match
       ...> schema = Vx.Match.t(%{a: _, b: _})
-      ...> Vx.validate!(schema, %{a: 1, c: 2})
-      ** (Vx.Error) must match %{a: _, b: _}
+      ...> Vx.valid?(schema, %{a: 1, c: 2})
+      false
   """
   @spec t(term) :: Macro.t()
   defmacro t(pattern) do

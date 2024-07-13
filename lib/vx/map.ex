@@ -14,14 +14,14 @@ defmodule Vx.Map do
 
   ## Examples
 
-      iex> Vx.Map.t() |> Vx.validate!(%{})
-      :ok
+      iex> Vx.Map.t() |> Vx.valid?(%{})
+      true
 
-      iex> Vx.Map.t() |> Vx.validate!(%{a: "foo", b: 123})
-      :ok
+      iex> Vx.Map.t() |> Vx.valid?(%{a: "foo", b: 123})
+      true
 
-      iex> Vx.Map.t() |> Vx.validate!("foo")
-      ** (Vx.Error) must be a map
+      iex> Vx.Map.t() |> Vx.valid?("foo")
+      false
   """
   @spec t() :: Vx.t()
   def t, do: %__MODULE__{}
@@ -40,19 +40,18 @@ defmodule Vx.Map do
 
   ## Examples
 
-      iex> Vx.Map.t(Vx.String.t(), Vx.Number.t()) |> Vx.validate!(%{})
-      :ok
+      iex> Vx.Map.t(Vx.String.t(), Vx.Number.t()) |> Vx.valid?(%{})
+      true
 
       iex> schema = Vx.Map.t(Vx.Atom.t(), Vx.Number.t())
-      ...> Vx.validate!(schema, %{a: 123, b: 234.5})
-      :ok
+      ...> Vx.valid?(schema, %{a: 123, b: 234.5})
+      true
 
-      iex> Vx.Map.t(Vx.Atom.t(), Vx.Number.t()) |> Vx.validate!("foo")
-      ** (Vx.Error) must be a map<atom, number>
+      iex> Vx.Map.t(Vx.Atom.t(), Vx.Number.t()) |> Vx.valid?("foo")
+      false
 
-      iex> Vx.Map.t(Vx.Atom.t(), Vx.Number.t()) |> Vx.validate!(%{foo: "bar"})
-      ** (Vx.Error) must be a map<atom, number>
-      - value of element :foo: must be a number
+      iex> Vx.Map.t(Vx.Atom.t(), Vx.Number.t()) |> Vx.valid?(%{foo: "bar"})
+      false
   """
   @spec t(Vx.t(), Vx.t()) :: Vx.t()
   def t(key_schema, value_schema) do
@@ -67,17 +66,16 @@ defmodule Vx.Map do
   ## Examples
 
       iex> schema = Vx.Map.shape(%{a: Vx.String.t(), b: Vx.Number.t()})
-      ...> Vx.validate!(schema, %{a: "foo", b: 123})
-      :ok
+      ...> Vx.valid?(schema, %{a: "foo", b: 123})
+      true
 
       iex> schema = Vx.Map.shape(%{a: Vx.String.t(), b: Vx.Number.t()})
-      ...> Vx.validate!(schema, %{a: "foo"})
-      ** (Vx.Error) must have key(s) :b
+      ...> Vx.valid?(schema, %{a: "foo"})
+      false
 
       iex> schema = Vx.Map.shape(%{a: Vx.String.t(), b: Vx.Number.t()})
-      ...> Vx.validate!(schema, %{a: "foo", b: "bar"})
-      ** (Vx.Error) does not match shape
-      - key :b: must be a number
+      ...> Vx.valid?(schema, %{a: "foo", b: "bar"})
+      false
 
   It is also possible to mark certain keys as optional.
 
@@ -85,23 +83,22 @@ defmodule Vx.Map do
       ...>   :a => Vx.String.t(),
       ...>   Vx.Optional.t(:b) => Vx.Number.t()
       ...> })
-      ...> Vx.validate!(schema, %{a: "foo"})
-      :ok
+      ...> Vx.valid?(schema, %{a: "foo"})
+      true
 
       iex> schema = Vx.Map.shape(%{
       ...>   a: Vx.String.t(),
       ...>   b: Vx.Optional.t(Vx.Number.t())
       ...> })
-      ...> Vx.validate!(schema, %{a: "foo"})
-      :ok
+      ...> Vx.valid?(schema, %{a: "foo"})
+      true
 
       iex> schema = Vx.Map.shape(%{
       ...>   :a => Vx.String.t(),
       ...>   Vx.Optional.t(:b) => Vx.Number.t()
       ...> })
-      ...> Vx.validate!(schema, %{a: "foo", b: "bar"})
-      ** (Vx.Error) does not match shape
-      - key :b: must be a number
+      ...> Vx.valid?(schema, %{a: "foo", b: "bar"})
+      false
   """
   @spec shape(Vx.t(), map) :: Vx.t()
   def shape(schema \\ t(), shape) when is_map(shape) do
@@ -113,11 +110,11 @@ defmodule Vx.Map do
 
   ## Examples
 
-      iex> Vx.Map.size(is: 0) |> Vx.validate!(%{})
-      :ok
+      iex> Vx.Map.size(is: 0) |> Vx.valid?(%{})
+      true
 
-      iex> Vx.Map.size(is: 1) |> Vx.validate!(%{a: "foo", b: 123})
-      ** (Vx.Error) must have a size of 1
+      iex> Vx.Map.size(is: 1) |> Vx.valid?(%{a: "foo", b: 123})
+      false
   """
   @spec size(Vx.t(), Keyword.t()) :: Vx.t()
   def size(schema \\ t(), opts) when is_list(opts) do

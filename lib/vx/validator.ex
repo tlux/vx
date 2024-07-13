@@ -6,7 +6,7 @@ defmodule Vx.Validator do
   @enforce_keys [:fun]
   defstruct [:fun]
 
-  @type fun :: (any -> Vx.Validatable.result())
+  @type fun :: boolean | :ok | :error | {:error, String.t()}
 
   @type t :: %__MODULE__{fun: fun}
 
@@ -14,6 +14,17 @@ defmodule Vx.Validator do
   def t(fun), do: %__MODULE__{fun: fun}
 
   defimpl Vx.Validatable do
-    def validate(schema, value), do: schema.fun.(value)
+    def validate(schema, value) do
+      case schema.fun.(value) do
+        :ok -> :ok
+        true -> :ok
+        {:error, error} -> {:error, error}
+        _ -> {:error, "is invalid"}
+      end
+    end
+  end
+
+  defimpl Vx.Humanizable do
+    def humanize(_), do: "custom validator"
   end
 end
