@@ -25,5 +25,16 @@ defmodule Vx.OptionalTest do
       assert {:error, _} = Vx.validate(Vx.Optional.t(Vx.String.t()), 1)
       assert {:error, _} = Vx.validate(map_with_optional_key, %{"bar" => true})
     end
+
+    test "do not wrap Vx.Optional" do
+      schema = Vx.Optional.t(Vx.String.t())
+
+      assert Vx.Optional.t(schema) == schema
+    end
+
+    test "unwrap and replace Vx.Nullable" do
+      assert Vx.Optional.t(Vx.Nullable.t(Vx.String.t())) ==
+               Vx.Optional.t(Vx.String.t())
+    end
   end
 end

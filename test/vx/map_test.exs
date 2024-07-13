@@ -14,7 +14,7 @@ defmodule Vx.MapTest do
     test "no match" do
       Enum.each(@invalid, fn value ->
         assert {:error, [error]} = Vx.validate(Vx.Map.t(), value)
-        assert Exception.message(error) == "must be a map"
+        assert Exception.message(error) == "expected map"
       end)
     end
   end
@@ -37,29 +37,25 @@ defmodule Vx.MapTest do
     test "no match" do
       schema = Vx.Map.t(Vx.String.t(), Vx.Number.t())
 
-      assert {:error, error} =
+      assert {:error, [error]} =
                Vx.validate(schema, %{:foo => 123, "bar" => 234.5})
 
-      assert Exception.message(error) ==
-               "must be a map<string, number>\n" <>
-                 "- element :foo: must be a string"
+      assert Exception.message(error) == "expected string at [:foo]"
 
       assert {:error, [error]} = Vx.validate(schema, %{"foo" => "bar"})
 
-      assert Exception.message(error) ==
-               "must be a map<string, number>\n" <>
-                 ~s[- value of element "foo": must be a number]
+      assert Exception.message(error) == ~s(expected number at ["foo"])
 
       assert {:error, _} = Vx.validate(schema, %{"foo" => 123, "bar" => "bar"})
 
       assert {:error, [error]} = Vx.validate(schema, "foo")
-      assert Exception.message(error) == "must be a map<string, number>"
+      assert Exception.message(error) == "expected map"
     end
   end
 
   describe "shape/1" do
     test "missing required key" do
-      assert {:error, error} =
+      assert {:error, [error]} =
                Vx.validate(Vx.Map.shape(%{"foo" => "bar", "bar" => 123}), %{})
 
       assert Exception.message(error) == ~s[must have key(s) "bar", "foo"]
@@ -69,12 +65,10 @@ defmodule Vx.MapTest do
       assert :ok =
                Vx.validate!(Vx.Map.shape(%{"foo" => "bar"}), %{"foo" => "bar"})
 
-      assert {:error, error} =
+      assert {:error, [error]} =
                Vx.validate(Vx.Map.shape(%{"foo" => "bar"}), %{"foo" => "baz"})
 
-      assert Exception.message(error) ==
-               "does not match shape\n" <>
-                 ~s[- key "foo": must be "bar"]
+      assert Exception.message(error) == ~s(expected "bar" at ["foo"])
     end
 
     test "schema value" do
@@ -83,14 +77,12 @@ defmodule Vx.MapTest do
                  "foo" => "bar"
                })
 
-      assert {:error, error} =
+      assert {:error, [error]} =
                Vx.validate(Vx.Map.shape(%{"foo" => Vx.String.present()}), %{
                  "foo" => " "
                })
 
-      assert Exception.message(error) ==
-               "does not match shape\n" <>
-                 ~s[- key "foo": must be present]
+      assert Exception.message(error) == ~s(must be present at ["foo"])
     end
 
     test "optional key" do
@@ -127,33 +119,29 @@ defmodule Vx.MapTest do
                  "baz" => nil
                })
 
-      assert {:error, error} =
+      assert {:error, [error]} =
                Vx.validate(shape, %{
                  "foo" => nil,
                  "bar" => 123,
                  "baz" => "foo"
                })
 
-      assert Exception.message(error) ==
-               "does not match shape\n" <>
-                 ~s[- key "foo": must be a string]
+      assert Exception.message(error) == ~s(expected string at ["foo"])
 
-      assert {:error, error} =
+      assert {:error, [error]} =
                Vx.validate(shape, %{
                  "foo" => 123,
                  "bar" => 234,
                  "baz" => "foo"
                })
 
-      assert Exception.message(error) ==
-               "does not match shape\n" <>
-                 ~s[- key "foo": must be a string]
+      assert Exception.message(error) == ~s(expected string at ["foo"])
     end
 
     test "excess keys" do
       shape = Vx.Map.shape(%{"foo" => Vx.Number.t()})
 
-      assert {:error, error} =
+      assert {:error, [error]} =
                Vx.validate(shape, %{
                  "foo" => 123,
                  "bar" => "baz",
@@ -182,27 +170,17 @@ defmodule Vx.MapTest do
     end
   end
 
-  describe "size/1" do
+  describe "size/1 with exact size" do
     test "match" do
-      assert :ok = Vx.validate(Vx.Map.size(0), %{})
-      assert :ok = Vx.validate(Vx.Map.size(1), %{"foo" => "bar"})
+      assert :ok = Vx.validate(Vx.Map.size(is: 0), %{})
+      assert :ok = Vx.validate(Vx.Map.size(is: 1), %{"foo" => "bar"})
     end
 
     test "no match" do
-      assert {:error, error} =
-               Vx.validate(Vx.Map.size(1), %{"foo" => "bar", "baz" => "qix"})
+      assert {:error, [error]} =
+               Vx.validate(Vx.Map.size(is: 1), %{"foo" => "bar", "baz" => "qix"})
 
-      assert Exception.message(error) == "must have a size of 1"
-    end
-
-    test "invalid size" do
-      assert_raise FunctionClauseError, fn ->
-        Vx.Map.size(-1)
-      end
-
-      assert_raise FunctionClauseError, fn ->
-        Vx.Map.size(1.1)
-      end
+      assert Exception.message(error) == "does not have a size of 1"
     end
   end
 end

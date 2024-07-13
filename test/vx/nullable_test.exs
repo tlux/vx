@@ -19,8 +19,15 @@ defmodule Vx.NullableTest do
       assert Exception.message(error) == ~s[expected "foo"?]
     end
 
-    test "do not wrap Vx.Nullable"
+    test "do not wrap Vx.Nullable" do
+      schema = Vx.Nullable.t(Vx.String.t())
 
-    test "unwrap and replace Vx.Optional"
+      assert Vx.Nullable.t(schema) == schema
+    end
+
+    test "unwrap and replace Vx.Optional" do
+      assert Vx.Nullable.t(Vx.Optional.t(Vx.String.t())) ==
+               Vx.Nullable.t(Vx.String.t())
+    end
   end
 end

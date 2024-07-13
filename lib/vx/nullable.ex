@@ -14,14 +14,14 @@ defmodule Vx.Nullable do
 
   ## Examples
 
-      iex> Vx.Nullable.t(Vx.String.t()) |> Vx.validate!("foo")
-      :ok
+      iex> Vx.Nullable.t(Vx.String.t()) |> Vx.valid?("foo")
+      true
 
-      iex> Vx.Nullable.t(Vx.String.t()) |> Vx.validate!(nil)
-      :ok
+      iex> Vx.Nullable.t(Vx.String.t()) |> Vx.valid?(nil)
+      true
 
-      iex> Vx.Nullable.t(Vx.String.t()) |> Vx.validate!(123)
-      ** (Vx.Error) must be (string | nil)
+      iex> Vx.Nullable.t(Vx.String.t()) |> Vx.valid?(123)
+      false
   """
   @spec t(Vx.t()) :: Vx.t()
   def t(%Vx.Nullable{} = schema), do: schema
