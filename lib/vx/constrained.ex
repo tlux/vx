@@ -28,9 +28,31 @@ defmodule Vx.Constrained do
 
   defimpl Vx.Validatable do
     def validate(%{type: type, constraints: constraints}, value) do
-      with [] <- Vx.Validatable.validate(type, value) do
-        Enum.flat_map(constraints, &Vx.Validatable.validate(&1, value))
+      with :ok <- Vx.validate(type, value) do
+        constraints
+        |> Enum.flat_map(&Vx.errors_on(&1, value))
+        |> then(fn
+          [] -> :ok
+          errors -> {:error, errors}
+        end)
       end
+    end
+  end
+
+  defimpl Vx.Humanizable do
+    def humanize(%{type: type, constraints: constraints}) do
+      suffix =
+        case MapSet.size(constraints) do
+          0 ->
+            ""
+
+          _ ->
+            "[" <>
+              Enum.map_join(constraints, ", ", &Vx.Humanizable.humanize/1) <>
+              "]"
+        end
+
+      Vx.Humanizable.humanize(type) <> suffix
     end
   end
 end

@@ -40,10 +40,10 @@ defmodule Vx.Atom do
   end
 
   defimpl Vx.Validatable do
-    def validate(_, value) when is_atom(value), do: []
+    def validate(_, value), do: is_atom(value)
+  end
 
-    def validate(schema, value) do
-      [Vx.Error.new(schema, value, "is not an atom")]
-    end
+  defimpl Vx.Humanizable do
+    def humanize(_), do: "atom"
   end
 end

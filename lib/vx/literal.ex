@@ -11,30 +11,31 @@ defmodule Vx.Literal do
 
   ## Examples
 
-      iex> Vx.Literal.t(:foo) |> Vx.validate!(:foo)
-      :ok
+      iex> Vx.Literal.t(:foo) |> Vx.valid?(:foo)
+      true
 
-      iex> Vx.Literal.t(:foo) |> Vx.validate!(:bar)
-      ** (Vx.Error) must be :foo
+      iex> Vx.Literal.t(:foo) |> Vx.valid?(:bar)
+      false
 
   Note that everything not being a type (to be precise anything not implementing
-  the `Vx.Validatable` protocol) is automatically considered a literal. So this
-  is equivalent to the previous example:
+  the `Vx.Validatable` protocol explicitly) is automatically considered a
+  literal. So the following code is equivalent to the previous example:
 
-      iex> :foo |> Vx.validate!(:foo)
-      :ok
+      iex> :foo |> Vx.valid?(:foo)
+      true
 
-      iex> :foo |> Vx.validate!(:bar)
-      ** (Vx.Error) must be :foo
+      iex> :foo |> Vx.valid?(:bar)
+      false
   """
   @spec t(any) :: Vx.t()
   def t(value), do: %__MODULE__{value: value}
 
   defimpl Vx.Validatable do
-    def validate(%{value: value}, value), do: []
+    def validate(%{value: value}, value), do: true
+    def validate(_, _), do: false
+  end
 
-    def validate(%{value: value} = schema, actual_value) do
-      [Vx.Error.new(schema, actual_value, "is not #{inspect(value)}")]
-    end
+  defimpl Vx.Humanizable do
+    def humanize(%{value: value}), do: inspect(value)
   end
 end

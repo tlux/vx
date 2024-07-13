@@ -3,7 +3,7 @@ defmodule Vx.String do
   The String type.
   """
 
-  use Vx.ConstrainContextual
+  use Vx.ContextualConstrain
 
   alias __MODULE__.{
     Format,
@@ -93,12 +93,10 @@ defmodule Vx.String do
   end
 
   defimpl Vx.Validatable do
-    def validate(schema, value) do
-      if is_binary(value) && String.valid?(value) do
-        []
-      else
-        [Vx.Error.new(schema, value, "is not a string")]
-      end
-    end
+    def validate(_, value), do: is_binary(value) && String.valid?(value)
+  end
+
+  defimpl Vx.Humanizable do
+    def humanize(_), do: "string"
   end
 end

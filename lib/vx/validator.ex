@@ -6,13 +6,7 @@ defmodule Vx.Validator do
   @enforce_keys [:fun]
   defstruct [:fun]
 
-  @type fun ::
-          (any ->
-             boolean
-             | :ok
-             | :error
-             | {:error, String.t()}
-             | {:error, [String.t()]})
+  @type fun :: (any -> Vx.Validatable.result())
 
   @type t :: %__MODULE__{fun: fun}
 
@@ -20,22 +14,6 @@ defmodule Vx.Validator do
   def t(fun), do: %__MODULE__{fun: fun}
 
   defimpl Vx.Validatable do
-    def validate(schema, value) do
-      case schema.fun.(value) do
-        true ->
-          []
-
-        :ok ->
-          []
-
-        {:error, message_or_messages} ->
-          message_or_messages
-          |> List.wrap()
-          |> Enum.map(&Vx.Error.new(schema, value, &1))
-
-        _ ->
-          Vx.Error.new(schema, value, "is invalid")
-      end
-    end
+    def validate(schema, value), do: schema.fun.(value)
   end
 end

@@ -23,18 +23,12 @@ defmodule Vx.Enum do
   end
 
   defimpl Vx.Validatable do
-    def validate(%{values: values} = schema, value) do
-      if value in values do
-        []
-      else
-        [
-          Vx.Error.new(
-            schema,
-            value,
-            "is not one of #{Vx.Util.inspect_enum(values)}"
-          )
-        ]
-      end
+    def validate(%{values: values}, value), do: value in values
+  end
+
+  defimpl Vx.Humanizable do
+    def humanize(%{values: values}) do
+      "enum[#{Vx.Util.inspect_enum(values)}]"
     end
   end
 end

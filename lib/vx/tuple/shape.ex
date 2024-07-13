@@ -9,34 +9,23 @@ defmodule Vx.Tuple.Shape do
   @type t :: %__MODULE__{shape: tuple}
 
   defimpl Vx.Validatable do
-    def validate(%{shape: shape} = schema, value) do
+    def validate(%{shape: shape}, value) do
       max_size = max(tuple_size(value), tuple_size(shape))
 
-      Enum.flat_map(0..(max_size - 1), fn index ->
+      0..(max_size - 1)
+      |> Enum.flat_map(fn index ->
         with {:value_elem, {:ok, value}} <-
                {:value_elem, fetch_elem(value, index)},
              {:shape_elem, {:ok, shape}} <-
                {:shape_elem, fetch_elem(shape, index)},
-             {:match, []} <- {:match, Vx.Validatable.validate(shape, value)} do
+             {:match, []} <- {:match, Vx.errors_on(shape, value)} do
           []
         else
           {:value_elem, :error} ->
-            [
-              Vx.Error.new(
-                schema,
-                value,
-                "element at index #{index} is missing"
-              )
-            ]
+            {:error, "element at index #{index} is missing"}
 
           {:shape_elem, :error} ->
-            [
-              Vx.Error.new(
-                schema,
-                value,
-                "element at index #{index} is abundant"
-              )
-            ]
+            {:error, "element at index #{index} is abundant"}
 
           {:match, errors} ->
             Enum.map(errors, fn error ->
@@ -45,6 +34,10 @@ defmodule Vx.Tuple.Shape do
               |> Vx.Error.prepend_message("element at index #{index}")
             end)
         end
+      end)
+      |> then(fn
+        [] -> :ok
+        errors -> {:error, errors}
       end)
     end
 

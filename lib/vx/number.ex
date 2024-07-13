@@ -5,12 +5,12 @@ defmodule Vx.Number do
 
   defstruct []
 
-  use Vx.ConstrainContextual, also_permit: [Vx.Float, Vx.Integer]
+  use Vx.ContextualConstrain, also_permit: [Vx.Float, Vx.Integer]
 
   alias __MODULE__.{
+    Between,
     GreaterThan,
     GreaterThanOrEqualTo,
-    InRange,
     LessThan,
     LessThanOrEqualTo,
     NonFractional
@@ -110,34 +110,18 @@ defmodule Vx.Number do
 
   def between(schema, last, first)
       when is_number(first) and is_number(last) and last > first do
-    range(schema, first..last)
+    between(schema, last, first)
   end
 
   def between(schema, first, last) when is_number(first) and is_number(last) do
-    range(schema, first..last)
-  end
-
-  @doc """
-  Requires the number to be in the given range.
-
-  ## Example
-
-      iex> Vx.Number.range(1..10) |> Vx.validate!(5)
-      :ok
-
-      iex> Vx.Number.range(1..10) |> Vx.validate!(11)
-      ** (Vx.Error) must be in 1..10
-  """
-  @spec range(Vx.t(), Range.t()) :: Vx.t()
-  def range(schema \\ t(), _.._ = range) do
-    constrain(schema, %InRange{range: range})
+    constrain(schema, %Between{first: first, last: last})
   end
 
   defimpl Vx.Validatable do
-    def validate(_, value) when is_number(value), do: []
+    def validate(_, value), do: is_number(value)
+  end
 
-    def validate(schema, value) do
-      [Vx.Error.new(schema, value, "is not a number")]
-    end
+  defimpl Vx.Humanizable do
+    def humanize(_), do: "number"
   end
 end

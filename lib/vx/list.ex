@@ -3,13 +3,9 @@ defmodule Vx.List do
   The List type.
   """
 
-  use Vx.ConstrainContextual
+  use Vx.ContextualConstrain
 
-  alias __MODULE__.{
-    Length,
-    Shape,
-    ValueSchema
-  }
+  alias __MODULE__.{Length, Shape, Values}
 
   defstruct []
 
@@ -45,14 +41,14 @@ defmodule Vx.List do
   """
   @spec t(Vx.t()) :: Vx.t()
   def t(schema) do
-    constrain(t(), %ValueSchema{schema: schema})
+    constrain(t(), %Values{schema: schema})
   end
 
   @doc """
   Requires the list to have a specific size.
   """
   @spec length(Vx.t(), Keyword.t()) :: Vx.t()
-  def length(schema \\ t(), opts) do
+  def length(schema \\ t(), opts) when is_list(opts) do
     constrain(schema, Length.new(opts))
   end
 
@@ -92,10 +88,11 @@ defmodule Vx.List do
   end
 
   defimpl Vx.Validatable do
-    def validate(_, values) when is_list(values), do: []
+    def validate(_, values) when is_list(values), do: :ok
+    def validate(_, _), do: :error
+  end
 
-    def validate(schema, value) do
-      [Vx.Error.new(schema, value, "is not a list")]
-    end
+  defimpl Vx.Humanizable do
+    def humanize(_), do: "list"
   end
 end

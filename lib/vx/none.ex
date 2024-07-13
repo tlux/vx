@@ -1,6 +1,6 @@
-defmodule Vx.Any do
+defmodule Vx.None do
   @moduledoc """
-  The Any type.
+  The None type.
   """
 
   defstruct []
@@ -10,17 +10,17 @@ defmodule Vx.Any do
 
   ## Examples
 
-      iex> Vx.Any.t() |> Vx.valid?("foo")
-      true
+      iex> Vx.None.t() |> Vx.valid?("foo")
+      false
   """
   @spec t() :: Vx.t()
   def t, do: %__MODULE__{}
 
   defimpl Vx.Validatable do
-    def validate(_, _), do: true
+    def validate(_, _), do: false
   end
 
   defimpl Vx.Humanizable do
-    def humanize(_), do: "any"
+    def humanize(_), do: "none"
   end
 end

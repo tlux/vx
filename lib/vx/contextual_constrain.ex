@@ -1,4 +1,4 @@
-defmodule Vx.ConstrainContextual do
+defmodule Vx.ContextualConstrain do
   @moduledoc """
   This module can be `use`d in type modules to provide a context-dependent
   `constrain/2` function that checks whether the passed schema matches the using
@@ -12,7 +12,7 @@ defmodule Vx.ConstrainContextual do
   ## Example
 
       defmodule MyType do
-        use Vx.ConstrainContextual
+        use Vx.ContextualConstrain
 
         defstruct []
       end
@@ -25,7 +25,7 @@ defmodule Vx.ConstrainContextual do
 
   To permit `SomeOtherType` from the previous example as well:
 
-      use Vx.ConstrainContextual, also_permit: [SomeOtherType]
+      use Vx.ContextualConstrain, also_permit: [SomeOtherType]
   """
 
   @doc """

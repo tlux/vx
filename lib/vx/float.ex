@@ -3,7 +3,7 @@ defmodule Vx.Float do
   The Float type.
   """
 
-  use Vx.ConstrainContextual
+  use Vx.ContextualConstrain
 
   defstruct []
 
@@ -12,23 +12,24 @@ defmodule Vx.Float do
 
   ## Examples
 
-      iex> Vx.Float.t() |> Vx.validate!(1.0)
-      :ok
+      iex> Vx.Float.t() |> Vx.valid?(1.0)
+      true
 
-      iex> Vx.Float.t() |> Vx.validate!(1)
-      ** (Vx.Error) must be a float
+      iex> Vx.Float.t() |> Vx.valid?(1)
+      false
 
-      iex> Vx.Float.t() |> Vx.validate!("foo")
-      ** (Vx.Error) must be a float
+      iex> Vx.Float.t() |> Vx.valid?("foo")
+      false
   """
   @spec t() :: Vx.t()
   def t, do: %__MODULE__{}
 
   defimpl Vx.Validatable do
-    def validate(_, value) when is_float(value), do: []
+    def validate(_, value) when is_float(value), do: :ok
+    def validate(_, _), do: :error
+  end
 
-    def validate(schema, value) do
-      [Vx.Error.new(schema, value, "is not a float")]
-    end
+  defimpl Vx.Humanizable do
+    def humanize(_), do: "float"
   end
 end

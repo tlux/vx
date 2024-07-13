@@ -3,18 +3,22 @@ defmodule Vx.Struct do
   The Struct type.
   """
 
-  defstruct [:of]
+  use Vx.ContextualConstrain
+
+  alias Vx.Struct.Type
+
+  defstruct []
 
   @doc """
   Builds a new Struct type matching any type of struct.
 
   ## Examples
 
-      iex> Vx.Struct.t() |> Vx.validate!(%Address{})
-      :ok
+      iex> Vx.Struct.t() |> Vx.valid?(%Address{})
+      true
 
-      iex> Vx.Struct.t() |> Vx.validate!(%{})
-      ** (Vx.Error) must be a struct
+      iex> Vx.Struct.t() |> Vx.valid?(%{})
+      false
   """
   @spec t() :: Vx.t()
   def t, do: %__MODULE__{}
@@ -24,25 +28,22 @@ defmodule Vx.Struct do
 
   ## Examples
 
-      iex> Vx.Struct.t(Address) |> Vx.validate!(%Address{})
-      :ok
+      iex> Vx.Struct.t(Address) |> Vx.valid?(%Address{})
+      true
 
-      iex> Vx.Struct.t(Address) |> Vx.validate!(%{})
-      ** (Vx.Error) must be a struct of type Address
+      iex> Vx.Struct.t(Address) |> Vx.valid?(%{})
+      false
 
-      iex> Vx.Struct.t(Address) |> Vx.validate!(%Country{})
-      ** (Vx.Error) must be a struct of type Address
+      iex> Vx.Struct.t(Address) |> Vx.valid?(%Country{})
+      false
   """
   @spec t(module) :: Vx.t()
-  def t(mod) when is_atom(mod), do: %__MODULE__{of: mod}
+  def t(mod) when is_atom(mod) do
+    constrain(t(), %Type{mod: mod})
+  end
 
   defimpl Vx.Validatable do
-    def validate(%{of: %mod{}}, mod), do: []
-
-    def validate(%{of: of} = schema, value) do
-      [
-        Vx.Error.new(schema, value, "must be a struct of type #{inspect(of)}")
-      ]
-    end
+    def validate(_, %_{}), do: true
+    def validate(_, _), do: false
   end
 end

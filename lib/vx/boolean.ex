@@ -23,10 +23,10 @@ defmodule Vx.Boolean do
   def t, do: %__MODULE__{}
 
   defimpl Vx.Validatable do
-    def validate(_, value) when is_boolean(value), do: []
+    def validate(_, value), do: is_boolean(value)
+  end
 
-    def validate(schema, value) do
-      [Vx.Error.new(schema, value, "is not a boolean")]
-    end
+  defimpl Vx.Humanizable do
+    def humanize(_), do: "boolean"
   end
 end

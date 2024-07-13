@@ -11,7 +11,7 @@ defmodule Vx.Map.Shape do
   defimpl Vx.Validatable do
     import Vx.Util, only: [inspect_enum: 1]
 
-    def validate(%{shape: shape} = schema, map) do
+    def validate(%{shape: shape}, map) do
       {required_keys, optional_keys} = extract_keys(shape)
       all_keys = MapSet.union(required_keys, optional_keys)
       ambiguous_keys = MapSet.intersection(required_keys, optional_keys)
@@ -28,22 +28,10 @@ defmodule Vx.Map.Shape do
 
       cond do
         MapSet.size(excess_keys) > 0 ->
-          [
-            Vx.Error.new(
-              schema,
-              map,
-              "must not have key(s) #{inspect_enum(excess_keys)}"
-            )
-          ]
+          {:error, "must not have key(s) #{inspect_enum(excess_keys)}"}
 
         MapSet.size(missing_keys) > 0 ->
-          [
-            Vx.Error.new(
-              schema,
-              map,
-              "must have key(s) #{inspect_enum(missing_keys)}"
-            )
-          ]
+          {:error, "must have key(s) #{inspect_enum(missing_keys)}"}
 
         true ->
           validate_members(map, shape)
@@ -51,10 +39,11 @@ defmodule Vx.Map.Shape do
     end
 
     defp validate_members(map, shape) do
-      Enum.flat_map(shape, fn {key, value_schema} ->
+      shape
+      |> Enum.flat_map(fn {key, value_schema} ->
         with {:ok, value} <- fetch_value(map, key, value_schema),
              {:validate, []} <-
-               {:validate, Vx.Validatable.validate(value_schema, value)} do
+               {:validate, Vx.errors_on(value_schema, value)} do
           []
         else
           :omit ->
@@ -64,6 +53,10 @@ defmodule Vx.Map.Shape do
             key = resolve_key(key)
             Enum.map(errors, &Vx.Error.prepend_path(&1, key))
         end
+      end)
+      |> then(fn
+        [] -> :ok
+        errors -> {:error, errors}
       end)
     end
 

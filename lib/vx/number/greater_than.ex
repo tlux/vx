@@ -1,4 +1,8 @@
 defmodule Vx.Number.GreaterThan do
+  @moduledoc """
+  A constraint that verifies a number is greater than another number.
+  """
+
   @enforce_keys [:value]
   defstruct [:value]
 
@@ -7,10 +11,16 @@ defmodule Vx.Number.GreaterThan do
   defimpl Vx.Validatable do
     def validate(schema, value) do
       if value > schema.value do
-        []
+        :ok
       else
-        [Vx.Error.new(schema, value, "must be greater than #{schema.value}")]
+        {:error, "must be greater than #{schema.value}"}
       end
+    end
+  end
+
+  defimpl Vx.Humanizable do
+    def humanize(%{value: value}) do
+      "> #{value}"
     end
   end
 end

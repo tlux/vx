@@ -21,10 +21,53 @@ defmodule Vx do
   """
   @spec validate(t, any) :: :ok | {:error, [Vx.Error.t()]}
   def validate(schema, value) do
-    case Vx.Validatable.validate(schema, value) do
+    case errors_on(schema, value) do
       [] -> :ok
-      errors -> {:error, Enum.sort_by(errors, & &1.path)}
+      errors -> {:error, errors}
     end
+  end
+
+  @doc """
+  Validates the schema returning a list of errors.
+  """
+  @doc since: "1.0.0"
+  @spec errors_on(t, any) :: [Vx.Error.t()]
+  def errors_on(schema, value) do
+    case Vx.Validatable.validate(schema, value) do
+      res when res in [true, :ok] ->
+        []
+
+      res when res in [false, :error] ->
+        [Vx.Error.new(schema, value)]
+
+      {:error, errors} when is_list(errors) ->
+        Enum.map(errors, &map_error(schema, value, &1))
+
+      {:error, error} ->
+        [map_error(schema, value, error)]
+    end
+  end
+
+  defp map_error(_schema, _value, %Vx.Error{} = error), do: error
+
+  defp map_error(schema, value, message) when is_binary(message) do
+    Vx.Error.new(schema, value, message)
+  end
+
+  defp map_error(schema, value, {path, message})
+       when is_binary(message) and is_list(path) do
+    Vx.Error.new(schema, value, path, message)
+  end
+
+  @doc """
+  Returns the list of error messages for a given schema and value.
+  """
+  @doc since: "1.0.0"
+  @spec error_messages_on(t, any) :: [String.t()]
+  def error_messages_on(schema, value) do
+    schema
+    |> errors_on(value)
+    |> Enum.map(&Vx.Error.message/1)
   end
 
   @doc """

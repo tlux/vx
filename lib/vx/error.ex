@@ -3,6 +3,7 @@ defmodule Vx.Error do
   An error that occurred during schema validation.
   """
 
+  @derive {Inspect, optional: [:message]}
   @enforce_keys [:caused_by, :actual_value]
   defexception [:caused_by, :actual_value, :message, path: []]
 
@@ -56,8 +57,11 @@ defmodule Vx.Error do
   end
 
   @impl true
-  def message(%{path: path, message: nil}) do
-    message_with_path(path, "invalid")
+  def message(%{caused_by: schema, path: path, message: nil}) do
+    message_with_path(
+      path,
+      "type mismatch: #{Vx.Humanizable.humanize(schema)}"
+    )
   end
 
   def message(%{path: path, message: message}) do

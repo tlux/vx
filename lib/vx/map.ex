@@ -3,14 +3,9 @@ defmodule Vx.Map do
   The Map type.
   """
 
-  use Vx.ConstrainContextual
+  use Vx.ContextualConstrain
 
-  alias __MODULE__.{
-    KeySchema,
-    Shape,
-    Size,
-    ValueSchema
-  }
+  alias __MODULE__.{Keys, Shape, Size, Values}
 
   defstruct []
 
@@ -62,8 +57,8 @@ defmodule Vx.Map do
   @spec t(Vx.t(), Vx.t()) :: Vx.t()
   def t(key_schema, value_schema) do
     t()
-    |> constrain(%KeySchema{schema: key_schema})
-    |> constrain(%ValueSchema{schema: value_schema})
+    |> constrain(%Keys{schema: key_schema})
+    |> constrain(%Values{schema: value_schema})
   end
 
   @doc """
@@ -125,15 +120,15 @@ defmodule Vx.Map do
       ** (Vx.Error) must have a size of 1
   """
   @spec size(Vx.t(), Keyword.t()) :: Vx.t()
-  def size(schema \\ t(), opts) do
+  def size(schema \\ t(), opts) when is_list(opts) do
     constrain(schema, Size.new(opts))
   end
 
   defimpl Vx.Validatable do
-    def validate(_, value) when is_map(value), do: []
+    def validate(_, value), do: is_map(value)
+  end
 
-    def validate(schema, value) do
-      [Vx.Error.new(schema, value, "is not a map")]
-    end
+  defimpl Vx.Humanizable do
+    def humanize(_), do: "map"
   end
 end

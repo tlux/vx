@@ -35,12 +35,10 @@ defmodule Vx.Match do
   end
 
   defimpl Vx.Validatable do
-    def validate(schema, value) do
-      if schema.matcher.(value) do
-        []
-      else
-        [Vx.Error.new(schema, value, "does not match #{schema.pattern}")]
-      end
-    end
+    def validate(%{matcher: matcher}, value), do: matcher.(value)
+  end
+
+  defimpl Vx.Humanizable do
+    def humanize(%{pattern: pattern}), do: "match #{pattern}"
   end
 end

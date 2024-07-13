@@ -1,35 +1,31 @@
 defmodule Vx.Except do
   @moduledoc """
-  The Except type subtracts one type from another.
+  The Except type btracts one type from another.
   """
 
-  @enforce_keys [:min, :sub]
-  defstruct [:min, :sub]
+  @enforce_keys [:a, :b]
+  defstruct [:a, :b]
 
   @doc """
   Builds a new Except type.
   """
   @spec t(Vx.t(), Vx.t()) :: Vx.t()
-  def t(min, sub) do
-    %__MODULE__{min: min, sub: sub}
-  end
+  def t(a, b), do: %__MODULE__{a: a, b: b}
 
   @spec t(nonempty_list(Vx.t())) :: Vx.t()
   def t([_, _ | _] = list) when is_list(list) do
-    Enum.reduce(list, fn item, acc ->
-      t(acc, item)
-    end)
+    Enum.reduce(list, &t(&2, &1))
   end
 
   defimpl Vx.Validatable do
-    def validate(%{min: min, sub: sub} = schema, value) do
-      with {:min, []} <- {:min, Vx.Validatable.validate(min, value)},
-           {:sub, []} <- {:sub, Vx.Validatable.validate(sub, value)} do
-        [Vx.Error.new(schema, value, "must not be #{inspect(sub)}")]
-      else
-        {:min, errors} -> errors
-        {:sub, _} -> []
-      end
+    def validate(%{a: a, b: b}, value) do
+      Vx.valid?(a, value) && !Vx.valid?(b, value)
+    end
+  end
+
+  defimpl Vx.Humanizable do
+    def humanize(%{a: a, b: b}) do
+      "#{Vx.Humanizable.humanize(a)} except #{Vx.Humanizable.humanize(b)}"
     end
   end
 end

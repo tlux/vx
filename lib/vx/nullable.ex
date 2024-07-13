@@ -24,13 +24,20 @@ defmodule Vx.Nullable do
       ** (Vx.Error) must be (string | nil)
   """
   @spec t(Vx.t()) :: Vx.t()
+  def t(%Vx.Nullable{} = schema), do: schema
+
+  def t(%Vx.Optional{schema: schema}), do: t(schema)
+
   def t(schema), do: %__MODULE__{schema: schema}
 
   defimpl Vx.Validatable do
-    def validate(_, nil), do: []
+    def validate(_, nil), do: :ok
+    def validate(%{schema: schema}, value), do: Vx.validate(schema, value)
+  end
 
-    def validate(%{schema: schema}, value) do
-      Vx.Validatable.validate(schema, value)
+  defimpl Vx.Humanizable do
+    def humanize(%{schema: schema}) do
+      "#{Vx.Humanizable.humanize(schema)}?"
     end
   end
 end

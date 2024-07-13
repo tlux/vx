@@ -1,4 +1,8 @@
 defmodule Vx.String.Length do
+  @moduledoc """
+  A constraint that verifies the length of a string.
+  """
+
   @derive {Inspect, optional: [:is, :min, :max]}
   defstruct [:is, :min, :max]
 
@@ -24,8 +28,12 @@ defmodule Vx.String.Length do
         if valid_value?(key, actual, expected) do
           []
         else
-          [Vx.Error.new(schema, value, error_message_for(key, expected))]
+          [error_message_for(key, expected)]
         end
+      end)
+      |> then(fn
+        [] -> :ok
+        errors -> {:error, errors}
       end)
     end
 

@@ -3,6 +3,8 @@ defmodule Vx.Integer do
   The Integer type.
   """
 
+  use Vx.ContextualConstrain
+
   defstruct []
 
   @type t :: %__MODULE__{}
@@ -12,23 +14,39 @@ defmodule Vx.Integer do
 
   ## Examples
 
-      iex> Vx.Integer.t() |> Vx.validate!(1)
-      :ok
+      iex> Vx.Integer.t() |> Vx.valid?(1)
+      true
 
-      iex> Vx.Integer.t() |> Vx.validate!(1.0)
-      ** (Vx.Error) must be an integer
+      iex> Vx.Integer.t() |> Vx.valid?(1.0)
+      false
 
-      iex> Vx.Integer.t() |> Vx.validate!("foo")
-      ** (Vx.Error) must be an integer
+      iex> Vx.Integer.t() |> Vx.valid?("foo")
+      false
   """
   @spec t() :: t
   def t, do: %__MODULE__{}
 
-  defimpl Vx.Validatable do
-    def validate(_, value) when is_integer(value), do: []
+  @doc """
+  Requires the integer to be in the given range.
 
-    def validate(schema, value) do
-      [Vx.Error.new(schema, value, "is not an integer")]
-    end
+  ## Example
+
+      iex> Vx.Integer.range(1..10) |> Vx.valid?(5)
+      true
+
+      iex> Vx.Integer.range(1..10) |> Vx.valid?(11)
+      false
+  """
+  @spec range(Vx.t(), Range.t()) :: Vx.t()
+  def range(schema \\ t(), _.._ = range) do
+    constrain(schema, %Vx.Integer.Range{range: range})
+  end
+
+  defimpl Vx.Validatable do
+    def validate(_, value), do: is_integer(value)
+  end
+
+  defimpl Vx.Humanizable do
+    def humanize(_), do: "integer"
   end
 end

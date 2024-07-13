@@ -9,10 +9,21 @@ defprotocol Vx.Validatable do
 
   @fallback_to_any true
 
+  @type result ::
+          boolean
+          | :ok
+          | :error
+          | {:error, Vx.Error.t()}
+          | {:error, String.t()}
+          | {:error, {Vx.Error.path(), String.t()}}
+          | {:error, nonempty_list(Vx.Error.t())}
+          | {:error, nonempty_list(String.t())}
+          | {:error, nonempty_list({Vx.Error.path(), String.t()})}
+
   @doc """
   Validates a value against a given validatable.
   """
-  @spec validate(t, any) :: [Vx.Error.t()]
+  @spec validate(t, any) :: result
   def validate(validatable, value)
 end
 

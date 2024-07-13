@@ -3,7 +3,7 @@ defmodule Vx.Tuple do
   The Tuple type.
   """
 
-  use Vx.ConstrainContextual
+  use Vx.ContextualConstrain
 
   defstruct []
 
@@ -44,7 +44,7 @@ defmodule Vx.Tuple do
       ** (Vx.Error) must have a size of 2
   """
   @spec size(Vx.t(), Keyword.t()) :: Vx.t()
-  def size(schema \\ t(), opts) do
+  def size(schema \\ t(), opts) when is_list(opts) do
     constrain(schema, Size.new(opts))
   end
 
@@ -69,10 +69,6 @@ defmodule Vx.Tuple do
   end
 
   defimpl Vx.Validatable do
-    def validate(_, value) when is_tuple(value), do: []
-
-    def validate(schema, value) do
-      [Vx.Error.new(schema, value, "is not a tuple")]
-    end
+    def validate(_, value), do: is_tuple(value)
   end
 end

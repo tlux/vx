@@ -3,8 +3,8 @@ defmodule Vx.Not do
   The Not type negates the given type or value.
   """
 
-  @enforce_keys [:of]
-  defstruct [:of]
+  @enforce_keys [:schema]
+  defstruct [:schema]
 
   @doc """
   Builds a new type negating the passed one.
@@ -18,18 +18,15 @@ defmodule Vx.Not do
       ** (Vx.Error) must not be integer
   """
   @spec t(Vx.t()) :: Vx.t()
-  def t(of), do: %__MODULE__{of: of}
+  def t(schema), do: %__MODULE__{schema: schema}
 
   defimpl Vx.Validatable do
-    def validate(%{of: of} = schema, value) do
-      case Vx.Validatable.validate(of, value) do
-        [] ->
-          # TODO: improve message
-          [Vx.Error.new(schema, value, "must not be #{inspect(of)}")]
+    def validate(%{schema: schema}, value), do: !Vx.valid?(schema, value)
+  end
 
-        _ ->
-          []
-      end
+  defimpl Vx.Humanizable do
+    def humanize(%{schema: schema}) do
+      "not (#{Vx.Humanizable.humanize(schema)})"
     end
   end
 end
