@@ -3,7 +3,7 @@ defmodule Vx.Error do
   An error that occurred during schema validation.
   """
 
-  @enforce_keys [:caused_by, :actual_value, :message]
+  @enforce_keys [:caused_by, :actual_value]
   defexception [:caused_by, :actual_value, :message, path: []]
 
   @type path_segment :: term
@@ -13,7 +13,7 @@ defmodule Vx.Error do
   @type t :: %__MODULE__{
           caused_by: Vx.t(),
           actual_value: any,
-          message: String.t(),
+          message: nil | String.t(),
           path: path
         }
 
@@ -21,8 +21,7 @@ defmodule Vx.Error do
   def new(caused_by, value) do
     %__MODULE__{
       caused_by: caused_by,
-      actual_value: value,
-      message: default_message(caused_by)
+      actual_value: value
     }
   end
 
@@ -33,8 +32,7 @@ defmodule Vx.Error do
     %__MODULE__{
       caused_by: caused_by,
       actual_value: value,
-      path: path,
-      message: default_message(caused_by)
+      path: path
     }
   end
 
@@ -57,16 +55,18 @@ defmodule Vx.Error do
     }
   end
 
-  defp default_message(schema) do
+  @impl true
+  def message(%{path: []} = error), do: get_message(error)
+
+  def message(%{path: path} = error) do
+    "#{get_message(error)} at #{inspect(path)}"
+  end
+
+  defp get_message(%{caused_by: schema, message: nil}) do
     "expected #{Vx.Humanizable.humanize(schema)}"
   end
 
-  @impl true
-  def message(%{path: [], message: message}), do: message
-
-  def message(%{path: path, message: message}) do
-    "#{message} at #{inspect(path)}"
-  end
+  defp get_message(%{message: message}), do: message
 
   @doc """
   Prepends a message to the error message.
@@ -86,5 +86,13 @@ defmodule Vx.Error do
 
   def prepend_path(%__MODULE__{} = error, segment) do
     %{error | path: [segment | error.path]}
+  end
+
+  @doc """
+  Puts a new schema in the error.
+  """
+  @spec put_schema(t, Vx.t()) :: t
+  def put_schema(error, schema) do
+    %{error | caused_by: schema}
   end
 end

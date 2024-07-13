@@ -12,7 +12,7 @@ defmodule Vx.TupleTest do
 
     test "no match" do
       Enum.each([nil, "foo", :foo, true, false], fn value ->
-        assert {:error, error} = Vx.validate(Vx.Tuple.t(), value)
+        assert  {:error, [error]} = Vx.validate(Vx.Tuple.t(), value)
         assert Exception.message(error) == "must be a tuple"
       end)
     end
@@ -31,7 +31,7 @@ defmodule Vx.TupleTest do
     end
 
     test "no match" do
-      assert {:error, error} = Vx.validate(Vx.Tuple.shape({1, 2, 3}), {1, 2})
+      assert  {:error, [error]} = Vx.validate(Vx.Tuple.shape({1, 2, 3}), {1, 2})
 
       assert Exception.message(error) ==
                "must match {1, 2, 3}\n" <>
@@ -56,7 +56,7 @@ defmodule Vx.TupleTest do
     end
 
     test "no match" do
-      assert {:error, error} = Vx.validate(Vx.Tuple.size(2), {1})
+      assert  {:error, [error]} = Vx.validate(Vx.Tuple.size(2), {1})
       assert Exception.message(error) == "must have a size of 2"
 
       assert {:error, _} = Vx.validate(Vx.Tuple.size(2), {1, 2, 3})

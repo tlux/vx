@@ -32,7 +32,16 @@ defmodule Vx.Nullable do
 
   defimpl Vx.Validatable do
     def validate(_, nil), do: :ok
-    def validate(%{schema: schema}, value), do: Vx.validate(schema, value)
+
+    def validate(%{schema: schema} = nullable, value) do
+      case Vx.validate(schema, value) do
+        :ok ->
+          :ok
+
+        {:error, errors} ->
+          {:error, Enum.map(errors, &Vx.Error.put_schema(&1, nullable))}
+      end
+    end
   end
 
   defimpl Vx.Humanizable do

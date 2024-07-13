@@ -15,14 +15,14 @@ defmodule Vx.Optional do
 
   ## Examples
 
-      iex> Vx.Optional.t(Vx.String.t()) |> Vx.validate!("foo")
-      :ok
+      iex> Vx.Optional.t(Vx.String.t()) |> Vx.valid?("foo")
+      true
 
-      iex> Vx.Optional.t(Vx.String.t()) |> Vx.validate!(nil)
-      :ok
+      iex> Vx.Optional.t(Vx.String.t()) |> Vx.valid?(nil)
+      true
 
-      iex> Vx.Optional.t(Vx.String.t()) |> Vx.validate!(123)
-      ** (Vx.Error) must be string?
+      iex> Vx.Optional.t(Vx.String.t()) |> Vx.valid?(123)
+      false
 
   In most cases the behavior is the same as using `Vx.Nullable.t/1`.
 
@@ -32,16 +32,15 @@ defmodule Vx.Optional do
       ...>   :a => Vx.String.t(),
       ...>   Vx.Optional.t(:b) => Vx.Number.t()
       ...> })
-      ...> Vx.validate!(schema, %{a: "foo"})
-      :ok
+      ...> Vx.valid?(schema, %{a: "foo"})
+      true
 
       iex> schema = Vx.Map.shape(%{
       ...>   :a => Vx.String.t(),
       ...>   Vx.Optional.t(:b) => Vx.Number.t()
       ...> })
-      ...> Vx.validate!(schema, %{a: "foo", b: "bar"})
-      ** (Vx.Error) does not match shape
-      - key :b: must be a number
+      ...> Vx.valid?(schema, %{a: "foo", b: "bar"})
+      false
   """
   @spec t(Vx.t()) :: Vx.t()
   def t(%Vx.Optional{} = schema), do: schema
@@ -52,7 +51,16 @@ defmodule Vx.Optional do
 
   defimpl Vx.Validatable do
     def validate(_, nil), do: :ok
-    def validate(%{schema: schema}, value), do: Vx.validate(schema, value)
+
+    def validate(%{schema: schema} = optional, value) do
+      case Vx.validate(schema, value) do
+        :ok ->
+          :ok
+
+        {:error, errors} ->
+          {:error, Enum.map(errors, &Vx.Error.put_schema(&1, optional))}
+      end
+    end
   end
 
   defimpl Vx.Humanizable do

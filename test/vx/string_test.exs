@@ -13,7 +13,7 @@ defmodule Vx.StringTest do
 
     test "no match" do
       Enum.each(@invalid, fn value ->
-        assert {:error, error} = Vx.validate(Vx.String.t(), value)
+        assert  {:error, [error]} = Vx.validate(Vx.String.t(), value)
         assert Exception.message(error) == "must be a string"
       end)
     end
@@ -27,7 +27,7 @@ defmodule Vx.StringTest do
     end
 
     test "no match" do
-      assert {:error, error} = Vx.validate(Vx.String.non_empty(), "")
+      assert  {:error, [error]} = Vx.validate(Vx.String.non_empty(), "")
       assert Exception.message(error) == "must not be empty"
 
       Enum.each(@invalid, fn value ->
@@ -43,7 +43,7 @@ defmodule Vx.StringTest do
 
     test "no match" do
       Enum.each(["", "   ", "\n \n"], fn value ->
-        assert {:error, error} = Vx.validate(Vx.String.present(), value)
+        assert  {:error, [error]} = Vx.validate(Vx.String.present(), value)
         assert Exception.message(error) == "must be present"
       end)
 
@@ -61,7 +61,7 @@ defmodule Vx.StringTest do
     end
 
     test "no match" do
-      assert {:error, error} = Vx.validate(Vx.String.min_length(3), "fo")
+      assert  {:error, [error]} = Vx.validate(Vx.String.min_length(3), "fo")
       assert Exception.message(error) == "must be at least 3 characters"
     end
 
@@ -84,7 +84,7 @@ defmodule Vx.StringTest do
     end
 
     test "no match" do
-      assert {:error, error} = Vx.validate(Vx.String.max_length(3), "foob")
+      assert  {:error, [error]} = Vx.validate(Vx.String.max_length(3), "foob")
       assert Exception.message(error) == "must be at most 3 characters"
     end
 

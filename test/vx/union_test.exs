@@ -22,7 +22,7 @@ defmodule Vx.UnionTest do
     end
 
     test "no match" do
-      assert {:error, error} = Vx.validate(Vx.Union.t([Vx.Integer.t()]), "foo")
+      assert  {:error, [error]} = Vx.validate(Vx.Union.t([Vx.Integer.t()]), "foo")
 
       assert Exception.message(error) ==
                ~s[must be an integer]

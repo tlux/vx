@@ -28,10 +28,10 @@ defmodule Vx.Map.Shape do
 
       cond do
         MapSet.size(excess_keys) > 0 ->
-          ["must not have key(s) #{inspect_enum(excess_keys)}"]
+          {:error, ["must not have key(s) #{inspect_enum(excess_keys)}"]}
 
         MapSet.size(missing_keys) > 0 ->
-          ["must have key(s) #{inspect_enum(missing_keys)}"]
+          {:error, ["must have key(s) #{inspect_enum(missing_keys)}"]}
 
         true ->
           validate_members(map, shape)

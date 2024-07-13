@@ -19,8 +19,8 @@ defmodule Vx.OptionalTest do
     end
 
     test "no match", %{map_with_optional_key: map_with_optional_key} do
-      assert {:error, error} = Vx.validate(Vx.Optional.t("foo"), "bar")
-      assert Exception.message(error) == ~s[must be "foo"?]
+      assert {:error, [error]} = Vx.validate(Vx.Optional.t("foo"), "bar")
+      assert Exception.message(error) == ~s[expected "foo"??]
 
       assert {:error, _} = Vx.validate(Vx.Optional.t(Vx.String.t()), 1)
       assert {:error, _} = Vx.validate(map_with_optional_key, %{"bar" => true})

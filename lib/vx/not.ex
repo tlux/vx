@@ -11,11 +11,11 @@ defmodule Vx.Not do
 
   ## Examples
 
-      iex> Vx.Not.t(Vx.Integer.t()) |> Vx.validate!("foo")
-      :ok
+      iex> Vx.Not.t(Vx.Integer.t()) |> Vx.valid?("foo")
+      true
 
-      iex> Vx.Not.t(Vx.Integer.t()) |> Vx.validate!(123)
-      ** (Vx.Error) must not be integer
+      iex> Vx.Not.t(Vx.Integer.t()) |> Vx.valid?(123)
+      false
   """
   @spec t(Vx.t()) :: Vx.t()
   def t(schema), do: %__MODULE__{schema: schema}

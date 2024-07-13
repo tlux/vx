@@ -11,7 +11,7 @@ defmodule Vx.StructTest do
 
     test "no match" do
       Enum.each([nil, "foo", :foo, true, false], fn value ->
-        assert {:error, error} = Vx.validate(Vx.Struct.t(), value)
+        assert  {:error, [error]} = Vx.validate(Vx.Struct.t(), value)
         assert Exception.message(error) == "must be a struct"
       end)
     end
@@ -23,7 +23,7 @@ defmodule Vx.StructTest do
     end
 
     test "no match" do
-      assert {:error, error} = Vx.validate(Vx.Struct.t(Country), %Address{})
+      assert  {:error, [error]} = Vx.validate(Vx.Struct.t(Country), %Address{})
 
       assert Exception.message(error) ==
                "must be a struct of type Country"

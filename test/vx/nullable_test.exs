@@ -12,11 +12,15 @@ defmodule Vx.NullableTest do
     end
 
     test "no match" do
-      assert {:error, error} = Vx.validate(Vx.Nullable.t(Vx.String.t()), 123)
-      assert Exception.message(error) == ~s[must be (string | nil)]
+      assert {:error, [error]} = Vx.validate(Vx.Nullable.t(Vx.String.t()), 123)
+      assert Exception.message(error) == "expected string?"
 
-      assert {:error, error} = Vx.validate(Vx.Nullable.t("foo"), 123)
-      assert Exception.message(error) == ~s[must be ("foo" | nil)]
+      assert {:error, [error]} = Vx.validate(Vx.Nullable.t("foo"), 123)
+      assert Exception.message(error) == ~s[expected "foo"?]
     end
+
+    test "do not wrap Vx.Nullable"
+
+    test "unwrap and replace Vx.Optional"
   end
 end
