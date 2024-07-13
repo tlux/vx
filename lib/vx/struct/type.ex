@@ -12,7 +12,7 @@ defmodule Vx.Struct.Type do
       if is_struct(value, mod) do
         :ok
       else
-        {:error, "is not a struct of type #{inspect(mod)}"}
+        {:error, "not a struct of type #{inspect(mod)}"}
       end
     end
   end

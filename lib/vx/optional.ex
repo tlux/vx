@@ -57,7 +57,7 @@ defmodule Vx.Optional do
 
   defimpl Vx.Humanizable do
     def humanize(%{schema: schema}) do
-      "#{Vx.Humanizable.humanize(schema)}*"
+      "#{Vx.Humanizable.humanize(schema)}??"
     end
   end
 end

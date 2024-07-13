@@ -46,8 +46,16 @@ defmodule Vx.List.Length do
       "does not have a length of #{expected}"
     end
 
+    defp error_message_for(:min, 1) do
+      "must have at least 1 element"
+    end
+
     defp error_message_for(:min, expected) do
       "must have at least #{expected} elements"
+    end
+
+    defp error_message_for(:max, 1) do
+      "must have at most 1 element"
     end
 
     defp error_message_for(:max, expected) do

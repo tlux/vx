@@ -1,6 +1,6 @@
 defmodule Vx.Except do
   @moduledoc """
-  The Except type btracts one type from another.
+  The Except type subtracts one type from another.
   """
 
   @enforce_keys [:a, :b]

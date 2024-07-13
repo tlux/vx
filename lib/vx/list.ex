@@ -14,11 +14,11 @@ defmodule Vx.List do
 
   ## Examples
 
-      iex> Vx.List.t() |> Vx.validate!([1, 2, 3])
-      :ok
+      iex> Vx.List.t() |> Vx.valid?([1, 2, 3])
+      true
 
-      iex> Vx.List.t() |> Vx.validate!("foo")
-      ** (Vx.Error) must be a list
+      iex> Vx.List.t() |> Vx.valid?("foo")
+      false
   """
   @spec t() :: Vx.t()
   def t, do: %__MODULE__{}
@@ -28,15 +28,14 @@ defmodule Vx.List do
 
   ## Examples
 
-      iex> Vx.List.t(Vx.Number.t()) |> Vx.validate!([1, 2, 3])
-      :ok
+      iex> Vx.List.t(Vx.Number.t()) |> Vx.valid?([1, 2, 3])
+      true
 
-      iex> Vx.List.t(Vx.String.t()) |> Vx.validate!("foo")
-      ** (Vx.Error) must be a list
+      iex> Vx.List.t(Vx.String.t()) |> Vx.valid?("foo")
+      false
 
-      iex> Vx.List.t(Vx.String.t()) |> Vx.validate!(["foo", 2, "bar"])
-      ** (Vx.Error) must be a list<string>
-      - element 1: must be a string
+      iex> Vx.List.t(Vx.String.t()) |> Vx.valid?(["foo", 2, "bar"])
+      false
 
   """
   @spec t(Vx.t()) :: Vx.t()
@@ -57,11 +56,11 @@ defmodule Vx.List do
 
   ## Examples
 
-      iex> Vx.List.non_empty() |> Vx.validate!([1, 2, 3])
-      :ok
+      iex> Vx.List.non_empty() |> Vx.valid?([1, 2, 3])
+      true
 
-      iex> Vx.List.non_empty() |> Vx.validate!([])
-      ** (Vx.Error) must not be empty
+      iex> Vx.List.non_empty() |> Vx.valid?([])
+      false
   """
   @spec non_empty(Vx.t()) :: Vx.t()
   def non_empty(schema \\ t()), do: length(schema, min: 1)
@@ -71,16 +70,14 @@ defmodule Vx.List do
 
   ## Examples
 
-      iex> Vx.List.shape([Vx.Number.t(), Vx.String.t()]) |> Vx.validate!([123, "foo"])
-      :ok
+      iex> Vx.List.shape([Vx.Number.t(), Vx.String.t()]) |> Vx.valid?([123, "foo"])
+      true
 
-      iex> Vx.List.shape([Vx.Number.t(), Vx.String.t()]) |> Vx.validate!([123])
-      ** (Vx.Error) must match [number, string]
-      - element 1 is missing
+      iex> Vx.List.shape([Vx.Number.t(), Vx.String.t()]) |> Vx.valid?([123])
+      false
 
-      iex> Vx.List.shape([Vx.Number.t(), Vx.String.t()]) |> Vx.validate!([123, :foo])
-      ** (Vx.Error) must match [number, string]
-      - element 1: must be a string
+      iex> Vx.List.shape([Vx.Number.t(), Vx.String.t()]) |> Vx.valid?([123, :foo])
+      false
   """
   @spec shape(Vx.t(), [Vx.t()]) :: Vx.t()
   def shape(schema \\ t(), shape) when is_list(shape) do
@@ -88,8 +85,7 @@ defmodule Vx.List do
   end
 
   defimpl Vx.Validatable do
-    def validate(_, values) when is_list(values), do: :ok
-    def validate(_, _), do: :error
+    def validate(_, values), do: is_list(values)
   end
 
   defimpl Vx.Humanizable do

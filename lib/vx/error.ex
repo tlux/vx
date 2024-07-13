@@ -3,8 +3,7 @@ defmodule Vx.Error do
   An error that occurred during schema validation.
   """
 
-  @derive {Inspect, optional: [:message]}
-  @enforce_keys [:caused_by, :actual_value]
+  @enforce_keys [:caused_by, :actual_value, :message]
   defexception [:caused_by, :actual_value, :message, path: []]
 
   @type path_segment :: term
@@ -14,7 +13,7 @@ defmodule Vx.Error do
   @type t :: %__MODULE__{
           caused_by: Vx.t(),
           actual_value: any,
-          message: nil | String.t(),
+          message: String.t(),
           path: path
         }
 
@@ -22,7 +21,8 @@ defmodule Vx.Error do
   def new(caused_by, value) do
     %__MODULE__{
       caused_by: caused_by,
-      actual_value: value
+      actual_value: value,
+      message: default_message(caused_by)
     }
   end
 
@@ -33,7 +33,8 @@ defmodule Vx.Error do
     %__MODULE__{
       caused_by: caused_by,
       actual_value: value,
-      path: path
+      path: path,
+      message: default_message(caused_by)
     }
   end
 
@@ -56,20 +57,16 @@ defmodule Vx.Error do
     }
   end
 
-  @impl true
-  def message(%{caused_by: schema, path: path, message: nil}) do
-    message_with_path(
-      path,
-      "type mismatch: #{Vx.Humanizable.humanize(schema)}"
-    )
+  defp default_message(schema) do
+    "expected #{Vx.Humanizable.humanize(schema)}"
   end
+
+  @impl true
+  def message(%{path: [], message: message}), do: message
 
   def message(%{path: path, message: message}) do
-    message_with_path(path, message)
+    "#{message} at #{inspect(path)}"
   end
-
-  defp message_with_path([], text), do: text
-  defp message_with_path(path, text), do: "value at #{inspect(path)} #{text}"
 
   @doc """
   Prepends a message to the error message.

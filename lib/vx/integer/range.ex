@@ -13,7 +13,7 @@ defmodule Vx.Integer.Range do
       if value in range do
         :ok
       else
-        {:error, "is not in range #{inspect(range)}"}
+        {:error, "not in range #{inspect(range)}"}
       end
     end
   end

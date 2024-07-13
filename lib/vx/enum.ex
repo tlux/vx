@@ -28,7 +28,7 @@ defmodule Vx.Enum do
 
   defimpl Vx.Humanizable do
     def humanize(%{values: values}) do
-      "enum[#{Vx.Util.inspect_enum(values)}]"
+      "enum(#{Vx.Util.inspect_enum(values)})"
     end
   end
 end

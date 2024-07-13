@@ -24,17 +24,13 @@ defmodule Vx.List.Shape do
           []
         else
           {:value_elem, :error} ->
-            {:error, "element at index #{index} is missing"}
+            ["element at index #{index} is missing"]
 
           {:shape_elem, :error} ->
-            {:error, "element at index #{index} is abundant"}
+            ["element at index #{index} is abundant"]
 
           {:match, errors} ->
-            Enum.map(errors, fn error ->
-              error
-              |> Vx.Error.prepend_path(index)
-              |> Vx.Error.prepend_message("element at index #{index}")
-            end)
+            Enum.map(errors, &Vx.Error.prepend_path(&1, index))
         end
       end)
       |> then(fn

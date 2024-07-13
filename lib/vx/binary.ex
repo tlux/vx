@@ -13,6 +13,9 @@ defmodule Vx.Binary do
       iex> Vx.Binary.t() |> Vx.valid?("foo")
       true
 
+      iex> Vx.Binary.t() |> Vx.valid?(<<0, 1, 2>>)
+      true
+
       iex> Vx.Binary.t() |> Vx.valid?(123)
       false
   """

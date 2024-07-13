@@ -15,7 +15,7 @@ defmodule Vx.EnumTest do
 
     test "no match", %{schema: schema} do
       assert {:error, [error]} = Vx.validate(schema, :baz)
-      assert Exception.message(error) == ~s(is no enum[:foo, "bar"])
+      assert Exception.message(error) == ~s[expected enum(:foo, "bar")]
     end
   end
 end

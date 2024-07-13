@@ -12,7 +12,7 @@ defmodule Vx.FloatTest do
     test "no match" do
       Enum.each([123, "foo", :foo, true, false], fn value ->
         assert {:error, [error]} = Vx.validate(Vx.Float.t(), value)
-        assert Exception.message(error) == "is no float"
+        assert Exception.message(error) == "expected float"
       end)
     end
   end

@@ -1,4 +1,5 @@
-defimpl Vx.Humanizable, for: [Vx.List.Length, Vx.Map.Size, Vx.Tuple.Size] do
+defimpl Vx.Humanizable,
+  for: [Vx.List.Length, Vx.Map.Size, Vx.String.Length, Vx.Tuple.Size] do
   def humanize(schema) do
     schema
     |> Map.from_struct()
@@ -8,7 +9,7 @@ defimpl Vx.Humanizable, for: [Vx.List.Length, Vx.Map.Size, Vx.Tuple.Size] do
   end
 
   defp text(_, nil), do: nil
-  defp text(:is, value), do: "size of #{value}"
-  defp text(:min, value), do: "min size of #{value}"
-  defp text(:max, value), do: "max size of #{value}"
+  defp text(:is, value), do: "size = #{value}"
+  defp text(:min, value), do: "size >= #{value}"
+  defp text(:max, value), do: "size <= #{value}"
 end

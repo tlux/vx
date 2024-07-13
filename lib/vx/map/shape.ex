@@ -28,10 +28,10 @@ defmodule Vx.Map.Shape do
 
       cond do
         MapSet.size(excess_keys) > 0 ->
-          {:error, "must not have key(s) #{inspect_enum(excess_keys)}"}
+          ["must not have key(s) #{inspect_enum(excess_keys)}"]
 
         MapSet.size(missing_keys) > 0 ->
-          {:error, "must have key(s) #{inspect_enum(missing_keys)}"}
+          ["must have key(s) #{inspect_enum(missing_keys)}"]
 
         true ->
           validate_members(map, shape)
@@ -95,5 +95,13 @@ defmodule Vx.Map.Shape do
 
     defp resolve_key(%Vx.Optional{schema: key}), do: key
     defp resolve_key(key), do: key
+  end
+
+  defimpl Vx.Humanizable do
+    def humanize(%{shape: shape}) do
+      Enum.map_join(shape, ", ", fn {key, value} ->
+        "#{inspect(key)} => #{Vx.Humanizable.humanize(value)}"
+      end)
+    end
   end
 end

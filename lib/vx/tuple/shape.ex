@@ -22,10 +22,10 @@ defmodule Vx.Tuple.Shape do
           []
         else
           {:value_elem, :error} ->
-            {:error, "element at index #{index} is missing"}
+            ["element at index #{index} is missing"]
 
           {:shape_elem, :error} ->
-            {:error, "element at index #{index} is abundant"}
+            ["element at index #{index} is abundant"]
 
           {:match, errors} ->
             Enum.map(errors, fn error ->

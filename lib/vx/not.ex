@@ -26,7 +26,7 @@ defmodule Vx.Not do
 
   defimpl Vx.Humanizable do
     def humanize(%{schema: schema}) do
-      "not (#{Vx.Humanizable.humanize(schema)})"
+      "not(#{Vx.Humanizable.humanize(schema)})"
     end
   end
 end
