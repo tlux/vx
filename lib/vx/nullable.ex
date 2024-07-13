@@ -24,6 +24,8 @@ defmodule Vx.Nullable do
       false
   """
   @spec t(Vx.t()) :: Vx.t()
+  def t(%Vx.Literal{value: nil} = schema), do: schema
+
   def t(%Vx.Nullable{} = schema), do: schema
 
   def t(%Vx.Optional{schema: schema}), do: t(schema)

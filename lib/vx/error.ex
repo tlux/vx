@@ -3,52 +3,58 @@ defmodule Vx.Error do
   An error that occurred during schema validation.
   """
 
-  @enforce_keys [:caused_by, :actual_value]
-  defexception [:caused_by, :actual_value, :message, path: []]
+  @enforce_keys [:schema, :actual_value]
+  defexception [:schema, :actual_value, :message, path: []]
 
   @type path_segment :: term
 
   @type path :: [path_segment]
 
   @type t :: %__MODULE__{
-          caused_by: Vx.t(),
+          schema: Vx.t(),
           actual_value: any,
           message: nil | String.t(),
           path: path
         }
 
+  @doc """
+  Builds a new error.
+  """
   @spec new(Vx.t(), any) :: t
-  def new(caused_by, value) do
-    %__MODULE__{
-      caused_by: caused_by,
-      actual_value: value
-    }
+  def new(schema, value) do
+    %__MODULE__{schema: schema, actual_value: value}
   end
 
+  @doc """
+  Builds a new error with a custom message or path.
+  """
   @spec new(Vx.t(), any, path | String.t()) :: t
-  def new(caused_by, value, path_or_message)
+  def new(schema, value, path_or_message)
 
-  def new(caused_by, value, path) when is_list(path) do
+  def new(schema, value, path) when is_list(path) do
     %__MODULE__{
-      caused_by: caused_by,
+      schema: schema,
       actual_value: value,
       path: path
     }
   end
 
-  def new(caused_by, value, message) when is_binary(message) do
+  def new(schema, value, message) when is_binary(message) do
     %__MODULE__{
-      caused_by: caused_by,
+      schema: schema,
       actual_value: value,
       message: message
     }
   end
 
+  @doc """
+  Builds a new error with a custom message and path.
+  """
   @spec new(Vx.t(), any, path, String.t()) :: t
-  def new(caused_by, value, path, message)
+  def new(schema, value, path, message)
       when is_list(path) and is_binary(message) do
     %__MODULE__{
-      caused_by: caused_by,
+      schema: schema,
       actual_value: value,
       message: message,
       path: path
@@ -62,7 +68,7 @@ defmodule Vx.Error do
     "#{get_message(error)} at #{inspect(path)}"
   end
 
-  defp get_message(%{caused_by: schema, message: nil}) do
+  defp get_message(%{schema: schema, message: nil}) do
     "expected #{Vx.Humanizable.humanize(schema)}"
   end
 
@@ -85,6 +91,6 @@ defmodule Vx.Error do
   """
   @spec put_schema(t, Vx.t()) :: t
   def put_schema(error, schema) do
-    %{error | caused_by: schema}
+    %{error | schema: schema}
   end
 end

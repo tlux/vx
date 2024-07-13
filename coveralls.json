@@ -3,6 +3,7 @@
     "deps",
     "priv",
     "rel",
+    "lib/vx/contextual_constrain.ex",
     "test/support"
   ],
   "terminal_options": {
