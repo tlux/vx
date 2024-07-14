@@ -19,7 +19,7 @@ defmodule Vx do
       iex> Vx.validate(Vx.String.t(), 123)
       {:error, [Vx.Error.new(Vx.String.t(), 123)]}
   """
-  @spec validate(t, any) :: :ok | {:error, [Vx.Error.t()]}
+  @spec validate(t, any) :: :ok | {:error, nonempty_list(Vx.Error.t())}
   def validate(schema, value) do
     case errors_on(schema, value) do
       [] -> :ok
@@ -55,7 +55,7 @@ defmodule Vx do
   end
 
   defp map_error(schema, value, {path, message})
-       when is_binary(message) and is_list(path) do
+       when is_list(path) and is_binary(message) do
     Vx.Error.new(schema, value, path, message)
   end
 
