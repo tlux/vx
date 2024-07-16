@@ -2,6 +2,7 @@ defmodule Vx.Constrained do
   @moduledoc """
   A type that wraps a schema and applies constraints to it.
   """
+  @moduledoc since: "1.0.0"
 
   @enforce_keys [:type]
   defstruct [:type, constraints: MapSet.new()]
@@ -13,14 +14,20 @@ defmodule Vx.Constrained do
 
   @type t :: t(Vx.t())
 
-  @doc false
+  @doc """
+  Wrap a schema in a `Vx.Constrained`.
+
+  Is a no-op when the passed schema is already a `Vx.Constrained`.
+  """
   @spec wrap(wrapped | t(wrapped)) :: t(wrapped)
         when wrapped: Vx.t()
   def wrap(type)
   def wrap(%__MODULE__{} = constrained), do: constrained
   def wrap(type), do: %__MODULE__{type: type}
 
-  @doc false
+  @doc """
+  Adds a constraint to a `Vx.Constrained` schema.
+  """
   @spec put_constraint(t, Vx.t()) :: t
   def put_constraint(%__MODULE__{} = constrained, constraint) do
     Map.update!(constrained, :constraints, &MapSet.put(&1, constraint))

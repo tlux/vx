@@ -8,7 +8,7 @@ defmodule Vx.Validator do
   @enforce_keys [:fun]
   defstruct [:fun]
 
-  @type fun :: boolean | :ok | :error | {:error, String.t()}
+  @type fun :: (any -> boolean | :ok | :error | {:error, String.t()})
 
   @type t :: %__MODULE__{fun: fun}
 
@@ -16,7 +16,7 @@ defmodule Vx.Validator do
   Creates a new validator from a function.
   """
   @spec t(fun) :: Vx.t()
-  def t(fun), do: %__MODULE__{fun: fun}
+  def t(fun) when is_function(fun, 1), do: %__MODULE__{fun: fun}
 
   @doc """
   Creates a new validator from a function and adds it as constraint to the
@@ -24,7 +24,9 @@ defmodule Vx.Validator do
   """
   @doc since: "1.0.0"
   @spec t(Vx.t(), fun) :: Vx.t()
-  def t(schema, fun), do: constrain_any(schema, t(fun))
+  def t(schema, fun) when is_function(fun, 1) do
+    constrain_any(schema, t(fun))
+  end
 
   defimpl Vx.Validatable do
     def validate(schema, value) do
