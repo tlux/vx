@@ -1,7 +1,6 @@
 defmodule Vx.Comparable do
   @moduledoc """
-  A module for creating constraints that verify if a value is comparable to
-  another value.
+  A module for creating constraints to compare values.
   """
   @moduledoc since: "1.0.0"
 

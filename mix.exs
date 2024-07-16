@@ -81,6 +81,7 @@ defmodule Vx.MixProject do
           Vx.Tuple
         ],
         Combinations: [
+          Vx.Constrained,
           Vx.Except,
           Vx.Intersect,
           Vx.Union
@@ -97,11 +98,11 @@ defmodule Vx.MixProject do
         ],
         Protocols: [
           Vx.Validatable,
-          Vx.Inspectable
+          Vx.Humanizable
         ],
         "Low-Level API": [
-          Vx.Type,
-          Vx.Constraint
+          Vx.Constrain,
+          Vx.ContextualConstrain
         ]
       ]
     ]
