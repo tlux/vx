@@ -105,7 +105,7 @@
            [priority: :low, max_length: 80]},
           {Credo.Check.Readability.ModuleAttributeNames, []},
           {Credo.Check.Readability.ModuleDoc,
-           [files: %{excluded: ["test/**/*"]}]},
+           [ignore_names: ~r/Test\z/, files: %{excluded: ["test/"]}]},
           {Credo.Check.Readability.ModuleNames, []},
           {Credo.Check.Readability.ParenthesesInCondition, []},
           {Credo.Check.Readability.ParenthesesOnZeroArityDefs, []},
