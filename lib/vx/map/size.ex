@@ -1,7 +1,5 @@
 defmodule Vx.Map.Size do
-  @moduledoc """
-  A constraint that verifies the size of a map.
-  """
+  @moduledoc false
 
   @derive {Inspect, optional: [:is, :min, :max]}
   defstruct [:is, :min, :max]

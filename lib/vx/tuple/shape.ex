@@ -1,7 +1,5 @@
 defmodule Vx.Tuple.Shape do
-  @moduledoc """
-  A constraint that verifies the shape of a tuple.
-  """
+  @moduledoc false
 
   @enforce_keys [:shape]
   defstruct [:shape]
@@ -41,6 +39,6 @@ defmodule Vx.Tuple.Shape do
          when index >= 0 and index < tuple_size(tuple),
          do: {:ok, elem(tuple, index)}
 
-    defp fetch_elem(_tuple, index) when index >= 0, do: :error
+    defp fetch_elem(_, index) when index >= 0, do: :error
   end
 end

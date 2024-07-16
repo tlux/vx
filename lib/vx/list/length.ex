@@ -1,7 +1,5 @@
 defmodule Vx.List.Length do
-  @moduledoc """
-  A constraint that verifies the length of a list.
-  """
+  @moduledoc false
 
   @derive {Inspect, optional: [:is, :min, :max]}
   defstruct [:is, :min, :max]

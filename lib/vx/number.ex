@@ -3,8 +3,6 @@ defmodule Vx.Number do
   The Integer type provides validators for integers.
   """
 
-  defstruct []
-
   use Vx.ContextualConstrain, also_permit: [Vx.Float, Vx.Integer]
 
   alias __MODULE__.{
@@ -15,6 +13,8 @@ defmodule Vx.Number do
     LessThanOrEqualTo,
     NonFractional
   }
+
+  defstruct []
 
   @doc """
   Builds a new Number type.

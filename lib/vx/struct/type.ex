@@ -1,7 +1,5 @@
 defmodule Vx.Struct.Type do
-  @moduledoc """
-  A constraint that verifies the type of a struct.
-  """
+  @moduledoc false
 
   defstruct [:mod]
 

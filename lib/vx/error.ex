@@ -61,7 +61,7 @@ defmodule Vx.Error do
     }
   end
 
-  @impl true
+  @impl Exception
   def message(%{path: []} = error), do: get_message(error)
 
   def message(%{path: path} = error) do

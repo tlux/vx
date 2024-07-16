@@ -1,7 +1,5 @@
 defmodule Vx.Map.Values do
-  @moduledoc """
-  A constraint that verifies the values of a map.
-  """
+  @moduledoc false
 
   @enforce_keys [:schema]
   defstruct [:schema]

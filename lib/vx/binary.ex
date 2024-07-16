@@ -2,6 +2,7 @@ defmodule Vx.Binary do
   @moduledoc """
   The Binary type.
   """
+  @moduledoc since: "1.0.0"
 
   defstruct []
 

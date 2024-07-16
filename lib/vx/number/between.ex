@@ -1,7 +1,5 @@
 defmodule Vx.Number.Between do
-  @moduledoc """
-  A constraint that verifies a number is between two numbers.
-  """
+  @moduledoc false
 
   @enforce_keys [:first, :last]
   defstruct [:first, :last]

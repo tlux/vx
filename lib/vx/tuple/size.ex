@@ -1,7 +1,5 @@
 defmodule Vx.Tuple.Size do
-  @moduledoc """
-  A constraint that verifies the size of a tuple.
-  """
+  @moduledoc false
 
   @derive {Inspect, optional: [:is, :min, :max]}
   defstruct [:is, :min, :max]

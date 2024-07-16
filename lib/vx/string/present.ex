@@ -1,7 +1,5 @@
 defmodule Vx.String.Present do
-  @moduledoc """
-  A constraint that verifies a string is present.
-  """
+  @moduledoc false
 
   defstruct []
 

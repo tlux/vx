@@ -1,7 +1,5 @@
 defmodule Vx.List.Shape do
-  @moduledoc """
-  A constraint that verifies the shape of a list.
-  """
+  @moduledoc false
 
   @enforce_keys [:shape]
   defstruct [:shape]
@@ -43,6 +41,6 @@ defmodule Vx.List.Shape do
          when index >= 0 and index < actual_length,
          do: {:ok, Enum.at(list, index)}
 
-    defp fetch_elem(_list, index, _actual_length) when index >= 0, do: :error
+    defp fetch_elem(_, index, _) when index >= 0, do: :error
   end
 end

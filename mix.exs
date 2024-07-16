@@ -64,19 +64,24 @@ defmodule Vx.MixProject do
         Types: [
           Vx.Any,
           Vx.Atom,
+          Vx.Binary,
+          Vx.Boolean,
+          Vx.Decimal,
+          Vx.Enum,
           Vx.Float,
           Vx.Integer,
           Vx.List,
           Vx.Literal,
-          Vx.Boolean,
-          Vx.Enum,
           Vx.Map,
+          Vx.Nil,
+          Vx.None,
           Vx.Number,
           Vx.String,
           Vx.Struct,
           Vx.Tuple
         ],
         Combinations: [
+          Vx.Except,
           Vx.Intersect,
           Vx.Union
         ],

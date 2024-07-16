@@ -1,7 +1,5 @@
 defmodule Vx.String.NonEmpty do
-  @moduledoc """
-  A constraint that verifies a string is not empty.
-  """
+  @moduledoc false
 
   defstruct []
 

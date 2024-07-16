@@ -48,7 +48,7 @@ defmodule Vx do
     end
   end
 
-  defp map_error(_schema, _value, %Vx.Error{} = error), do: error
+  defp map_error(_, _, %Vx.Error{} = error), do: error
 
   defp map_error(schema, value, message) when is_binary(message) do
     Vx.Error.new(schema, value, message)

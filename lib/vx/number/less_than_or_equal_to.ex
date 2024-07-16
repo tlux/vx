@@ -1,7 +1,5 @@
 defmodule Vx.Number.LessThanOrEqualTo do
-  @moduledoc """
-  A constraint that verifies a number is less than or equal to another number.
-  """
+  @moduledoc false
 
   @enforce_keys [:value]
   defstruct [:value]

@@ -1,7 +1,5 @@
 defmodule Vx.Number.GreaterThan do
-  @moduledoc """
-  A constraint that verifies a number is greater than another number.
-  """
+  @moduledoc false
 
   @enforce_keys [:value]
   defstruct [:value]

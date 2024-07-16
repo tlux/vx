@@ -1,6 +1,8 @@
 defmodule Vx.DecimalTest do
   use ExUnit.Case, async: true
 
+  doctest Vx.Decimal
+
   describe "t/0" do
     test "match" do
       assert :ok = Vx.validate(Vx.Decimal.t(), Decimal.new("1.23"))

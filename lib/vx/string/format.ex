@@ -1,7 +1,5 @@
 defmodule Vx.String.Format do
-  @moduledoc """
-  A constraint that verifies the format of a string using a regular expression.
-  """
+  @moduledoc false
 
   @enforce_keys [:regex]
   defstruct [:regex]

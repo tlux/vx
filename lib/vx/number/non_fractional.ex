@@ -1,7 +1,5 @@
 defmodule Vx.Number.NonFractional do
-  @moduledoc """
-  A constraint that verifies a number is not a fractional number.
-  """
+  @moduledoc false
 
   defstruct []
 

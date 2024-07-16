@@ -2,6 +2,7 @@ defmodule Vx.None do
   @moduledoc """
   The None type.
   """
+  @moduledoc since: "1.0.0"
 
   defstruct []
 

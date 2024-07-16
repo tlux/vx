@@ -1,10 +1,10 @@
 defmodule Vx.Map.Keys do
-  @moduledoc """
-  A constraint that verifies the keys of a map.
-  """
+  @moduledoc false
 
   @enforce_keys [:schema]
   defstruct [:schema]
+
+  @type t :: %__MODULE__{schema: Vx.t()}
 
   defimpl Vx.Validatable do
     def validate(%{schema: schema}, map) do

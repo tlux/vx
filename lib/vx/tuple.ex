@@ -5,9 +5,9 @@ defmodule Vx.Tuple do
 
   use Vx.ContextualConstrain
 
-  defstruct []
-
   alias __MODULE__.{Shape, Size}
+
+  defstruct []
 
   @doc """
   Builds a new Tuple type.

@@ -1,7 +1,5 @@
 defmodule Vx.Map.Shape do
-  @moduledoc """
-  A constraint that verifies the shape of a map.
-  """
+  @moduledoc false
 
   @enforce_keys [:shape]
   defstruct [:shape]
@@ -73,7 +71,7 @@ defmodule Vx.Map.Shape do
       end)
     end
 
-    defp fetch_value(map, %Vx.Optional{schema: key}, _value_t) do
+    defp fetch_value(map, %Vx.Optional{schema: key}, _) do
       case Map.fetch(map, key) do
         {:ok, value} -> {:ok, value}
         :error -> :omit
@@ -88,7 +86,7 @@ defmodule Vx.Map.Shape do
       end
     end
 
-    defp fetch_value(map, key, _value_t) do
+    defp fetch_value(map, key, _) do
       # should never raise as key existence is already validated at this point
       {:ok, Map.fetch!(map, key)}
     end

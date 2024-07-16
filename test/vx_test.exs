@@ -18,7 +18,8 @@ defmodule VxTest do
          "name" => Vx.String.t(),
          "age" => Vx.Number.t(),
          "hobbies" =>
-           Vx.List.t(Vx.String.present())
+           Vx.String.present()
+           |> Vx.List.t()
            |> Vx.List.non_empty(),
          "type" => Vx.Enum.t(["user", "admin"]),
          "addresses" => Vx.List.t(Vx.Struct.t(Address))

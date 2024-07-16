@@ -14,7 +14,7 @@ defmodule Vx.ValidationFailedError do
     %__MODULE__{errors: errors}
   end
 
-  @impl true
+  @impl Exception
   def message(%{errors: errors}) do
     "Validation failed: " <> Enum.map_join(errors, ", ", &Vx.Error.message/1)
   end

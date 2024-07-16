@@ -1,7 +1,5 @@
 defmodule Vx.Integer.Range do
-  @moduledoc """
-  A constraint that verifies the range of an integer.
-  """
+  @moduledoc false
 
   @enforce_keys [:range]
   defstruct [:range]
