@@ -5,7 +5,12 @@ defmodule Vx.Map do
 
   use Vx.ContextualConstrain
 
-  alias __MODULE__.{Keys, Shape, Size, Values}
+  alias __MODULE__.{
+    Keys,
+    Shape,
+    Size,
+    Values
+  }
 
   defstruct []
 

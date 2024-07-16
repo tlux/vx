@@ -5,7 +5,11 @@ defmodule Vx.List do
 
   use Vx.ContextualConstrain
 
-  alias __MODULE__.{Length, Shape, Values}
+  alias __MODULE__.{
+    Length,
+    Shape,
+    Values
+  }
 
   defstruct []
 

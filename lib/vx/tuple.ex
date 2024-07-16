@@ -5,7 +5,10 @@ defmodule Vx.Tuple do
 
   use Vx.ContextualConstrain
 
-  alias __MODULE__.{Shape, Size}
+  alias __MODULE__.{
+    Shape,
+    Size
+  }
 
   defstruct []
 
