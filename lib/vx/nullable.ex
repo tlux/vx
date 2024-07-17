@@ -46,9 +46,9 @@ defmodule Vx.Nullable do
     end
   end
 
-  defimpl Vx.Humanizable do
-    def humanize(%{schema: schema}) do
-      "#{Vx.Humanizable.humanize(schema)}?"
+  defimpl Vx.Printable do
+    def print(%{schema: schema}) do
+      "#{Vx.Printable.print(schema)}?"
     end
   end
 end

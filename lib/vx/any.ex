@@ -5,6 +5,8 @@ defmodule Vx.Any do
 
   defstruct []
 
+  @type t :: %__MODULE__{}
+
   @doc """
   Builds a new type that matches anything.
 
@@ -20,7 +22,7 @@ defmodule Vx.Any do
     def validate(_, _), do: true
   end
 
-  defimpl Vx.Humanizable do
-    def humanize(_), do: "any"
+  defimpl Vx.Printable do
+    def print(_), do: "any"
   end
 end

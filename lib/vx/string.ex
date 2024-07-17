@@ -3,7 +3,7 @@ defmodule Vx.String do
   The String type.
   """
 
-  use Vx.ContextualConstrain
+  use Vx.Constrainable
 
   alias __MODULE__.{
     Format,
@@ -13,6 +13,8 @@ defmodule Vx.String do
   }
 
   defstruct []
+
+  @type t :: %__MODULE__{}
 
   @doc """
   Builds a new String type.
@@ -96,7 +98,7 @@ defmodule Vx.String do
     def validate(_, value), do: is_binary(value) && String.valid?(value)
   end
 
-  defimpl Vx.Humanizable do
-    def humanize(_), do: "string"
+  defimpl Vx.Printable do
+    def print(_), do: "string"
   end
 end

@@ -7,6 +7,8 @@ defmodule Vx.Intersect do
   @enforce_keys [:a, :b]
   defstruct [:a, :b]
 
+  @type t :: %__MODULE__{a: Vx.t(), b: Vx.t()}
+
   @doc """
   Builds a new Intersect type.
 
@@ -36,9 +38,9 @@ defmodule Vx.Intersect do
     end
   end
 
-  defimpl Vx.Humanizable do
-    def humanize(%{a: a, b: b}) do
-      "#{Vx.Humanizable.humanize(a)} and #{Vx.Humanizable.humanize(b)}"
+  defimpl Vx.Printable do
+    def print(%{a: a, b: b}) do
+      "#{Vx.Printable.print(a)} and #{Vx.Printable.print(b)}"
     end
   end
 end

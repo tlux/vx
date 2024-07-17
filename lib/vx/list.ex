@@ -3,7 +3,7 @@ defmodule Vx.List do
   The List type.
   """
 
-  use Vx.ContextualConstrain
+  use Vx.Constrainable
 
   alias __MODULE__.{
     Length,
@@ -12,6 +12,8 @@ defmodule Vx.List do
   }
 
   defstruct []
+
+  @type t :: %__MODULE__{}
 
   @doc """
   Builds a new List type.
@@ -92,7 +94,7 @@ defmodule Vx.List do
     def validate(_, values), do: is_list(values)
   end
 
-  defimpl Vx.Humanizable do
-    def humanize(_), do: "list"
+  defimpl Vx.Printable do
+    def print(_), do: "list"
   end
 end

@@ -3,7 +3,7 @@ defmodule Vx.Number do
   The Integer type provides validators for integers.
   """
 
-  use Vx.ContextualConstrain, also_permit: [Vx.Float, Vx.Integer]
+  use Vx.Constrainable, also_permit: [Vx.Float, Vx.Integer]
 
   alias __MODULE__.{
     Between,
@@ -15,6 +15,8 @@ defmodule Vx.Number do
   }
 
   defstruct []
+
+  @type t :: %__MODULE__{}
 
   @doc """
   Builds a new Number type.
@@ -128,7 +130,7 @@ defmodule Vx.Number do
     def validate(_, value), do: is_number(value)
   end
 
-  defimpl Vx.Humanizable do
-    def humanize(_), do: "number"
+  defimpl Vx.Printable do
+    def print(_), do: "number"
   end
 end

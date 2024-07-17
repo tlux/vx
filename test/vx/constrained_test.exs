@@ -5,15 +5,57 @@ defmodule Vx.ConstrainedTest do
 
   describe "t/1" do
     test "wrap schema" do
-      wrapped = Vx.String.t()
+      schema = Vx.String.t()
 
-      assert %Vx.Constrained{schema: ^wrapped} = Vx.Constrained.t(wrapped)
+      assert %Vx.Constrained{schema: ^schema} = Vx.Constrained.t(schema)
     end
 
-    test "do not wrap already-constrained" do
-      schema = Vx.Constrained.t(Vx.String.t())
+    test "do not wrap already constrained schema" do
+      wrapped = Vx.Constrained.t(Vx.String.t())
 
-      assert Vx.Constrained.t(schema) == schema
+      assert Vx.Constrained.t(wrapped) == wrapped
+    end
+  end
+
+  describe "t/2" do
+    setup do
+      schema = Vx.String.t()
+      constraint = Vx.Validator.t(fn _ -> true end)
+      {:ok, schema: schema, constraint: constraint}
+    end
+
+    test "allow single constraint as second arg", %{
+      schema: schema,
+      constraint: constraint
+    } do
+      assert Vx.Constrained.t(schema, [constraint]) ==
+               Vx.Constrained.t(schema, constraint)
+    end
+
+    test "wrap schema with constraints", %{
+      schema: schema,
+      constraint: constraint
+    } do
+      constrained = Vx.Constrained.t(schema, [constraint])
+
+      assert constrained.schema == schema
+      assert Vx.Constrained.constraints(constrained) == [constraint]
+    end
+
+    test "do not wrap already constrained schema but add constraints", %{
+      schema: schema,
+      constraint: constraint
+    } do
+      constrained = Vx.Constrained.t(schema, [constraint])
+      constraint_to_add = Vx.Validator.t(fn _ -> false end)
+      updated_constrained = Vx.Constrained.t(constrained, [constraint_to_add])
+
+      assert updated_constrained.schema == schema
+
+      assert Vx.Constrained.constraints(updated_constrained) == [
+               constraint,
+               constraint_to_add
+             ]
     end
   end
 

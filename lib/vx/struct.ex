@@ -5,6 +5,8 @@ defmodule Vx.Struct do
 
   defstruct [:mod]
 
+  @type t :: %__MODULE__{mod: module | nil}
+
   @doc """
   Builds a new Struct type matching any type of struct.
 
@@ -42,8 +44,8 @@ defmodule Vx.Struct do
     def validate(_, _), do: false
   end
 
-  defimpl Vx.Humanizable do
-    def humanize(%{mod: nil}), do: "struct"
-    def humanize(%{mod: mod}), do: inspect(mod)
+  defimpl Vx.Printable do
+    def print(%{mod: nil}), do: "struct"
+    def print(%{mod: mod}), do: inspect(mod)
   end
 end

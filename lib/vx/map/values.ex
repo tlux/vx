@@ -19,9 +19,9 @@ defmodule Vx.Map.Values do
     end
   end
 
-  defimpl Vx.Humanizable do
-    def humanize(%{schema: schema}) do
-      Vx.Humanizable.humanize(schema) <> " values"
+  defimpl Vx.Printable do
+    def print(%{schema: schema}) do
+      Vx.Printable.print(schema) <> " values"
     end
   end
 end

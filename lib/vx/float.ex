@@ -3,9 +3,11 @@ defmodule Vx.Float do
   The Float type.
   """
 
-  use Vx.ContextualConstrain
+  use Vx.Constrainable
 
   defstruct []
+
+  @type t :: %__MODULE__{}
 
   @doc """
   Builds a new Float type.
@@ -29,7 +31,7 @@ defmodule Vx.Float do
     def validate(_, _), do: :error
   end
 
-  defimpl Vx.Humanizable do
-    def humanize(_), do: "float"
+  defimpl Vx.Printable do
+    def print(_), do: "float"
   end
 end

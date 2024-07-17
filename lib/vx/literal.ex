@@ -6,6 +6,8 @@ defmodule Vx.Literal do
   @enforce_keys [:value]
   defstruct [:value]
 
+  @type t :: %__MODULE__{value: any}
+
   @doc """
   Builds a new Literal type from a value.
 
@@ -35,7 +37,7 @@ defmodule Vx.Literal do
     def validate(_, _), do: false
   end
 
-  defimpl Vx.Humanizable do
-    def humanize(%{value: value}), do: inspect(value)
+  defimpl Vx.Printable do
+    def print(%{value: value}), do: inspect(value)
   end
 end

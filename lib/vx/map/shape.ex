@@ -95,10 +95,10 @@ defmodule Vx.Map.Shape do
     defp resolve_key(key), do: key
   end
 
-  defimpl Vx.Humanizable do
-    def humanize(%{shape: shape}) do
+  defimpl Vx.Printable do
+    def print(%{shape: shape}) do
       Enum.map_join(shape, ", ", fn {key, value} ->
-        "#{inspect(key)} => #{Vx.Humanizable.humanize(value)}"
+        "#{inspect(key)} => #{Vx.Printable.print(value)}"
       end)
     end
   end

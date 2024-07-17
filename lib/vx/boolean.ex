@@ -5,6 +5,8 @@ defmodule Vx.Boolean do
 
   defstruct []
 
+  @type t :: %__MODULE__{}
+
   @doc """
   Builds a new Boolean type.
 
@@ -26,7 +28,7 @@ defmodule Vx.Boolean do
     def validate(_, value), do: is_boolean(value)
   end
 
-  defimpl Vx.Humanizable do
-    def humanize(_), do: "boolean"
+  defimpl Vx.Printable do
+    def print(_), do: "boolean"
   end
 end

@@ -21,9 +21,9 @@ defmodule Vx.Map.Keys do
     end
   end
 
-  defimpl Vx.Humanizable do
-    def humanize(%{schema: schema}) do
-      Vx.Humanizable.humanize(schema) <> " keys"
+  defimpl Vx.Printable do
+    def print(%{schema: schema}) do
+      Vx.Printable.print(schema) <> " keys"
     end
   end
 end

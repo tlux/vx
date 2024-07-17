@@ -96,11 +96,11 @@ defmodule Vx.MixProject do
         ],
         Protocols: [
           Vx.Validatable,
-          Vx.Humanizable
+          Vx.Printable
         ],
         "Low-Level API": [
           Vx.Constrain,
-          Vx.ContextualConstrain
+          Vx.Constrainable
         ]
       ]
     ]

@@ -15,7 +15,7 @@ defmodule Vx.Number.NonFractional do
     end
   end
 
-  defimpl Vx.Humanizable do
-    def humanize(_), do: "non fractional"
+  defimpl Vx.Printable do
+    def print(_), do: "non fractional"
   end
 end

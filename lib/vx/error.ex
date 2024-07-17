@@ -69,7 +69,7 @@ defmodule Vx.Error do
   end
 
   defp get_message(%{schema: schema, message: nil}) do
-    "expected #{Vx.Humanizable.humanize(schema)}"
+    "expected #{Vx.Printable.print(schema)}"
   end
 
   defp get_message(%{message: message}), do: message

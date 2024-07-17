@@ -3,7 +3,7 @@ defmodule Vx.Tuple do
   The Tuple type.
   """
 
-  use Vx.ContextualConstrain
+  use Vx.Constrainable
 
   alias __MODULE__.{
     Shape,
@@ -11,6 +11,8 @@ defmodule Vx.Tuple do
   }
 
   defstruct []
+
+  @type t :: %__MODULE__{}
 
   @doc """
   Builds a new Tuple type.
@@ -74,7 +76,7 @@ defmodule Vx.Tuple do
     def validate(_, value), do: is_tuple(value)
   end
 
-  defimpl Vx.Humanizable do
-    def humanize(_), do: "tuple"
+  defimpl Vx.Printable do
+    def print(_), do: "tuple"
   end
 end

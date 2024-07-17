@@ -1,6 +1,6 @@
-defimpl Vx.Humanizable,
+defimpl Vx.Printable,
   for: [Vx.List.Length, Vx.Map.Size, Vx.String.Length, Vx.Tuple.Size] do
-  def humanize(schema) do
+  def print(schema) do
     schema
     |> Map.from_struct()
     |> Enum.map(fn {key, value} -> text(key, value) end)

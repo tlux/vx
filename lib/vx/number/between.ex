@@ -16,8 +16,8 @@ defmodule Vx.Number.Between do
     end
   end
 
-  defimpl Vx.Humanizable do
-    def humanize(%{first: first, last: last}) do
+  defimpl Vx.Printable do
+    def print(%{first: first, last: last}) do
       "between #{first} and #{last}"
     end
   end

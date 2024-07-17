@@ -7,6 +7,11 @@ defmodule Vx.Match do
   @enforce_keys [:matcher, :pattern]
   defstruct [:matcher, :pattern]
 
+  @type t :: %__MODULE__{
+          matcher: (any -> boolean),
+          pattern: String.t()
+        }
+
   @doc """
   Creates a new type that matches a pattern.
 
@@ -38,7 +43,7 @@ defmodule Vx.Match do
     def validate(%{matcher: matcher}, value), do: matcher.(value)
   end
 
-  defimpl Vx.Humanizable do
-    def humanize(%{pattern: pattern}), do: "match #{pattern}"
+  defimpl Vx.Printable do
+    def print(%{pattern: pattern}), do: "match #{pattern}"
   end
 end

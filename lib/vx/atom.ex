@@ -3,7 +3,11 @@ defmodule Vx.Atom do
   The Atom type.
   """
 
+  use Vx.Constrainable
+
   defstruct []
+
+  @type t :: %__MODULE__{}
 
   @doc """
   Builds a new Atom type.
@@ -34,16 +38,16 @@ defmodule Vx.Atom do
   @doc """
   Builds a new Atom type that matches any user-defined atom.
   """
-  @spec custom(Vx.t()) :: Vx.t()
-  def custom(schema \\ t()) do
-    Vx.Except.t([schema, Vx.Boolean.t(), Vx.Literal.t(nil)])
+  @spec custom() :: Vx.t()
+  def custom do
+    Vx.Except.t([Vx.Atom.t(), Vx.Boolean.t(), nil])
   end
 
   defimpl Vx.Validatable do
     def validate(_, value), do: is_atom(value)
   end
 
-  defimpl Vx.Humanizable do
-    def humanize(_), do: "atom"
+  defimpl Vx.Printable do
+    def print(_), do: "atom"
   end
 end

@@ -37,7 +37,7 @@ defmodule VxTest do
                Vx.validate(schema, %{@valid_values | "type" => "guest"})
 
       assert Exception.message(error) ==
-               ~s/expected enum("user", "admin") at ["type"]/
+               ~s/expected any of "user", "admin" at ["type"]/
 
       assert {:error, [error]} =
                Vx.validate(schema, %{@valid_values | "hobbies" => []})
@@ -72,7 +72,7 @@ defmodule VxTest do
 
     test "invalid", %{schema: schema} do
       assert_raise Vx.ValidationFailedError,
-                   ~s/Validation failed: expected enum("user", "admin") at ["type"]/,
+                   ~s/Validation failed: expected any of "user", "admin" at ["type"]/,
                    fn ->
                      Vx.validate!(schema, %{@valid_values | "type" => "guest"})
                    end

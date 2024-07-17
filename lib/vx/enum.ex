@@ -6,6 +6,8 @@ defmodule Vx.Enum do
   @enforce_keys [:values]
   defstruct [:values]
 
+  @type t :: %__MODULE__{values: nonempty_list}
+
   @doc """
   Builds a new Enum type.
 
@@ -26,9 +28,9 @@ defmodule Vx.Enum do
     def validate(%{values: values}, value), do: value in values
   end
 
-  defimpl Vx.Humanizable do
-    def humanize(%{values: values}) do
-      "enum(#{Vx.Util.inspect_enum(values)})"
+  defimpl Vx.Printable do
+    def print(%{values: values}) do
+      "any of #{Vx.Util.inspect_enum(values)}"
     end
   end
 end

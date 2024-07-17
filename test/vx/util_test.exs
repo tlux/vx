@@ -15,7 +15,7 @@ defmodule Vx.UtilTest do
                Vx.List.t(Vx.Number.t()),
                :bar
              ],
-             &Vx.Humanizable.humanize/1
+             &Vx.Printable.print/1
            ) == ~s(string, "foo", list[number values], :bar)
   end
 end

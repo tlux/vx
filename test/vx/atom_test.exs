@@ -17,4 +17,19 @@ defmodule Vx.AtomTest do
       end)
     end
   end
+
+  describe "custom/0" do
+    test "match" do
+      assert :ok = Vx.validate(Vx.Atom.custom(), :foo)
+    end
+
+    test "no match" do
+      Enum.each([nil, 123, 123.4, "foo", %{}, []], fn value ->
+        assert {:error, [error]} = Vx.validate(Vx.Atom.custom(), value)
+
+        assert Exception.message(error) ==
+                 "expected atom except boolean except nil"
+      end)
+    end
+  end
 end

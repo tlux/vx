@@ -3,7 +3,7 @@ defmodule Vx.Integer do
   The Integer type.
   """
 
-  use Vx.ContextualConstrain
+  use Vx.Constrainable
 
   defstruct []
 
@@ -46,7 +46,7 @@ defmodule Vx.Integer do
     def validate(_, value), do: is_integer(value)
   end
 
-  defimpl Vx.Humanizable do
-    def humanize(_), do: "integer"
+  defimpl Vx.Printable do
+    def print(_), do: "integer"
   end
 end

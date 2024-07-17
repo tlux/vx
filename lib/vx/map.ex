@@ -3,7 +3,7 @@ defmodule Vx.Map do
   The Map type.
   """
 
-  use Vx.ContextualConstrain
+  use Vx.Constrainable
 
   alias __MODULE__.{
     Keys,
@@ -13,6 +13,8 @@ defmodule Vx.Map do
   }
 
   defstruct []
+
+  @type t :: %__MODULE__{}
 
   @doc """
   Builds a new Map type that matches any map.
@@ -130,7 +132,7 @@ defmodule Vx.Map do
     def validate(_, value), do: is_map(value)
   end
 
-  defimpl Vx.Humanizable do
-    def humanize(_), do: "map"
+  defimpl Vx.Printable do
+    def print(_), do: "map"
   end
 end

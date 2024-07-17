@@ -6,6 +6,8 @@ defmodule Vx.Not do
   @enforce_keys [:schema]
   defstruct [:schema]
 
+  @type t :: %__MODULE__{schema: Vx.t()}
+
   @doc """
   Builds a new type negating the passed one.
 
@@ -24,9 +26,9 @@ defmodule Vx.Not do
     def validate(%{schema: schema}, value), do: !Vx.valid?(schema, value)
   end
 
-  defimpl Vx.Humanizable do
-    def humanize(%{schema: schema}) do
-      "not(#{Vx.Humanizable.humanize(schema)})"
+  defimpl Vx.Printable do
+    def print(%{schema: schema}) do
+      "not(#{Vx.Printable.print(schema)})"
     end
   end
 end

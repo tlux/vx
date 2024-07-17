@@ -7,6 +7,8 @@ defmodule Vx.Except do
   @enforce_keys [:a, :b]
   defstruct [:a, :b]
 
+  @type t :: %__MODULE__{a: Vx.t(), b: Vx.t()}
+
   @doc """
   Builds a new Except type.
 
@@ -36,9 +38,9 @@ defmodule Vx.Except do
     end
   end
 
-  defimpl Vx.Humanizable do
-    def humanize(%{a: a, b: b}) do
-      "#{Vx.Humanizable.humanize(a)} except #{Vx.Humanizable.humanize(b)}"
+  defimpl Vx.Printable do
+    def print(%{a: a, b: b}) do
+      "#{Vx.Printable.print(a)} except #{Vx.Printable.print(b)}"
     end
   end
 end

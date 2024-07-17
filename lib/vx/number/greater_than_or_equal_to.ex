@@ -16,8 +16,8 @@ defmodule Vx.Number.GreaterThanOrEqualTo do
     end
   end
 
-  defimpl Vx.Humanizable do
-    def humanize(%{value: value}) do
+  defimpl Vx.Printable do
+    def print(%{value: value}) do
       ">= #{value}"
     end
   end

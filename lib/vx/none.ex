@@ -6,6 +6,8 @@ defmodule Vx.None do
 
   defstruct []
 
+  @type t :: %__MODULE__{}
+
   @doc """
   Builds a new type that matches anything.
 
@@ -21,7 +23,7 @@ defmodule Vx.None do
     def validate(_, _), do: false
   end
 
-  defimpl Vx.Humanizable do
-    def humanize(_), do: "none"
+  defimpl Vx.Printable do
+    def print(_), do: "none"
   end
 end

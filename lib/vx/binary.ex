@@ -6,6 +6,8 @@ defmodule Vx.Binary do
 
   defstruct []
 
+  @type t :: %__MODULE__{}
+
   @doc """
   Builds a new Binary type.
 
@@ -27,7 +29,7 @@ defmodule Vx.Binary do
     def validate(_, value), do: is_binary(value)
   end
 
-  defimpl Vx.Humanizable do
-    def humanize(_), do: "binary"
+  defimpl Vx.Printable do
+    def print(_), do: "binary"
   end
 end

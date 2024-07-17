@@ -1,12 +1,11 @@
 defmodule Vx.Comparable do
   @moduledoc """
-  A module for creating constraints to compare values.
+  A module for creating constraints on comparable structs or values.
   """
   @moduledoc since: "1.0.0"
 
-  import Vx.Constrain
-
   alias __MODULE__.{
+    Between,
     EqualTo,
     GreaterThan,
     GreaterThanOrEqualTo,
@@ -15,6 +14,8 @@ defmodule Vx.Comparable do
   }
 
   defstruct []
+
+  @type t :: %__MODULE__{}
 
   @type comparable :: module
 
@@ -79,7 +80,7 @@ defmodule Vx.Comparable do
   """
   @spec eq(Vx.t(), comparable, any) :: Vx.t()
   def eq(schema, comparable, value) when is_atom(comparable) do
-    constrain(schema, EqualTo, comparable, value)
+    constrain(schema, EqualTo, comparable, value: value)
   end
 
   @doc """
@@ -96,7 +97,7 @@ defmodule Vx.Comparable do
       false
 
       iex> Vx.Comparable.gt(Version.parse!("1.2.3"))
-      ...>  |> Vx.valid?(Version.parse!("1.2.2"))
+      ...> |> Vx.valid?(Version.parse!("1.2.2"))
       false
   """
   @spec gt(any) :: Vx.t()
@@ -149,7 +150,7 @@ defmodule Vx.Comparable do
   """
   @spec gt(Vx.t(), comparable, any) :: Vx.t()
   def gt(schema, comparable, value) when is_atom(comparable) do
-    constrain(schema, GreaterThan, comparable, value)
+    constrain(schema, GreaterThan, comparable, value: value)
   end
 
   @doc """
@@ -221,7 +222,7 @@ defmodule Vx.Comparable do
   """
   @spec gteq(Vx.t(), comparable, any) :: Vx.t()
   def gteq(schema, comparable, value) when is_atom(comparable) do
-    constrain(schema, GreaterThanOrEqualTo, comparable, value)
+    constrain(schema, GreaterThanOrEqualTo, comparable, value: value)
   end
 
   @doc """
@@ -238,7 +239,7 @@ defmodule Vx.Comparable do
       false
 
       iex> Vx.Comparable.lt(Version.parse!("1.2.3"))
-      ...>  |> Vx.valid?(Version.parse!("1.2.2"))
+      ...> |> Vx.valid?(Version.parse!("1.2.2"))
       true
   """
   @spec lt(any) :: Vx.t()
@@ -291,7 +292,7 @@ defmodule Vx.Comparable do
   """
   @spec lt(Vx.t(), comparable, any) :: Vx.t()
   def lt(schema, comparable, value) when is_atom(comparable) do
-    constrain(schema, LessThan, comparable, value)
+    constrain(schema, LessThan, comparable, value: value)
   end
 
   @doc """
@@ -309,7 +310,7 @@ defmodule Vx.Comparable do
       true
 
       iex> Vx.Comparable.lteq(Version.parse!("1.2.3"))
-      ...>  |> Vx.valid?(Version.parse!("1.2.2"))
+      ...> |> Vx.valid?(Version.parse!("1.2.2"))
       true
   """
   @spec lteq(any) :: Vx.t()
@@ -363,17 +364,92 @@ defmodule Vx.Comparable do
   """
   @spec lteq(Vx.t(), comparable, any) :: Vx.t()
   def lteq(schema, comparable, value) when is_atom(comparable) do
-    constrain(schema, LessThanOrEqualTo, comparable, value)
+    constrain(schema, LessThanOrEqualTo, comparable, value: value)
   end
 
-  defp constrain(schema, constraint, comparable, value)
-       when is_atom(constraint) and is_atom(comparable) do
+  @doc """
+  A constraint that verifies if a comparable value is less than or equal to
+  another value.
+
+  ## Examples
+
+      iex> Vx.Comparable.between(Version.parse!("1.0.0"), Version.parse!("1.2.3"))
+      ...> |> Vx.valid?(Version.parse!("1.0.0"))
+      true
+
+      iex> Vx.Comparable.between(Version.parse!("1.0.0"), Version.parse!("1.2.3"))
+      ...> |> Vx.valid?(Version.parse!("1.2.3"))
+      true
+
+      iex> Vx.Comparable.between(Version.parse!("1.0.0"), Version.parse!("1.2.3"))
+      ...> |> Vx.valid?(Version.parse!("1.2.4"))
+      false
+
+      iex> Vx.Comparable.between(Version.parse!("1.0.0"), Version.parse!("1.2.3"))
+      ...> |> Vx.valid?(Version.parse!("0.0.22"))
+      false
+  """
+  @spec between(any, any) :: Vx.t()
+  def between(%comparable{} = first, %comparable{} = last) do
+    comparable
+    |> Vx.Struct.t()
+    |> between(comparable, first, last)
+  end
+
+  @doc """
+  A constraint that verifies if a comparable value is less than or equal to
+  another value using either a parent schema or a module implementing the
+  `compare/2` function.
+
+  ## Examples
+
+      iex> Vx.Any.t()
+      ...> |> Vx.Comparable.between(Version.parse!("1.0.0"), Version.parse!("2.0.0"))
+      ...> |> Vx.valid?(Version.parse!("1.2.2"))
+      true
+
+      iex> Version
+      ...> |> Vx.Comparable.between(Version.parse!("1.0.0"), Version.parse!("2.0.0"))
+      ...> |> Vx.valid?(Version.parse!("1.2.2"))
+      true
+  """
+  @spec between(Vx.t() | comparable, any, any) :: Vx.t()
+  def between(comparable_or_schema, first, last)
+
+  def between(comparable, first, last) when is_atom(comparable) do
+    comparable
+    |> Vx.Struct.t()
+    |> between(comparable, first, last)
+  end
+
+  def between(schema, %comparable{} = first, %comparable{} = last) do
+    between(schema, comparable, first, last)
+  end
+
+  @doc """
+  A constraint that verifies if a comparable value is less than or equal to
+  another value using a parent schema and a module implementing the `compare/2`
+  function.
+
+  ## Examples
+
+      iex> Vx.Any.t()
+      ...> |> Vx.Comparable.between(Version, Version.parse!("1.0.0"), Version.parse!("2.0.0"))
+      ...> |> Vx.valid?(Version.parse!("1.2.2"))
+      true
+  """
+  @spec between(Vx.t(), comparable, any, any) :: Vx.t()
+  def between(schema, comparable, first, last) when is_atom(comparable) do
+    constrain(schema, Between, comparable, first: first, last: last)
+  end
+
+  defp constrain(schema, constraint_mod, comparable, opts)
+       when is_atom(constraint_mod) and is_atom(comparable) do
     if Code.ensure_loaded?(comparable) &&
          function_exported?(comparable, :compare, 2) do
-      constrain_any(
-        schema,
-        struct!(constraint, comparable: comparable, value: value)
-      )
+      opts = Keyword.put(opts, :comparable, comparable)
+      constraint = struct!(constraint_mod, opts)
+      Vx.Constrained.t(schema, constraint)
     else
       raise ArgumentError, "#{inspect(comparable)} does not implement compare/2"
     end
