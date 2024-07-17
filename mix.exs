@@ -65,6 +65,7 @@ defmodule Vx.MixProject do
           Vx.Atom,
           Vx.Binary,
           Vx.Boolean,
+          Vx.Comparable,
           Vx.Enum,
           Vx.Float,
           Vx.Integer,
@@ -90,7 +91,6 @@ defmodule Vx.MixProject do
           Vx.Optional
         ],
         Helpers: [
-          Vx.Comparable,
           Vx.Match,
           Vx.Validator
         ],
