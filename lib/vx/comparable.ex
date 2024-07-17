@@ -32,7 +32,9 @@ defmodule Vx.Comparable do
   """
   @spec eq(any) :: Vx.t()
   def eq(%comparable{} = value) do
-    eq(Vx.Any.t(), comparable, value)
+    comparable
+    |> Vx.Struct.t()
+    |> eq(comparable, value)
   end
 
   @doc """
@@ -54,7 +56,9 @@ defmodule Vx.Comparable do
   def eq(comparable_or_schema, value)
 
   def eq(comparable, value) when is_atom(comparable) do
-    eq(Vx.Any.t(), comparable, value)
+    comparable
+    |> Vx.Struct.t()
+    |> eq(comparable, value)
   end
 
   def eq(schema, %comparable{} = value) do
@@ -97,7 +101,9 @@ defmodule Vx.Comparable do
   """
   @spec gt(any) :: Vx.t()
   def gt(%comparable{} = value) do
-    gt(Vx.Any.t(), comparable, value)
+    comparable
+    |> Vx.Struct.t()
+    |> gt(comparable, value)
   end
 
   @doc """
@@ -121,7 +127,9 @@ defmodule Vx.Comparable do
   def gt(comparable_or_schema, value)
 
   def gt(comparable, value) when is_atom(comparable) do
-    gt(Vx.Any.t(), comparable, value)
+    comparable
+    |> Vx.Struct.t()
+    |> gt(comparable, value)
   end
 
   def gt(schema, %comparable{} = value) do
@@ -164,7 +172,9 @@ defmodule Vx.Comparable do
   """
   @spec gteq(any) :: Vx.t()
   def gteq(%comparable{} = value) do
-    gteq(Vx.Any.t(), comparable, value)
+    comparable
+    |> Vx.Struct.t()
+    |> gteq(comparable, value)
   end
 
   @doc """
@@ -188,7 +198,9 @@ defmodule Vx.Comparable do
   def gteq(comparable_or_schema, value)
 
   def gteq(comparable, value) when is_atom(comparable) do
-    gteq(Vx.Any.t(), comparable, value)
+    comparable
+    |> Vx.Struct.t()
+    |> gteq(comparable, value)
   end
 
   def gteq(schema, %comparable{} = value) do
@@ -231,7 +243,9 @@ defmodule Vx.Comparable do
   """
   @spec lt(any) :: Vx.t()
   def lt(%comparable{} = value) do
-    lt(Vx.Any.t(), comparable, value)
+    comparable
+    |> Vx.Struct.t()
+    |> lt(comparable, value)
   end
 
   @doc """
@@ -255,7 +269,9 @@ defmodule Vx.Comparable do
   def lt(comparable_or_schema, value)
 
   def lt(comparable, value) when is_atom(comparable) do
-    lt(Vx.Any.t(), comparable, value)
+    comparable
+    |> Vx.Struct.t()
+    |> lt(comparable, value)
   end
 
   def lt(schema, %comparable{} = value) do
@@ -298,7 +314,9 @@ defmodule Vx.Comparable do
   """
   @spec lteq(any) :: Vx.t()
   def lteq(%comparable{} = value) do
-    lteq(Vx.Any.t(), comparable, value)
+    comparable
+    |> Vx.Struct.t()
+    |> lteq(comparable, value)
   end
 
   @doc """
@@ -322,7 +340,9 @@ defmodule Vx.Comparable do
   def lteq(comparable_or_schema, value)
 
   def lteq(comparable, value) when is_atom(comparable) do
-    lteq(Vx.Any.t(), comparable, value)
+    comparable
+    |> Vx.Struct.t()
+    |> lteq(comparable, value)
   end
 
   def lteq(schema, %comparable{} = value) do

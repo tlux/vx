@@ -11,7 +11,8 @@ if Code.ensure_loaded?(Decimal) do
     As `Decimal` implements `compare/2` you can use the constraints from the
     `Vx.Comparable` module to make more sophisticated assertions.
 
-        iex> Vx.Comparable.eq(Decimal.new("1.23")) |> Vx.valid?("1.23")
+        iex> Vx.Comparable.eq(Decimal.new("1.23"))
+        ...> |> Vx.valid?(Decimal.new("1.23"))
         true
 
         iex> Vx.Decimal.t()

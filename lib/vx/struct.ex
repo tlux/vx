@@ -3,11 +3,7 @@ defmodule Vx.Struct do
   The Struct type.
   """
 
-  use Vx.ContextualConstrain
-
-  alias Vx.Struct.Type
-
-  defstruct []
+  defstruct [:mod]
 
   @doc """
   Builds a new Struct type matching any type of struct.
@@ -38,16 +34,16 @@ defmodule Vx.Struct do
       false
   """
   @spec t(module) :: Vx.t()
-  def t(mod) when is_atom(mod) do
-    constrain(t(), %Type{mod: mod})
-  end
+  def t(mod) when is_atom(mod), do: %__MODULE__{mod: mod}
 
   defimpl Vx.Validatable do
-    def validate(_, %_{}), do: true
+    def validate(%{mod: nil}, %_{}), do: true
+    def validate(%{mod: mod}, %mod{}), do: true
     def validate(_, _), do: false
   end
 
   defimpl Vx.Humanizable do
-    def humanize(_), do: "struct"
+    def humanize(%{mod: nil}), do: "struct"
+    def humanize(%{mod: mod}), do: inspect(mod)
   end
 end

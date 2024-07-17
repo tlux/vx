@@ -24,7 +24,7 @@ defmodule Vx.StructTest do
 
     test "no match" do
       assert {:error, [error]} = Vx.validate(Vx.Struct.t(Country), %Address{})
-      assert Exception.message(error) == "not a struct of type Country"
+      assert Exception.message(error) == "expected Country"
 
       Enum.each([nil, "foo", :foo, true, false], fn value ->
         assert {:error, _} = Vx.validate(Vx.Struct.t(Country), value)

@@ -61,7 +61,7 @@ defmodule VxTest do
                })
 
       assert Exception.message(error) ==
-               ~s(not a struct of type Address at ["addresses", 1])
+               ~s(expected Address at ["addresses", 1])
     end
   end
 
