@@ -10,4 +10,8 @@ defmodule Vx.AnyTest do
       end)
     end
   end
+
+  test "Vx.Printable.print/1" do
+    assert Vx.Printable.print(Vx.Any.t()) == "any"
+  end
 end

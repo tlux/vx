@@ -32,4 +32,8 @@ defmodule Vx.AtomTest do
       end)
     end
   end
+
+  test "Vx.Printable.print/1" do
+    assert Vx.Printable.print(Vx.Atom.t()) == "atom"
+  end
 end

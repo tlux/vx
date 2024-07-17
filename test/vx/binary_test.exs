@@ -17,4 +17,8 @@ defmodule Vx.BinaryTest do
       end)
     end
   end
+
+  test "Vx.Printable.print/1" do
+    assert Vx.Printable.print(Vx.Binary.t()) == "binary"
+  end
 end

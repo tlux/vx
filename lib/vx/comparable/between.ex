@@ -15,14 +15,14 @@ defmodule Vx.Comparable.Between do
            comparable.compare(actual_value, last) in [:lt, :eq] do
         :ok
       else
-        {:error, "must be between #{first} and #{last}"}
+        {:error, "must be between #{inspect(first)} and #{inspect(last)}"}
       end
     end
   end
 
   defimpl Vx.Printable do
     def print(%{first: first, last: last}) do
-      "between #{first} and #{last}"
+      "between #{inspect(first)} and #{inspect(last)}"
     end
   end
 end
