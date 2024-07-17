@@ -15,7 +15,7 @@ defmodule Vx.IncompatibleConstraintError do
 
   @impl Exception
   def message(%{constraint: constraint, permitted: permitted, actual: actual}) do
-    "unable to add constraint '#{Vx.Printable.print(constraint)}' to " <>
+    "unable to add constraint #{inspect(constraint)} to " <>
       "#{inspect(actual)} (must be #{permitted_str(permitted)})"
   end
 
