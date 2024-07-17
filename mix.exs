@@ -65,7 +65,6 @@ defmodule Vx.MixProject do
           Vx.Atom,
           Vx.Binary,
           Vx.Boolean,
-          Vx.Decimal,
           Vx.Enum,
           Vx.Float,
           Vx.Integer,
