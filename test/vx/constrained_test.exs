@@ -86,4 +86,21 @@ defmodule Vx.ConstrainedTest do
       refute Vx.valid?(schema, 123)
     end
   end
+
+  describe "Vx.Printable.print/1" do
+    test "with constraints" do
+      schema =
+        Vx.String.t()
+        |> Vx.String.length(min: 1)
+        |> Vx.String.length(max: 3)
+
+      assert Vx.Printable.print(schema) == "string[length <= 3, length >= 1]"
+    end
+
+    test "without constraints" do
+      schema = Vx.Constrained.t(Vx.String.t())
+
+      assert Vx.Printable.print(schema) == "string"
+    end
+  end
 end

@@ -18,6 +18,12 @@ defmodule Vx.TupleTest do
     end
   end
 
+  describe "t/1" do
+    test "alias for shape/1" do
+      assert Vx.Tuple.t({1, 2, 3}) == Vx.Tuple.shape({1, 2, 3})
+    end
+  end
+
   describe "shape/1" do
     test "match" do
       assert :ok = Vx.validate(Vx.Tuple.shape({1, 2, 3}), {1, 2, 3})

@@ -58,7 +58,7 @@ defmodule Vx.IntersectTest do
                )
 
       assert Exception.message(error) ==
-               ~s(expected string[size >= 1] and string[size <= 2])
+               ~s(expected string[length >= 1] and string[length <= 2])
     end
 
     test "disallow single item" do

@@ -31,4 +31,27 @@ defmodule Vx.ValidatorTest do
       assert Exception.message(error) == "does not match"
     end
   end
+
+  describe "t/2" do
+    setup do
+      {:ok, schema: Vx.Validator.t(Vx.String.t(), &String.contains?(&1, "foo"))}
+    end
+
+    test "match", %{schema: schema} do
+      assert :ok = Vx.validate(schema, "foobar")
+    end
+
+    test "no match", %{schema: schema} do
+      assert {:error, [error]} = Vx.validate(schema, 123)
+      assert Exception.message(error) == "expected string"
+
+      assert {:error, [error]} = Vx.validate(schema, "bar")
+      assert Exception.message(error) == "is invalid"
+    end
+  end
+
+  test "Vx.Printable.print/1" do
+    assert Vx.Printable.print(Vx.Validator.t(fn _ -> true end)) ==
+             "(custom validator)"
+  end
 end

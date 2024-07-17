@@ -71,6 +71,9 @@ defmodule Vx.ListTest do
     end
 
     test "no match" do
+      assert {:error, [error]} = Vx.validate(Vx.List.length(min: 1), [])
+      assert Exception.message(error) == "must have at least 1 element"
+
       assert {:error, [error]} = Vx.validate(Vx.List.length(min: 2), ["foo"])
       assert Exception.message(error) == "must have at least 2 elements"
     end
@@ -83,6 +86,11 @@ defmodule Vx.ListTest do
     end
 
     test "no match" do
+      assert {:error, [error]} =
+               Vx.validate(Vx.List.length(max: 1), ["foo", "bar"])
+
+      assert Exception.message(error) == "must have at most 1 element"
+
       assert {:error, [error]} =
                Vx.validate(Vx.List.length(max: 2), ["foo", "bar", "baz"])
 
