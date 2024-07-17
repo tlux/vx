@@ -44,7 +44,6 @@ defmodule Vx.MixProject do
       {:castore, "~> 1.0", only: :test, runtime: false},
       {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
       {:excoveralls, "~> 0.18", only: :test, runtime: false},
-      {:decimal, "~> 2.1", optional: true},
       {:dialyxir, "~> 1.4", only: [:dev, :test], runtime: false},
       {:ex_doc, "~> 0.31", only: :dev, runtime: false},
       {:mix_audit, "~> 2.1", only: [:dev, :test]}
