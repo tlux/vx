@@ -94,7 +94,7 @@ defmodule Vx.ConstrainedTest do
         |> Vx.String.length(min: 1)
         |> Vx.String.length(max: 3)
 
-      assert Vx.Printable.print(schema) == "string[length <= 3, length >= 1]"
+      assert Vx.Printable.print(schema) == "string[length >= 1, length <= 3]"
     end
 
     test "without constraints" do

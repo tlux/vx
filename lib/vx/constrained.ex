@@ -7,9 +7,9 @@ defmodule Vx.Constrained do
   @moduledoc since: "1.0.0"
 
   @enforce_keys [:schema]
-  defstruct [:schema, constraints: MapSet.new()]
+  defstruct [:schema, constraints: []]
 
-  @type t :: %__MODULE__{schema: Vx.t(), constraints: MapSet.t(Vx.t())}
+  @type t :: %__MODULE__{schema: Vx.t(), constraints: [Vx.t()]}
 
   @doc """
   Wrap a schema in a `Vx.Constrained`.
@@ -43,7 +43,7 @@ defmodule Vx.Constrained do
   """
   @spec constraints(t) :: [Vx.t()]
   def constraints(%__MODULE__{constraints: constraints}) do
-    Enum.to_list(constraints)
+    Enum.reverse(constraints)
   end
 
   @doc """
@@ -51,13 +51,14 @@ defmodule Vx.Constrained do
   """
   @spec put_constraint(t, Vx.t()) :: t
   def put_constraint(%__MODULE__{} = constrained, constraint) do
-    Map.update!(constrained, :constraints, &MapSet.put(&1, constraint))
+    Map.update!(constrained, :constraints, &[constraint | &1])
   end
 
   defimpl Vx.Validatable do
-    def validate(%{schema: schema, constraints: constraints}, value) do
-      with :ok <- Vx.validate(schema, value) do
-        constraints
+    def validate(%{schema: inner_schema} = schema, value) do
+      with :ok <- Vx.validate(inner_schema, value) do
+        schema
+        |> Vx.Constrained.constraints()
         |> Enum.flat_map(&Vx.errors_on(&1, value))
         |> then(fn
           [] -> :ok
@@ -68,19 +69,19 @@ defmodule Vx.Constrained do
   end
 
   defimpl Vx.Printable do
-    def print(%{schema: schema, constraints: constraints}) do
+    def print(%{schema: inner_schema} = schema) do
       suffix =
-        case MapSet.size(constraints) do
-          0 ->
+        case Vx.Constrained.constraints(schema) do
+          [] ->
             ""
 
-          _ ->
+          constraints ->
             "[" <>
               Enum.map_join(constraints, ", ", &Vx.Printable.print/1) <>
               "]"
         end
 
-      Vx.Printable.print(schema) <> suffix
+      Vx.Printable.print(inner_schema) <> suffix
     end
   end
 end
