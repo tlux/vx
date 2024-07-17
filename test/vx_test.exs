@@ -1,81 +1,171 @@
 defmodule VxTest do
   use ExUnit.Case, async: true
 
-  doctest Vx
+  import Vx.Force
 
-  @valid_values %{
-    "name" => "foo",
-    "age" => 18,
-    "hobbies" => ["foo", "bar"],
-    "type" => "admin",
-    "addresses" => [%Address{street: "baz"}]
-  }
+  @valid_value "foo"
+  @invalid_value 123
 
   setup do
-    {:ok,
-     schema:
-       Vx.Map.t(%{
-         "name" => Vx.String.t(),
-         "age" => Vx.Number.t(),
-         "hobbies" =>
-           Vx.String.present()
-           |> Vx.List.t()
-           |> Vx.List.non_empty(),
-         "type" => Vx.Enum.t(["user", "admin"]),
-         "addresses" => Vx.List.t(Vx.Struct.t(Address))
-       })}
+    {:ok, schema: Vx.String.t()}
   end
 
   describe "validate/2" do
     test "valid", %{schema: schema} do
-      assert :ok = Vx.validate(schema, @valid_values)
-      assert :ok = Vx.validate(schema, %{@valid_values | "type" => "user"})
+      assert Vx.validate(schema, @valid_value) == :ok
     end
 
     test "invalid", %{schema: schema} do
-      assert {:error, [error]} =
-               Vx.validate(schema, %{@valid_values | "type" => "guest"})
-
-      assert Exception.message(error) ==
-               ~s/expected any of "user", "admin" at ["type"]/
-
-      assert {:error, [error]} =
-               Vx.validate(schema, %{@valid_values | "hobbies" => []})
-
-      assert Exception.message(error) ==
-               ~s(must have at least 1 element at ["hobbies"])
-
-      assert {:error, [error]} =
-               Vx.validate(schema, %{
-                 @valid_values
-                 | "hobbies" => ["foo", "  "]
-               })
-
-      assert Exception.message(error) == ~s(must be present at ["hobbies", 1])
-
-      assert {:error, [error]} =
-               Vx.validate(schema, %{
-                 @valid_values
-                 | "addresses" =>
-                     @valid_values["addresses"] ++ [%Country{code: "DE"}]
-               })
-
-      assert Exception.message(error) ==
-               ~s(expected Address at ["addresses", 1])
+      assert Vx.validate(schema, @invalid_value) ==
+               {:error,
+                [%Vx.Error{schema: schema, actual_value: @invalid_value}]}
     end
   end
 
   describe "validate!/2" do
     test "valid", %{schema: schema} do
-      assert Vx.validate!(schema, @valid_values)
+      assert Vx.validate!(schema, @valid_value) == :ok
     end
 
     test "invalid", %{schema: schema} do
       assert_raise Vx.ValidationFailedError,
-                   ~s/Validation failed: expected any of "user", "admin" at ["type"]/,
+                   "Validation failed: expected string",
                    fn ->
-                     Vx.validate!(schema, %{@valid_values | "type" => "guest"})
+                     Vx.validate!(schema, @invalid_value)
                    end
+    end
+  end
+
+  describe "valid?/2" do
+    test "valid", %{schema: schema} do
+      assert Vx.valid?(schema, @valid_value) == true
+    end
+
+    test "invalid", %{schema: schema} do
+      assert Vx.valid?(schema, @invalid_value) == false
+    end
+  end
+
+  describe "errors_on/2" do
+    test "valid" do
+      Enum.each([true, :ok], fn result ->
+        assert Vx.errors_on(force(result), @valid_value) == []
+      end)
+    end
+
+    test "false" do
+      assert [%Vx.Error{message: nil, actual_value: @invalid_value}] =
+               Vx.errors_on(force(false), @invalid_value)
+    end
+
+    test "error" do
+      assert [%Vx.Error{message: nil, actual_value: @invalid_value}] =
+               Vx.errors_on(force(:error), @invalid_value)
+    end
+
+    test "error tuple with single message" do
+      assert [
+               %Vx.Error{
+                 message: "Something went wrong",
+                 actual_value: @invalid_value
+               }
+             ] =
+               Vx.errors_on(
+                 force({:error, "Something went wrong"}),
+                 @invalid_value
+               )
+    end
+
+    test "error tuple with single message and path" do
+      assert [
+               %Vx.Error{
+                 message: "Something went wrong",
+                 actual_value: @invalid_value,
+                 path: ["foo", "bar"]
+               }
+             ] =
+               Vx.errors_on(
+                 force({:error, {["foo", "bar"], "Something went wrong"}}),
+                 @invalid_value
+               )
+    end
+
+    test "error tuple with multiple messages" do
+      assert [
+               %Vx.Error{
+                 message: "Something went wrong",
+                 actual_value: @invalid_value
+               }
+             ] =
+               Vx.errors_on(
+                 force({:error, "Something went wrong"}),
+                 @invalid_value
+               )
+    end
+
+    test "error tuple with multiple messages and paths" do
+      assert [
+               %Vx.Error{
+                 message: "Something went wrong",
+                 actual_value: @invalid_value,
+                 path: ["foo"]
+               },
+               %Vx.Error{
+                 message: "Another error",
+                 actual_value: @invalid_value,
+                 path: ["foo", "bar"]
+               }
+             ] =
+               Vx.errors_on(
+                 force(
+                   {:error,
+                    [
+                      {["foo"], "Something went wrong"},
+                      {["foo", "bar"], "Another error"}
+                    ]}
+                 ),
+                 @invalid_value
+               )
+    end
+
+    test "error tuple with single error", %{schema: schema} do
+      error = %Vx.Error{
+        schema: schema,
+        message: "Something went wrong",
+        actual_value: @invalid_value
+      }
+
+      assert Vx.errors_on(force({:error, error}), @invalid_value) == [error]
+    end
+
+    test "error tuple with multiple errors", %{schema: schema} do
+      errors = [
+        %Vx.Error{
+          schema: schema,
+          message: "Something went wrong",
+          actual_value: @invalid_value
+        },
+        %Vx.Error{
+          schema: schema,
+          message: "Another error",
+          actual_value: @invalid_value,
+          path: ["foo", "bar"]
+        }
+      ]
+
+      assert Vx.errors_on(force({:error, errors}), @invalid_value) == errors
+    end
+  end
+
+  describe "error_messages_on/2" do
+    test "valid", %{schema: schema} do
+      assert Vx.error_messages_on(schema, @valid_value) == []
+    end
+
+    test "invalid", %{schema: schema} do
+      assert Vx.error_messages_on(schema, @invalid_value) == [
+               "expected string"
+             ]
     end
   end
 end

@@ -28,6 +28,41 @@ defmodule Vx do
   end
 
   @doc """
+  Validates a value against a given schema. Raises on error.
+
+  ## Examples
+
+      iex> Vx.validate!(Vx.String.t(), "foo")
+      :ok
+
+      iex> Vx.validate!(Vx.String.t(), 123)
+      ** (Vx.ValidationFailedError) Validation failed: expected string
+  """
+  @spec validate!(t, any) :: :ok | no_return
+  def validate!(schema, value) do
+    with {:error, errors} <- validate(schema, value) do
+      raise Vx.ValidationFailedError.new(errors)
+    end
+  end
+
+  @doc """
+  Checks if a value is valid against a given schema.
+
+  ## Examples
+
+      iex> Vx.valid?(Vx.String.t(), "foo")
+      true
+
+      iex> Vx.valid?(Vx.String.t(), 123)
+      false
+  """
+  @doc since: "0.4.0"
+  @spec valid?(t, any) :: boolean
+  def valid?(schema, value) do
+    validate(schema, value) == :ok
+  end
+
+  @doc """
   Validates the schema returning a list of errors.
   """
   @doc since: "1.0.0"
@@ -68,40 +103,5 @@ defmodule Vx do
     schema
     |> errors_on(value)
     |> Enum.map(&Vx.Error.message/1)
-  end
-
-  @doc """
-  Validates a value against a given schema. Raises on error.
-
-  ## Examples
-
-      iex> Vx.validate!(Vx.String.t(), "foo")
-      :ok
-
-      iex> Vx.validate!(Vx.String.t(), 123)
-      ** (Vx.ValidationFailedError) Validation failed: expected string
-  """
-  @spec validate!(t, any) :: :ok | no_return
-  def validate!(schema, value) do
-    with {:error, errors} <- validate(schema, value) do
-      raise Vx.ValidationFailedError.new(errors)
-    end
-  end
-
-  @doc """
-  Checks if a value is valid against a given schema.
-
-  ## Examples
-
-      iex> Vx.valid?(Vx.String.t(), "foo")
-      true
-
-      iex> Vx.valid?(Vx.String.t(), 123)
-      false
-  """
-  @doc since: "0.4.0"
-  @spec valid?(t, any) :: boolean
-  def valid?(schema, value) do
-    validate(schema, value) == :ok
   end
 end
