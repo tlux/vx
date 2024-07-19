@@ -24,7 +24,7 @@ defprotocol Vx.Validatable do
   Validates a value against a given validatable.
   """
   @spec validate(t, any) :: result
-  def validate(validatable, value)
+  def validate(schema, value)
 end
 
 defimpl Vx.Validatable, for: Any do
